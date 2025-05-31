@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Heart, Share2, ShoppingBag, Star, Truck, Shield, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Heart, Share2, Star, Truck, Shield, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Product, fetchProductById, fetchProducts } from '../lib/supabase';
 import ProductCard from '../components/Product/ProductCard';
+import CustomBagIcon from '../components/UI/CustomBagIcon';
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -260,7 +261,7 @@ const ProductDetail: React.FC = () => {
                         : ''
                     }`}
                   >
-                    <ShoppingBag size={18} />
+                    <CustomBagIcon size={18} />
                     {product.stock_status === 'out-of-stock'
                       ? 'Out of Stock'
                       : 'Add to Cart'}
