@@ -104,13 +104,6 @@ const Header: React.FC = () => {
                 <Search size={20} />
               </button>
               <Link 
-                to="/account" 
-                className="p-2 text-black hover:text-popmart-red transition-colors duration-200 hidden md:block"
-                aria-label="Account"
-              >
-                <User size={20} />
-              </Link>
-              <Link 
                 to="/wishlist" 
                 className="p-2 text-black hover:text-popmart-red transition-colors duration-200 hidden md:block"
                 aria-label="Wishlist"
@@ -186,9 +179,6 @@ const Header: React.FC = () => {
                 ))}
               </nav>
               <div className="mt-4 pt-4 border-t border-gray-100 flex flex-col space-y-2">
-                <Link to="/account" className="py-2 text-black hover:text-popmart-red flex items-center uppercase text-xs tracking-wider popmart-nav-font">
-                  <User size={18} className="mr-2" /> My Account
-                </Link>
                 <Link to="/wishlist" className="py-2 text-black hover:text-popmart-red flex items-center uppercase text-xs tracking-wider popmart-nav-font">
                   <Heart size={18} className="mr-2" /> Wishlist
                 </Link>
