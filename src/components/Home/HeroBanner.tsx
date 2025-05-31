@@ -79,38 +79,38 @@ const HeroBanner: React.FC = () => {
   const currentBanner = banners[currentIndex];
 
   return (
-    <div className="container mx-auto px-8 md:px-16 lg:px-32 xl:px-48 mt-8 relative">
+    <div className="container mx-auto px-4 md:px-8 lg:px-16 xl:px-24 mt-6 relative">
       {/* Banner container */}
       <div className="relative">
-        <div className="relative h-[550px] overflow-hidden px-6 md:px-12 lg:px-24 xl:px-36">
+        <div className="relative h-[570px] overflow-hidden px-3 md:px-6 lg:px-12 xl:px-18">
       {/* Slider Controls */}
       {banners.length > 1 && (
         <>
           <button
             onClick={prevSlide}
-            className="absolute left-4 md:left-8 lg:left-20 xl:left-32 top-1/2 z-10 transform -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white p-3 transition-colors duration-300"
+            className="absolute left-4 md:left-8 lg:left-16 xl:left-24 top-1/2 z-10 transform -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-3 md:p-2 lg:p-2 rounded-full transition-colors duration-300"
             aria-label="Previous slide"
           >
-            <ChevronLeft size={24} />
+            <ChevronLeft size={28} className="md:w-6 md:h-6 lg:w-5 lg:h-5" />
           </button>
           <button
             onClick={nextSlide}
-            className="absolute right-4 md:right-8 lg:right-20 xl:right-32 top-1/2 z-10 transform -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white p-3 transition-colors duration-300"
+            className="absolute right-4 md:right-8 lg:right-16 xl:right-24 top-1/2 z-10 transform -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-3 md:p-2 lg:p-2 rounded-full transition-colors duration-300"
             aria-label="Next slide"
           >
-            <ChevronRight size={24} />
+            <ChevronRight size={28} className="md:w-6 md:h-6 lg:w-5 lg:h-5" />
           </button>
         </>
       )}
 
       {/* Banner */}
-      <AnimatePresence mode="wait">
+      <AnimatePresence mode="wait" custom={currentIndex}>
         <motion.div
           key={currentBanner.id}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.7 }}
+          initial={{ x: 300, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          exit={{ x: -300, opacity: 0 }}
+          transition={{ duration: 0.7, ease: "easeInOut" }}
           className="absolute inset-0"
         >
           <div className="relative h-full w-full">
@@ -163,7 +163,7 @@ const HeroBanner: React.FC = () => {
 
       {/* Indicators */}
       {banners.length > 1 && (
-        <div className="absolute bottom-6 left-0 right-0 z-10 flex justify-center space-x-3">
+        <div className="absolute bottom-4 left-0 right-0 z-10 flex justify-center space-x-2">
           {banners.map((_, index) => (
             <button
               key={index}
