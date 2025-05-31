@@ -97,8 +97,8 @@ const HeroBanner: React.FC = () => {
 
   return (
     <div className="container mx-auto px-8 md:px-16 lg:px-32 xl:px-48 mt-8 relative">
-      {/* Red border around the banner, similar to PopMart */}
-      <div className="border-popmart-red border-4 relative">
+      {/* Banner container */}
+      <div className="relative">
         <div className="relative h-[550px] overflow-hidden px-6 md:px-12 lg:px-24 xl:px-36">
       {/* Slider Controls */}
       {banners.length > 1 && (
