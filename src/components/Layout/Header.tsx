@@ -34,8 +34,8 @@ const Header: React.FC = () => {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 w-full bg-white border-b border-gray-200">
-      <div className={`transition-all duration-300 ${isScrolled ? 'py-1' : 'py-2'} w-full`}>
-        <div className="w-full mx-0 px-[1cm]">
+      <div className={`transition-all duration-300 ${isScrolled ? 'py-5' : 'py-6'} w-full`}>
+        <div className="w-full mx-0 px-[2cm]">
           <div className="flex items-center justify-between">
             {/* Mobile Menu Button */}
             <button
@@ -76,7 +76,7 @@ const Header: React.FC = () => {
                 <div key={item.name} className="relative">
                   <Link
                     to={item.path}
-                    className={`font-medium py-2 px-4 text-black hover:text-popmart-red transition-colors duration-200 uppercase text-xs tracking-wider popmart-nav-font ${location.pathname === item.path ? 'text-popmart-red' : ''}`}
+                    className={`font-medium py-4 px-3 text-black hover:text-popmart-red transition-colors duration-200 uppercase text-xs tracking-wider popmart-nav-font ${location.pathname === item.path ? 'text-popmart-red' : ''}`}
                   >
                     {item.name}
                   </Link>
@@ -85,7 +85,7 @@ const Header: React.FC = () => {
             </nav>
 
             {/* Search Input - Visible on desktop */}
-            <div className="hidden lg:flex items-center relative border border-gray-300 rounded-full px-3 py-1 w-32 xl:w-64">
+            <div className="hidden lg:flex items-center relative border border-gray-300 rounded-full px-5 py-3 w-32 xl:w-64">
               <input 
                 type="text" 
                 placeholder="SEARCH"
@@ -95,7 +95,7 @@ const Header: React.FC = () => {
             </div>
 
             {/* Desktop Icons */}
-            <div className="flex items-center space-x-2 mr-2">
+            <div className="flex items-center space-x-6 mr-6">
               <button 
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
                 className="lg:hidden p-2 text-black hover:text-popmart-red transition-colors duration-200"
