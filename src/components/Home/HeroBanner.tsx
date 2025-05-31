@@ -96,20 +96,23 @@ const HeroBanner: React.FC = () => {
   const currentBanner = banners[currentIndex];
 
   return (
-    <div className="relative h-[75vh] overflow-hidden mt-24">
+    <div className="container mx-auto px-8 md:px-16 lg:px-32 xl:px-48 mt-8 relative">
+      {/* Red border around the banner, similar to PopMart */}
+      <div className="border-popmart-red border-4 relative">
+        <div className="relative h-[550px] overflow-hidden px-6 md:px-12 lg:px-24 xl:px-36">
       {/* Slider Controls */}
       {banners.length > 1 && (
         <>
           <button
             onClick={prevSlide}
-            className="absolute left-6 top-1/2 z-10 transform -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white p-3 transition-colors duration-300"
+            className="absolute left-4 md:left-8 lg:left-20 xl:left-32 top-1/2 z-10 transform -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white p-3 transition-colors duration-300"
             aria-label="Previous slide"
           >
             <ChevronLeft size={24} />
           </button>
           <button
             onClick={nextSlide}
-            className="absolute right-6 top-1/2 z-10 transform -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white p-3 transition-colors duration-300"
+            className="absolute right-4 md:right-8 lg:right-20 xl:right-32 top-1/2 z-10 transform -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white p-3 transition-colors duration-300"
             aria-label="Next slide"
           >
             <ChevronRight size={24} />
@@ -188,6 +191,8 @@ const HeroBanner: React.FC = () => {
           ))}
         </div>
       )}
+        </div>
+      </div>
     </div>
   );
 };
