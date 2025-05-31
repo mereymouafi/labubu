@@ -47,21 +47,28 @@ const Header: React.FC = () => {
             </button>
 
             {/* Logo */}
-            <Link to="/" className="flex items-center">
-              <div 
-                style={{
-                  fontFamily: '"Bebas Neue", sans-serif',
-                  backgroundColor: '#d10a1f',
-                  color: 'white',
-                  padding: '0',
-                  display: 'inline-block',
-                  lineHeight: '1',
-                }}
-                className="text-3xl uppercase"
-              >
-                LABUBU MAROC
-              </div>
-            </Link>
+            <Link to="/" className="flex items-center justify-center">
+  <div 
+    style={{
+      fontFamily: '"Bebas Neue", sans-serif',
+      backgroundColor: '#d10a1f',
+      color: 'white',
+      display: 'flex',                // Flex container
+      justifyContent: 'center',      // Horizontal centering
+      alignItems: 'center',          // Vertical centering
+      height: '30px',                // Fixed height for equal spacing
+      width: 'auto',                 // Or 100% if you want full width
+      padding: '3px 3px 0 3px',             // Left and right padding only
+    }}
+    className="text-3xl uppercase"
+  >
+    LABUBU MAROC
+  </div>
+</Link>
+
+
+
+
 
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center">
