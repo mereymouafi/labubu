@@ -33,13 +33,13 @@ const Header: React.FC = () => {
   ];
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 w-full bg-white border-b border-gray-200 overflow-hidden">
+    <header className="fixed top-0 left-0 right-0 z-50 w-full bg-white border-b border-gray-200">
       <div className={`transition-all duration-300 ${isScrolled ? 'py-1' : 'py-2'} w-full`}>
-        <div className="w-full mx-0 px-0">
+        <div className="w-full mx-0 px-[1cm]">
           <div className="flex items-center justify-between">
             {/* Mobile Menu Button */}
             <button
-              className="lg:hidden p-2"
+              className="lg:hidden p-2 ml-2"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               aria-label="Toggle menu"
             >
@@ -48,8 +48,8 @@ const Header: React.FC = () => {
 
             {/* Logo */}
             <Link to="/" className="flex items-center">
-              <div style={{backgroundColor: '#d10a1f'}} className="px-& py-2 inline-block">
-                <span className="text-white font-extrabold tracking-tight text-lg uppercase popmart-nav-font">LABUBU MAROC</span>
+              <div style={{backgroundColor: '#d10a1f'}} className="px-2 py-1.5 inline-block w-[170px] text-center">
+                <span style={{fontFamily: '"Bebas Neue", sans-serif'}} className="text-white tracking-wide text-xl uppercase">LABUBU MAROC</span>
               </div>
             </Link>
 
@@ -78,7 +78,7 @@ const Header: React.FC = () => {
             </div>
 
             {/* Desktop Icons */}
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 mr-2">
               <button 
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
                 className="lg:hidden p-2 text-black hover:text-popmart-red transition-colors duration-200"
@@ -88,10 +88,10 @@ const Header: React.FC = () => {
               </button>
               <Link 
                 to="/account" 
-                className="p-2 text-black hover:text-popmart-red transition-colors duration-200 hidden md:flex items-center space-x-1"
+                className="p-2 text-black hover:text-popmart-red transition-colors duration-200 hidden md:block"
                 aria-label="Account"
               >
-                <span className="text-xs uppercase tracking-wider popmart-nav-font">My Account</span>
+                <User size={20} />
               </Link>
               <Link 
                 to="/wishlist" 
