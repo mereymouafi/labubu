@@ -1,0 +1,118 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Heart, ShoppingBag } from 'lucide-react';
+import { Product } from '../../lib/supabase';
+
+interface ProductCardProps {
+  product: Product;
+}
+
+const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+  const {
+    id,
+    name,
+    price,
+    original_price,
+    images,
+    is_new,
+    is_on_sale,
+    stock_status
+  } = product;
+
+  const itemVariants = {
+    hidden: { y: 30, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        duration: 0.6
+      }
+    }
+  };
+
+  return (
+    <motion.div variants={itemVariants} className="group">
+      <div className="h-full">
+        <div className="relative overflow-hidden">
+          {/* Product Image */}
+          <Link to={`/product/${id}`} className="block">
+            <div className="aspect-square bg-popmart-lightgray overflow-hidden">
+              <img
+                src={images[0]}
+                alt={name}
+                className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105"
+              />
+            </div>
+
+            {/* Product Status Badges */}
+            <div className="absolute top-0 left-0">
+              {is_new && (
+                <span className="inline-block bg-popmart-red text-white text-xs px-3 py-1">
+                  NEW
+                </span>
+              )}
+              {is_on_sale && (
+                <span className="inline-block bg-black text-white text-xs px-3 py-1">
+                  SALE
+                </span>
+              )}
+              {stock_status === 'out-of-stock' && (
+                <span className="inline-block bg-gray-700 text-white text-xs px-3 py-1">
+                  SOLD OUT
+                </span>
+              )}
+            </div>
+
+            {/* Quick Action Buttons */}
+            <button
+              className="absolute top-2 right-2 w-8 h-8 bg-white/80 flex items-center justify-center text-gray-700 hover:text-popmart-red transition-colors duration-300"
+              aria-label="Add to wishlist"
+            >
+              <Heart size={16} />
+            </button>
+
+            {/* Add to Cart Button - Only visible on hover */}
+            <div className="absolute -bottom-10 left-0 right-0 group-hover:bottom-0 transition-all duration-300">
+              <button
+                disabled={stock_status === 'out-of-stock'}
+                className={`w-full py-2 flex items-center justify-center gap-2 transition-colors duration-300 ${
+                  stock_status === 'out-of-stock'
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    : 'bg-black text-white hover:bg-popmart-red'
+                }`}
+              >
+                <ShoppingBag size={16} />
+                <span className="text-sm">ADD TO CART</span>
+              </button>
+            </div>
+          </Link>
+        </div>
+
+        {/* Product Info */}
+        <div className="pt-4 pb-2 text-center">
+          <Link to={`/product/${id}`} className="block">
+            <h3 className="text-sm text-gray-600 hover:text-popmart-red transition-colors duration-300 mb-1">
+              {product.collection || 'POPMART'}
+            </h3>
+            <h4 className="font-medium text-black line-clamp-2 hover:text-popmart-red transition-colors duration-300">
+              {name}
+            </h4>
+          </Link>
+          <div className="mt-2 flex items-center justify-center">
+            {original_price && (
+              <span className="text-gray-400 line-through mr-2">
+                ${original_price.toFixed(2)}
+              </span>
+            )}
+            <span className="font-medium text-popmart-red">
+              ${price.toFixed(2)}
+            </span>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+export default ProductCard;
