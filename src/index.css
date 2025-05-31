@@ -1,14 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   body {
-    @apply font-sans text-gray-800 bg-gray-50;
+    @apply font-sans text-gray-800 bg-white;
+    font-family: 'Montserrat', sans-serif;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply font-medium leading-tight;
+    @apply font-bold leading-tight uppercase tracking-wide;
+  }
+  
+  .uppercase-text {
+    @apply uppercase text-xs tracking-wider font-medium;
+  }
+  
+  .popmart-nav-font {
+    font-family: "Arial Black", "Helvetica Bold", Arial, Helvetica, sans-serif;
+    font-weight: 900;
   }
 }
 
