@@ -76,7 +76,7 @@ const Header: React.FC = () => {
                 <div key={item.name} className="relative">
                   <Link
                     to={item.path}
-                    className={`font-medium py-4 px-3 text-black hover:text-popmart-red transition-colors duration-200 uppercase text-xs tracking-wider popmart-nav-font ${location.pathname === item.path ? 'text-popmart-red' : ''}`}
+                    className={`font-medium py-4 px-3 text-black hover:text-popmart-red transition-colors duration-200 uppercase text-base font-bold tracking-wider popmart-nav-font ${location.pathname === item.path ? 'text-popmart-red' : ''}`}
                   >
                     {item.name}
                   </Link>
@@ -171,7 +171,7 @@ const Header: React.FC = () => {
                   <div key={item.name} className="border-b border-gray-100 last:border-b-0">
                     <Link
                       to={item.path}
-                      className={`block font-medium py-3 flex justify-between items-center uppercase text-xs tracking-wider popmart-nav-font ${location.pathname === item.path ? 'text-popmart-red' : 'text-black'}`}
+                      className={`block font-medium py-3 flex justify-between items-center uppercase text-base font-bold tracking-wider popmart-nav-font ${location.pathname === item.path ? 'text-popmart-red' : 'text-black'}`}
                     >
                       {item.name}
                     </Link>
