@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Heart, Search, User } from 'lucide-react';
+import { Menu, X, Heart, Search, User, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { fetchCategories, Category } from '../../lib/supabase';
+
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [isCategoriesDropdownOpen, setIsCategoriesDropdownOpen] = useState(false);
+  const [isMobileCategoriesOpen, setIsMobileCategoriesOpen] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -21,7 +27,19 @@ const Header: React.FC = () => {
   useEffect(() => {
     setIsMenuOpen(false);
     setIsSearchOpen(false);
+    setIsCategoriesDropdownOpen(false);
+    setIsMobileCategoriesOpen(false);
   }, [location]);
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      const categoryData = await fetchCategories();
+      console.log('Categories loaded:', categoryData);
+      setCategories(categoryData);
+    };
+    
+    loadCategories();
+  }, []);
 
   // Updated to match POPMART's navigation items
   const navItems = [
@@ -48,38 +66,92 @@ const Header: React.FC = () => {
 
             {/* Logo */}
             <Link to="/" className="flex items-center justify-center">
-  <div 
-    style={{
-      fontFamily: '"Bebas Neue", sans-serif',
-      backgroundColor: '#d10a1f',
-      color: 'white',
-      display: 'flex',                // Flex container
-      justifyContent: 'center',      // Horizontal centering
-      alignItems: 'center',          // Vertical centering
-      height: '30px',                // Fixed height for equal spacing
-      width: 'auto',                 // Or 100% if you want full width
-      padding: '3px 3px 0 3px',             // Left and right padding only
-    }}
-    className="text-3xl uppercase"
-  >
-    LABUBU MAROC
-  </div>
-</Link>
-
-
-
-
+              <div 
+                style={{
+                  fontFamily: '"Bebas Neue", sans-serif',
+                  backgroundColor: '#d10a1f',
+                  color: 'white',
+                  display: 'flex',                // Flex container
+                  justifyContent: 'center',      // Horizontal centering
+                  alignItems: 'center',          // Vertical centering
+                  height: '30px',                // Fixed height for equal spacing
+                  width: 'auto',                 // Or 100% if you want full width
+                  padding: '3px 3px 0 3px',             // Left and right padding only
+                }}
+                className="text-3xl uppercase"
+              >
+                LABUBU MAROC
+              </div>
+            </Link>
 
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center">
               {navItems.map((item) => (
-                <div key={item.name} className="relative">
-                  <Link
-                    to={item.path}
-                    className={`font-medium py-4 px-3 text-black hover:text-popmart-red transition-colors duration-200 uppercase text-base font-bold tracking-wider popmart-nav-font ${location.pathname === item.path ? 'text-popmart-red' : ''}`}
-                  >
-                    {item.name}
-                  </Link>
+                <div key={item.name} className="relative"
+                  onMouseEnter={() => item.name === 'CATEGORIES' && setIsCategoriesDropdownOpen(true)}
+                  onMouseLeave={() => item.name === 'CATEGORIES' && setIsCategoriesDropdownOpen(false)}
+                >
+                  {item.name === 'CATEGORIES' ? (
+                    <div className="flex items-center cursor-pointer">
+                      <span 
+                        className={`font-medium py-4 px-3 text-black hover:text-popmart-red transition-colors duration-200 uppercase text-base font-bold tracking-wider popmart-nav-font ${location.pathname.startsWith('/categories') ? 'text-popmart-red' : ''}`}
+                      >
+                        {item.name}
+                        <ChevronDown size={16} className="inline ml-1 pb-1" />
+                      </span>
+                      
+                      {/* Categories Dropdown */}
+                      {isCategoriesDropdownOpen && categories.length > 0 && (
+                        <div className="absolute top-full left-0 bg-white shadow-lg z-50 w-[450px] p-4">
+                          <div className="grid grid-cols-2 gap-6">
+                            {categories.map((category) => (
+                              <Link
+                                key={category.id}
+                                to={`/categories/${category.slug}`}
+                                className="flex flex-col items-center hover:text-popmart-red transition-transform duration-200 hover:scale-105"
+                              >
+                                {category.image ? (
+                                  <div className="w-[180px] h-[100px] overflow-hidden mb-2">
+                                    <img 
+                                      src={category.image.startsWith('http') ? category.image : `https://${supabaseUrl}/storage/v1/object/public/${category.image}`} 
+                                      alt={category.name} 
+                                      className="w-full h-full object-cover"
+                                      onError={(e) => {
+                                        console.error(`Error loading image: ${category.image}`);
+                                        e.currentTarget.onerror = null;
+                                        e.currentTarget.src = 'https://via.placeholder.com/180x100?text=' + encodeURIComponent(category.name);
+                                      }}
+                                    />
+                                  </div>
+                                ) : (
+                                  <div className="w-[180px] h-[100px] bg-gray-100 flex items-center justify-center mb-2">
+                                    <span className="text-gray-400">{category.name}</span>
+                                  </div>
+                                )}
+                                <span className="text-sm text-center uppercase font-medium">{category.name}</span>
+                              </Link>
+                            ))}
+                            <Link 
+                              to="/categories"
+                              className="flex flex-col items-center hover:text-popmart-red transition-transform duration-200 hover:scale-105"
+                            >
+                              <div className="w-[180px] h-[100px] border border-gray-200 flex items-center justify-center mb-2 bg-gray-50">
+                                <span className="text-3xl">+</span>
+                              </div>
+                              <span className="text-sm text-center uppercase font-medium">ALL</span>
+                            </Link>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <Link
+                      to={item.path}
+                      className={`font-medium py-4 px-3 text-black hover:text-popmart-red transition-colors duration-200 uppercase text-base font-bold tracking-wider popmart-nav-font ${location.pathname === item.path ? 'text-popmart-red' : ''}`}
+                    >
+                      {item.name}
+                    </Link>
+                  )}
                 </div>
               ))}
             </nav>
@@ -122,7 +194,6 @@ const Header: React.FC = () => {
                 </svg>
                 <span className="ml-1 text-xs">0</span>
               </Link>
-
             </div>
           </div>
         </div>
@@ -160,29 +231,91 @@ const Header: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* Mobile Menu */}
+      {/* Mobile Navigation Menu */}
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="lg:hidden bg-white shadow-lg absolute top-full left-0 right-0 z-30"
+            className="lg:hidden absolute top-full left-0 right-0 bg-white shadow-md z-50 overflow-hidden"
           >
-            <div className="py-4 px-4">
-              <nav className="flex flex-col">
+            <div className="px-4 pt-2 pb-5">
+              <ul className="space-y-3">
                 {navItems.map((item) => (
-                  <div key={item.name} className="border-b border-gray-100 last:border-b-0">
-                    <Link
-                      to={item.path}
-                      className={`block font-medium py-3 flex justify-between items-center uppercase text-base font-bold tracking-wider popmart-nav-font ${location.pathname === item.path ? 'text-popmart-red' : 'text-black'}`}
-                    >
-                      {item.name}
-                    </Link>
-                  </div>
+                  <li key={item.name}>
+                    {item.name === 'CATEGORIES' ? (
+                      <div>
+                        <button
+                          onClick={() => setIsMobileCategoriesOpen(!isMobileCategoriesOpen)}
+                          className="flex items-center justify-between w-full py-2 text-black hover:text-popmart-red transition-colors duration-200 uppercase font-bold tracking-wider popmart-nav-font"
+                        >
+                          <span>{item.name}</span>
+                          <ChevronDown size={16} className={`transform transition-transform ${isMobileCategoriesOpen ? 'rotate-180' : ''}`} />
+                        </button>
+
+                        {/* Mobile Categories Dropdown */}
+                        {isMobileCategoriesOpen && categories.length > 0 && (
+                          <div className="pl-4 py-2">
+                            <ul className="space-y-2">
+                              {categories.map((category) => (
+                                <li key={category.id}>
+                                  <Link
+                                    to={`/categories/${category.slug}`}
+                                    className="flex items-center py-2 text-sm text-gray-700 hover:text-popmart-red"
+                                  >
+                                    {category.image ? (
+                                      <div className="w-[60px] h-[60px] mr-3 overflow-hidden">
+                                        <img
+                                          src={
+                                            category.image.startsWith('http')
+                                              ? category.image
+                                              : `https://${supabaseUrl}/storage/v1/object/public/${category.image}`
+                                          }
+                                          alt={category.name}
+                                          className="w-full h-full object-cover"
+                                          onError={(e) => {
+                                            e.currentTarget.onerror = null;
+                                            e.currentTarget.src = 'https://via.placeholder.com/60x60?text=' + encodeURIComponent(category.name);
+                                          }}
+                                        />
+                                      </div>
+                                    ) : (
+                                      <div className="w-[60px] h-[60px] mr-3 bg-gray-100 flex items-center justify-center">
+                                        <span className="text-gray-400 text-xs">{category.name}</span>
+                                      </div>
+                                    )}
+                                    <span>{category.name}</span>
+                                  </Link>
+                                </li>
+                              ))}
+                              <li>
+                                <Link
+                                  to="/categories"
+                                  className="flex items-center py-2 text-sm text-gray-700 hover:text-popmart-red"
+                                >
+                                  <div className="w-[60px] h-[60px] mr-3 border border-gray-200 flex items-center justify-center bg-gray-50">
+                                    <span className="text-xl">+</span>
+                                  </div>
+                                  <span>ALL</span>
+                                </Link>
+                              </li>
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <Link
+                        to={item.path}
+                        className={`block font-medium py-3 flex justify-between items-center uppercase text-base font-bold tracking-wider popmart-nav-font ${location.pathname === item.path ? 'text-popmart-red' : 'text-black'}`}
+                      >
+                        {item.name}
+                      </Link>
+                    )}
+                  </li>
                 ))}
-              </nav>
+              </ul>
               <div className="mt-4 pt-4 border-t border-gray-100 flex flex-col space-y-2">
                 <Link to="/wishlist" className="py-2 text-black hover:text-popmart-red flex items-center uppercase text-xs tracking-wider popmart-nav-font">
                   <Heart size={18} className="mr-2" /> Wishlist

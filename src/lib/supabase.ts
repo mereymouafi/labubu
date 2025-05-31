@@ -9,6 +9,15 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+export type Category = {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  image?: string;
+  created_at?: string;
+};
+
 export type Banner = {
   id: string;
   image: string;
@@ -132,6 +141,31 @@ export const fetchProductsByCollection = async (collectionName: string): Promise
   
   if (error) {
     console.error('Error fetching products by collection:', error);
+    return [];
+  }
+  
+  return data || [];
+};
+
+export const fetchCategories = async (): Promise<Category[]> => {
+  const { data, error } = await supabase.from('categories').select('*');
+  
+  if (error) {
+    console.error('Error fetching categories:', error);
+    return [];
+  }
+  
+  return data || [];
+};
+
+export const fetchProductsByCategory = async (categorySlug: string): Promise<Product[]> => {
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .eq('category', categorySlug);
+  
+  if (error) {
+    console.error('Error fetching products by category:', error);
     return [];
   }
   
