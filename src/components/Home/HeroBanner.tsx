@@ -10,45 +10,28 @@ const HeroBanner: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadBanners = async () => {
-      try {
-        const data = await fetchBanners();
-        setBanners(data);
-      } catch (error) {
-        console.error('Error loading banners:', error);
-        // Fallback banners if Supabase fails
-        setBanners([
-          {
-            id: '1',
-            image: 'https://cdn-global-naus.popmart.com/global-web/common/20240531072622/assets/image/ca/home/banner/b13f2de36c33c4f3ce7f962fa17d24e.webp',
-            title: 'Labubu Series',
-            subtitle: 'Explore the latest Labubu collection',
-            button_text: 'Shop Now',
-            button_link: '/collections'
-          },
-          {
-            id: '2',
-            image: 'https://cdn-global-naus.popmart.com/global-web/common/20240531072622/assets/image/ca/home/banner/06f09b0e8af55c30be06a73a30ccbca.webp',
-            title: 'Dimoo World',
-            subtitle: 'Discover magical characters from Dimoo World',
-            button_text: 'Explore',
-            button_link: '/shop'
-          },
-          {
-            id: '3',
-            image: 'https://cdn-global-naus.popmart.com/global-web/common/20240531072622/assets/image/ca/home/banner/6b41e6ac5f19a56beb62eb1f8d1a42d.webp',
-            title: 'SKULLPANDA',
-            subtitle: 'Unleash your dark side with SKULLPANDA',
-            button_text: 'View Collection',
-            button_link: '/collections/skullpanda'
-          }
-        ]);
-      } finally {
-        setLoading(false);
+    // Skip fetching from Supabase and directly use local images
+    const localBanners = [
+      {
+        id: '1',
+        image: '/src/pics/1.png',  // Use direct path reference
+        title: 'NEW SKULLPANDA COLLECTION',
+        subtitle: 'Discover the latest blind boxes and collectible figures',
+        button_text: 'Shop Now',
+        button_link: '/collections'
+      },
+      {
+        id: '2',
+        image: '/src/pics/2.png',  // Use direct path reference
+        title: 'Labubu Series',
+        subtitle: 'Explore the magical world of Labubu',
+        button_text: 'Explore',
+        button_link: '/shop'
       }
-    };
-
-    loadBanners();
+    ];
+    
+    setBanners(localBanners);
+    setLoading(false);
   }, []);
 
   useEffect(() => {
