@@ -4,7 +4,19 @@ import { Menu, X, Heart, Search, User, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fetchCategories, Category } from '../../lib/supabase';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+// Fonction utilitaire pour formater les URLs d'images Supabase
+const formatImageUrl = (imageUrl: string | undefined) => {
+  if (!imageUrl) return '';
+  
+  // Si l'URL est déjà complète, la retourner telle quelle
+  if (imageUrl.startsWith('http')) {
+    return imageUrl;
+  }
+  
+  // Format attendu pour le stockage Supabase
+  const supabaseProjectUrl = import.meta.env.VITE_SUPABASE_URL;
+  return `https://${supabaseProjectUrl}/storage/v1/object/public/${imageUrl}`;
+};
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -113,7 +125,7 @@ const Header: React.FC = () => {
                                 {category.image ? (
                                   <div className="w-[180px] h-[100px] overflow-hidden mb-2">
                                     <img 
-                                      src={category.image.startsWith('http') ? category.image : `https://${supabaseUrl}/storage/v1/object/public/${category.image}`} 
+                                      src={formatImageUrl(category.image)} 
                                       alt={category.name} 
                                       className="w-full h-full object-cover"
                                       onError={(e) => {
@@ -268,11 +280,7 @@ const Header: React.FC = () => {
                                     {category.image ? (
                                       <div className="w-[60px] h-[60px] mr-3 overflow-hidden">
                                         <img
-                                          src={
-                                            category.image.startsWith('http')
-                                              ? category.image
-                                              : `https://${supabaseUrl}/storage/v1/object/public/${category.image}`
-                                          }
+                                          src={formatImageUrl(category.image)}
                                           alt={category.name}
                                           className="w-full h-full object-cover"
                                           onError={(e) => {
