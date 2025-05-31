@@ -114,8 +114,8 @@ const Header: React.FC = () => {
                       
                       {/* Categories Dropdown */}
                       {isCategoriesDropdownOpen && categories.length > 0 && (
-                        <div className="absolute top-full left-0 bg-white shadow-lg z-50 w-[450px] p-4">
-                          <div className="grid grid-cols-2 gap-6">
+                        <div className="absolute top-full left-0 bg-white shadow-lg z-50 w-[600px] p-4">
+                          <div className="grid grid-cols-4 grid-rows-2 gap-3">
                             {categories.map((category) => (
                               <Link
                                 key={category.id}
@@ -123,7 +123,7 @@ const Header: React.FC = () => {
                                 className="flex flex-col items-center hover:text-popmart-red transition-transform duration-200 hover:scale-105"
                               >
                                 {category.image ? (
-                                  <div className="w-[180px] h-[100px] overflow-hidden mb-2">
+                                  <div className="w-[120px] h-[70px] overflow-hidden mb-2">
                                     <img 
                                       src={formatImageUrl(category.image)} 
                                       alt={category.name} 
@@ -131,27 +131,18 @@ const Header: React.FC = () => {
                                       onError={(e) => {
                                         console.error(`Error loading image: ${category.image}`);
                                         e.currentTarget.onerror = null;
-                                        e.currentTarget.src = 'https://via.placeholder.com/180x100?text=' + encodeURIComponent(category.name);
+                                        e.currentTarget.src = 'https://via.placeholder.com/120x70?text=' + encodeURIComponent(category.name);
                                       }}
                                     />
                                   </div>
                                 ) : (
-                                  <div className="w-[180px] h-[100px] bg-gray-100 flex items-center justify-center mb-2">
+                                  <div className="w-[120px] h-[70px] bg-gray-100 flex items-center justify-center mb-2">
                                     <span className="text-gray-400">{category.name}</span>
                                   </div>
                                 )}
-                                <span className="text-sm text-center uppercase font-medium">{category.name}</span>
+                                <span className="text-xs text-center uppercase font-medium">{category.name}</span>
                               </Link>
                             ))}
-                            <Link 
-                              to="/categories"
-                              className="flex flex-col items-center hover:text-popmart-red transition-transform duration-200 hover:scale-105"
-                            >
-                              <div className="w-[180px] h-[100px] border border-gray-200 flex items-center justify-center mb-2 bg-gray-50">
-                                <span className="text-3xl">+</span>
-                              </div>
-                              <span className="text-sm text-center uppercase font-medium">ALL</span>
-                            </Link>
                           </div>
                         </div>
                       )}
@@ -270,46 +261,35 @@ const Header: React.FC = () => {
                         {/* Mobile Categories Dropdown */}
                         {isMobileCategoriesOpen && categories.length > 0 && (
                           <div className="pl-4 py-2">
-                            <ul className="space-y-2">
+                            <div className="grid grid-cols-2 gap-2">
                               {categories.map((category) => (
-                                <li key={category.id}>
+                                <div key={category.id}>
                                   <Link
                                     to={`/categories/${category.slug}`}
-                                    className="flex items-center py-2 text-sm text-gray-700 hover:text-popmart-red"
+                                    className="flex flex-col items-center py-2 text-xs text-gray-700 hover:text-popmart-red"
                                   >
                                     {category.image ? (
-                                      <div className="w-[60px] h-[60px] mr-3 overflow-hidden">
+                                      <div className="w-[50px] h-[40px] mb-1 overflow-hidden">
                                         <img
                                           src={formatImageUrl(category.image)}
                                           alt={category.name}
                                           className="w-full h-full object-cover"
                                           onError={(e) => {
                                             e.currentTarget.onerror = null;
-                                            e.currentTarget.src = 'https://via.placeholder.com/60x60?text=' + encodeURIComponent(category.name);
+                                            e.currentTarget.src = 'https://via.placeholder.com/50x40?text=' + encodeURIComponent(category.name);
                                           }}
                                         />
                                       </div>
                                     ) : (
-                                      <div className="w-[60px] h-[60px] mr-3 bg-gray-100 flex items-center justify-center">
+                                      <div className="w-[50px] h-[40px] mb-1 bg-gray-100 flex items-center justify-center">
                                         <span className="text-gray-400 text-xs">{category.name}</span>
                                       </div>
                                     )}
-                                    <span>{category.name}</span>
+                                    <span className="text-center">{category.name}</span>
                                   </Link>
-                                </li>
+                                </div>
                               ))}
-                              <li>
-                                <Link
-                                  to="/categories"
-                                  className="flex items-center py-2 text-sm text-gray-700 hover:text-popmart-red"
-                                >
-                                  <div className="w-[60px] h-[60px] mr-3 border border-gray-200 flex items-center justify-center bg-gray-50">
-                                    <span className="text-xl">+</span>
-                                  </div>
-                                  <span>ALL</span>
-                                </Link>
-                              </li>
-                            </ul>
+                            </div>
                           </div>
                         )}
                       </div>
