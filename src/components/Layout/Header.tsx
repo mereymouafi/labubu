@@ -53,7 +53,7 @@ const Header: React.FC = () => {
                   fontFamily: '"Bebas Neue", sans-serif',
                   backgroundColor: '#d10a1f',
                   color: 'white',
-                  padding: '0',
+                  padding: '0.05em 0.12em',
                   display: 'inline-block',
                   lineHeight: '1',
                 }}
