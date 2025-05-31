@@ -48,8 +48,18 @@ const Header: React.FC = () => {
 
             {/* Logo */}
             <Link to="/" className="flex items-center">
-              <div style={{backgroundColor: '#d10a1f'}} className="px-2 py-1.5 inline-block w-[170px] text-center">
-                <span style={{fontFamily: '"Bebas Neue", sans-serif'}} className="text-white tracking-wide text-xl uppercase">LABUBU MAROC</span>
+              <div 
+                style={{
+                  fontFamily: '"Bebas Neue", sans-serif',
+                  backgroundColor: '#d10a1f',
+                  color: 'white',
+                  padding: '0',
+                  display: 'inline-block',
+                  lineHeight: '1',
+                }}
+                className="text-3xl uppercase"
+              >
+                LABUBU MAROC
               </div>
             </Link>
 
