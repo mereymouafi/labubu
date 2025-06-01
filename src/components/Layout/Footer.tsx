@@ -24,14 +24,6 @@ const Footer: React.FC = () => {
               </a>
             </div>
           </div>
-          <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 items-center">
-            <a href="https://play.google.com/store" className="block">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Get it on Google Play" className="h-10" />
-            </a>
-            <a href="https://apple.com/app-store" className="block">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="Download on the App Store" className="h-10" />
-            </a>
-          </div>
         </div>
       </div>
 
