@@ -126,7 +126,7 @@ const Footer: React.FC = () => {
             <ul className="space-y-4">
               <li className="flex items-start">
                 <MapPin size={18} className="text-black mr-3 mt-1 flex-shrink-0" />
-                <span className="text-gray-600">123 Labubu Street, Casablanca, Morocco</span>
+                <span className="text-gray-600">123 Labubu Street, agadir, Morocco</span>
               </li>
               <li className="flex items-center">
                 <Phone size={18} className="text-black mr-3 flex-shrink-0" />
@@ -144,12 +144,7 @@ const Footer: React.FC = () => {
         <div className="mt-12 pt-8 border-t border-gray-200">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-gray-500 text-sm">&copy; {new Date().getFullYear()} Labubu Maroc. All rights reserved.</p>
-            <div className="flex space-x-3">
-              <img src="/images/payment/visa.svg" alt="Visa" className="h-6" />
-              <img src="/images/payment/mastercard.svg" alt="Mastercard" className="h-6" />
-              <img src="/images/payment/paypal.svg" alt="PayPal" className="h-6" />
-              <img src="/images/payment/apple-pay.svg" alt="Apple Pay" className="h-6" />
-            </div>
+            
           </div>
         </div>
       </div>
