@@ -132,19 +132,21 @@ const Cart: React.FC = () => {
                 
                 <div className="flex flex-grow">
                   {/* Product Image */}
-                  <div className="w-36 h-36 flex-shrink-0 mr-6">
+                  <Link to={`/product/${item.product.id}`} className="w-36 h-36 flex-shrink-0 mr-6 cursor-pointer">
                     <img 
                       src={item.product.images[0]} 
                       alt={item.product.name}
                       className="w-full h-full object-contain border border-gray-200 p-2" 
                     />
-                  </div>
+                  </Link>
                   
                   {/* Product Details */}
                   <div className="flex-grow">
                     <div className="flex flex-col h-full justify-between">
                       <div>
-                        <h3 className="font-medium mb-1">{item.product.name}</h3>
+                        <Link to={`/product/${item.product.id}`} className="hover:text-popmart-red transition-colors">
+                          <h3 className="font-medium mb-1">{item.product.name}</h3>
+                        </Link>
                         <p className="text-sm text-gray-500">Single box</p>
                       </div>
                       
