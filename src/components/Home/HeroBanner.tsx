@@ -10,28 +10,43 @@ const HeroBanner: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Skip fetching from Supabase and directly use local images
-    const localBanners = [
-      {
-        id: '1',
-        image: '/src/pics/1.png',  // Use direct path reference
-        title: 'NEW SKULLPANDA COLLECTION',
-        subtitle: 'Discover the latest blind boxes and collectible figures',
-        button_text: 'Shop Now',
-        button_link: '/collections'
-      },
-      {
-        id: '2',
-        image: '/src/pics/2.png',  // Use direct path reference
-        title: 'Labubu Series',
-        subtitle: 'Explore the magical world of Labubu',
-        button_text: 'Explore',
-        button_link: '/shop'
+    const loadBanners = async () => {
+      try {
+        const bannerData = await fetchBanners();
+        
+        if (bannerData && bannerData.length > 0) {
+          setBanners(bannerData);
+        } else {
+          console.log('No banners found in database');
+          // Fallback to local banners if no banners in database
+          const localBanners = [
+            {
+              id: '1',
+              image: '/src/pics/1.png',
+              title: 'NEW SKULLPANDA COLLECTION',
+              subtitle: 'Discover the latest blind boxes and collectible figures',
+              button_text: 'Shop Now',
+              button_link: '/collections'
+            },
+            {
+              id: '2',
+              image: '/src/pics/2.png',
+              title: 'Labubu Series',
+              subtitle: 'Explore the magical world of Labubu',
+              button_text: 'Explore',
+              button_link: '/shop'
+            }
+          ];
+          setBanners(localBanners);
+        }
+      } catch (error) {
+        console.error('Error fetching banners:', error);
+      } finally {
+        setLoading(false);
       }
-    ];
+    };
     
-    setBanners(localBanners);
-    setLoading(false);
+    loadBanners();
   }, []);
 
   useEffect(() => {
