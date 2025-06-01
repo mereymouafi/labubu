@@ -41,7 +41,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               <img
                 src={images[0]}
                 alt={name}
-                className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105"
+                className="w-3/5 h-full mx-auto object-contain transition-all duration-700 group-hover:scale-105 transform-gpu scale-y-125"
               />
             </div>
 

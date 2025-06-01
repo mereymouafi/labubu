@@ -18,6 +18,15 @@ export type Category = {
   created_at?: string;
 };
 
+export type Character = {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  image?: string;
+  created_at?: string;
+};
+
 export type Banner = {
   id: string;
   image: string;
@@ -44,12 +53,16 @@ export type Product = {
   images: string[];
   category: string;
   collection: string;
+  character?: string;
   is_new?: boolean;
   is_featured?: boolean;
   is_on_sale?: boolean;
   description?: string;
   stock_status: string;
   created_at?: string;
+  category_id?: string;
+  collection_id?: string;
+  character_id?: string;
 };
 
 export const fetchBanners = async (): Promise<Banner[]> => {
@@ -166,6 +179,31 @@ export const fetchProductsByCategory = async (categorySlug: string): Promise<Pro
   
   if (error) {
     console.error('Error fetching products by category:', error);
+    return [];
+  }
+  
+  return data || [];
+};
+
+export const fetchCharacters = async (): Promise<Character[]> => {
+  const { data, error } = await supabase.from('characters').select('*');
+  
+  if (error) {
+    console.error('Error fetching characters:', error);
+    return [];
+  }
+  
+  return data || [];
+};
+
+export const fetchProductsByCharacter = async (characterSlug: string): Promise<Product[]> => {
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .eq('character', characterSlug);
+  
+  if (error) {
+    console.error('Error fetching products by character:', error);
     return [];
   }
   

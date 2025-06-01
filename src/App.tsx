@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from 'react';
+import { lazy, Suspense } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import Layout from './components/Layout/Layout';
@@ -7,6 +7,8 @@ import Layout from './components/Layout/Layout';
 const Home = lazy(() => import('./pages/Home'));
 const Categories = lazy(() => import('./pages/Categories'));
 const CategoryProducts = lazy(() => import('./pages/CategoryProducts'));
+const Characters = lazy(() => import('./pages/Characters'));
+const CharacterProducts = lazy(() => import('./pages/CharacterProducts'));
 const Collections = lazy(() => import('./pages/Collections'));
 const CollectionDetail = lazy(() => import('./pages/CollectionDetail'));
 const Shop = lazy(() => import('./pages/Shop'));
@@ -31,6 +33,8 @@ function App() {
             <Route index element={<Home />} />
             <Route path="categories" element={<Categories />} />
             <Route path="categories/:slug" element={<CategoryProducts />} />
+            <Route path="characters" element={<Characters />} />
+            <Route path="characters/:slug" element={<CharacterProducts />} />
             <Route path="collections" element={<Collections />} />
             <Route path="collections/:slug" element={<CollectionDetail />} />
             <Route path="shop" element={<Shop />} />
