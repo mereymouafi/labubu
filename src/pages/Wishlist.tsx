@@ -22,7 +22,11 @@ const Wishlist: React.FC = () => {
       variants={pageVariants}
       className="container mx-auto px-4 py-8 max-w-6xl"
     >
-      <h1 className="text-2xl font-bold mb-8">MY WISHLIST</h1>
+      <h1 className="text-3xl font-bold mb-8 text-center">MY WISHLIST</h1>
+      
+      <div className="flex justify-end mb-4">
+        <p className="text-sm">{wishlistItems.length} items</p>
+      </div>
 
       {wishlistItems.length === 0 ? (
         <div className="text-center py-16">
@@ -33,54 +37,58 @@ const Wishlist: React.FC = () => {
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="space-y-6">
           {wishlistItems.map((product) => (
             <div key={product.id} className="border border-gray-200 rounded-lg overflow-hidden">
-              <div className="p-4">
-                <div className="flex items-center">
-                  <div className="w-24 h-24 mr-4">
-                    <img 
-                      src={product.images[0]} 
-                      alt={product.name}
-                      className="w-full h-full object-contain" 
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <Link 
-                      to={`/product/${product.id}`}
-                      className="font-medium hover:text-popmart-red transition-colors duration-300"
-                    >
-                      {product.name}
-                    </Link>
-                    {product.collection && (
-                      <p className="text-sm text-gray-500">{product.collection}</p>
-                    )}
-                    <p className="font-medium text-primary-600 mt-1">
-                      ${product.price.toFixed(2)}
-                    </p>
-                  </div>
+              <div className="p-4 flex flex-col sm:flex-row items-start sm:items-center">
+                <div className="w-24 h-24 mr-4 flex-shrink-0">
+                  <img 
+                    src={product.images[0]} 
+                    alt={product.name}
+                    className="w-full h-full object-contain" 
+                  />
                 </div>
-                
-                <div className="flex mt-4 space-x-2">
-                  <button
-                    onClick={() => addToCart(product, 1)}
-                    disabled={product.stock_status === 'out-of-stock'}
-                    className={`flex-1 py-2 px-3 rounded flex items-center justify-center space-x-2 transition-colors ${
-                      product.stock_status === 'out-of-stock'
-                        ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                        : 'bg-black text-white hover:bg-popmart-red'
-                    }`}
-                  >
-                    <ShoppingBag size={16} />
-                    <span>Add to Cart</span>
-                  </button>
-                  <button
-                    onClick={() => removeFromWishlist(product.id)}
-                    className="p-2 text-gray-500 hover:text-red-500 border border-gray-300 rounded transition-colors"
-                    aria-label="Remove from wishlist"
-                  >
-                    <Trash2 size={16} />
-                  </button>
+                <div className="flex-grow mt-4 sm:mt-0">
+                  <div className="flex flex-col sm:flex-row justify-between w-full">
+                    <div>
+                      <Link 
+                        to={`/product/${product.id}`}
+                        className="font-medium text-lg hover:text-popmart-red transition-colors duration-300"
+                      >
+                        {product.name}
+                      </Link>
+                      {product.collection && (
+                        <p className="text-sm text-gray-500 mt-1">Style: {product.collection}</p>
+                      )}
+                    </div>
+                    <div className="mt-2 sm:mt-0 text-right">
+                      <p className="font-bold text-xl">
+                        C${product.price.toFixed(2)}
+                      </p>
+                      <button
+                        onClick={() => removeFromWishlist(product.id)}
+                        className="text-sm text-gray-500 hover:text-red-500 mt-2 transition-colors inline-block"
+                        aria-label="Remove from wishlist"
+                      >
+                        REMOVE
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-4">
+                    <button
+                      onClick={() => addToCart(product, 1)}
+                      disabled={product.stock_status === 'out-of-stock'}
+                      className={`py-2 px-3 rounded flex items-center justify-center space-x-2 transition-colors text-sm w-full sm:w-auto ${
+                        product.stock_status === 'out-of-stock'
+                          ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                          : 'bg-black text-white hover:bg-popmart-red'
+                      }`}
+                    >
+                      <ShoppingBag size={16} />
+                      <span>Add to Cart</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
