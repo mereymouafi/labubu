@@ -39,9 +39,10 @@ const NewArrivalsPage: React.FC = () => {
     const loadProducts = async () => {
       setIsLoading(true);
       try {
-        // Fetch most recent products, ordered by created_at
-        const data = await fetchProducts({ limit: 20 });
-        // Sort by creation date (newest first)
+        // Fetch products marked as new
+        const data = await fetchProducts({ new: true, limit: 20 });
+        
+        // Still sort by creation date (newest first)
         const sortedProducts = data.sort((a, b) => {
           return new Date(b.created_at || '').getTime() - new Date(a.created_at || '').getTime();
         });

@@ -19,8 +19,8 @@ const TrendingProducts: React.FC = () => {
   useEffect(() => {
     const loadProducts = async () => {
       try {
-        // In a real app, you'd have a specific query for trending products
-        const data = await fetchProducts({ limit: 12 });
+        // Fetch products that have is_trending flag set to true
+        const data = await fetchProducts({ trending: true, limit: 12 });
         setProducts(data);
       } catch (error) {
         console.error('Error loading trending products:', error);

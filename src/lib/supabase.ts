@@ -57,6 +57,8 @@ export type Product = {
   is_new?: boolean;
   is_featured?: boolean;
   is_on_sale?: boolean;
+  is_popular?: boolean;
+  is_trending?: boolean;
   description?: string;
   stock_status: string;
   created_at?: string;
@@ -123,6 +125,8 @@ export const fetchProducts = async (options?: {
   featured?: boolean;
   new?: boolean;
   onSale?: boolean;
+  popular?: boolean;
+  trending?: boolean;
   limit?: number;
 }): Promise<Product[]> => {
   let query = supabase.from('products').select('*');
@@ -145,6 +149,14 @@ export const fetchProducts = async (options?: {
   
   if (options?.onSale) {
     query = query.eq('is_on_sale', true);
+  }
+  
+  if (options?.popular) {
+    query = query.eq('is_popular', true);
+  }
+  
+  if (options?.trending) {
+    query = query.eq('is_trending', true);
   }
   
   if (options?.limit) {

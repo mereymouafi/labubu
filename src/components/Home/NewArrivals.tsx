@@ -33,13 +33,18 @@ const NewArrivals: React.FC = () => {
     const loadProducts = async () => {
       setIsLoading(true);
       try {
-        // Fetch most recent products, ordered by created_at
-        const data = await fetchProducts({ limit: 10 });
-        // Sort by creation date (newest first)
-        const sortedProducts = data.sort((a, b) => {
-          return new Date(b.created_at || '').getTime() - new Date(a.created_at || '').getTime();
-        });
-        setProducts(sortedProducts.slice(0, 4)); // Take only the first 4 newest products
+        // Fetch products marked as new
+        const data = await fetchProducts({ new: true, limit: 8 });
+        
+        // If we have more than 4 products, still sort them by date and show the newest ones
+        if (data.length > 4) {
+          const sortedProducts = data.sort((a, b) => {
+            return new Date(b.created_at || '').getTime() - new Date(a.created_at || '').getTime();
+          });
+          setProducts(sortedProducts.slice(0, 4)); // Take only the first 4 newest products
+        } else {
+          setProducts(data);
+        }
       } catch (error) {
         console.error('Error loading new arrivals:', error);
       } finally {

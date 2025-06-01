@@ -12,7 +12,7 @@ const FeaturedProducts: React.FC = () => {
   useEffect(() => {
     const loadProducts = async () => {
       try {
-        const data = await fetchProducts({ featured: true, limit: 8 });
+        const data = await fetchProducts({ popular: true, limit: 8 });
         setProducts(data);
       } catch (error) {
         console.error('Error loading products:', error);
@@ -84,7 +84,7 @@ const FeaturedProducts: React.FC = () => {
     return (
       <div className="py-20 bg-white container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-black">Best Sellers</h2>
+          <h2 className="text-3xl font-bold text-black">Popular Products</h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {[1, 2, 3, 4].map((i) => (
@@ -103,7 +103,7 @@ const FeaturedProducts: React.FC = () => {
     <section className="py-20 bg-white">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-black">Best Sellers</h2>
+          <h2 className="text-3xl font-bold text-black">Popular Products</h2>
         </div>
 
         <motion.div
