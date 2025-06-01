@@ -268,7 +268,7 @@ const ProductDetail: React.FC = () => {
                   <button
                     disabled={product.stock_status === 'out-of-stock'}
                     onClick={() => product && addToCart(product, quantity)}
-                    className={`flex-1 btn-primary flex items-center justify-center gap-2 ${
+                    className={`flex-1 flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-3 rounded-lg transition-colors duration-300 ${
                       product.stock_status === 'out-of-stock'
                         ? 'opacity-60 cursor-not-allowed'
                         : ''
@@ -335,17 +335,29 @@ const ProductDetail: React.FC = () => {
 
               {/* Share */}
               <div className="flex items-center gap-3 text-gray-500">
-                <Share2 size={18} />
-                <span>Share:</span>
-                <a href="#" className="hover:text-primary-600">
-                  Facebook
-                </a>
-                <a href="#" className="hover:text-primary-600">
-                  Twitter
-                </a>
-                <a href="#" className="hover:text-primary-600">
-                  Instagram
-                </a>
+                <button 
+                  onClick={() => {
+                    if (navigator.share) {
+                      navigator.share({
+                        title: product.name,
+                        text: `Check out ${product.name} on Labubu Maroc`,
+                        url: window.location.href,
+                      })
+                      .catch(error => console.log('Error sharing:', error));
+                    } else {
+                      // Fallback for browsers that don't support Web Share API
+                      // Copy link to clipboard
+                      navigator.clipboard.writeText(window.location.href)
+                        .then(() => alert('Link copied to clipboard! You can now paste it in your favorite app.'))
+                        .catch(err => console.error('Failed to copy link:', err));
+                    }
+                  }}
+                  className="flex items-center gap-2 hover:text-primary-600 cursor-pointer"
+                  aria-label="Share product"
+                >
+                  <Share2 size={18} />
+                  <span>Share</span>
+                </button>
               </div>
             </div>
           </div>
