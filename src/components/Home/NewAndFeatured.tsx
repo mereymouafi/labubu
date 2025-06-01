@@ -36,8 +36,11 @@ const NewAndFeatured: React.FC = () => {
   console.log('Rendering NewAndFeatured, products:', products, 'loading:', loading);
   return (
     <section className="py-12">
+      <div className="text-center mb-10">
+        <h2 className="text-3xl font-bold uppercase tracking-wide mb-2">NEW & FEATURED</h2>
+        <p className="text-gray-600">Discover our latest arrivals and featured collections for this season.</p>
+      </div>
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-red-600">NEW & FEATURED</h2>
         <div className="flex space-x-4">
           <button
             onClick={() => setActiveTab('new')}
