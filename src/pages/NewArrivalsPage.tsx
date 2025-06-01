@@ -73,7 +73,7 @@ const NewArrivalsPage: React.FC = () => {
         </nav>
       </div>
 
-      <h1 className="text-3xl font-bold mb-8 text-red-600">NEW ARRIVALS</h1>
+      <h1 className="text-3xl font-bold text-left text-red-600 my-8 py-4">NEW ARRIVALS</h1>
 
       {isLoading ? (
         <div className="flex justify-center items-center py-20">
