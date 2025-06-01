@@ -17,6 +17,7 @@ const ProductDetail = lazy(() => import('./pages/ProductDetail'));
 const Cart = lazy(() => import('./pages/Cart'));
 const Checkout = lazy(() => import('./pages/Checkout'));
 const Wishlist = lazy(() => import('./pages/Wishlist'));
+const NewArrivalsPage = lazy(() => import('./pages/NewArrivalsPage'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 // Loading component
@@ -44,6 +45,7 @@ function App() {
               <Route path="collections/:slug" element={<CollectionDetail />} />
               <Route path="shop" element={<Shop />} />
               <Route path="product/:id" element={<ProductDetail />} />
+              <Route path="new-arrivals" element={<NewArrivalsPage />} />
               <Route path="cart" element={<Cart />} />
               <Route path="checkout" element={<Checkout />} />
               <Route path="wishlist" element={<Wishlist />} />
