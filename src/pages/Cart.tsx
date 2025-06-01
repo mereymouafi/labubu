@@ -106,7 +106,7 @@ const Cart: React.FC = () => {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Cart items */}
           <div className="flex-grow">
-            <div className="mb-4">
+            <div className="mb-4 pt-4">
               <label className="inline-flex items-center">
                 <input 
                   type="checkbox" 
