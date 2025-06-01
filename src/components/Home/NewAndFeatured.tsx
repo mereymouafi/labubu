@@ -62,9 +62,7 @@ const NewAndFeatured: React.FC = () => {
           >
             FEATURED
           </button>
-          <Link to={activeTab === 'new' ? "/new-arrivals" : "/shop"} className="text-sm text-gray-600 hover:text-gray-900 ml-4">
-            More &gt;
-          </Link>
+          
         </div>
       </div>
 
