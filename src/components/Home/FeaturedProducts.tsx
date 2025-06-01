@@ -101,7 +101,6 @@ const FeaturedProducts: React.FC = () => {
 
   return (
     <section className="py-20 bg-white">
-      <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-black">Featured Products</h2>
         </div>
@@ -126,7 +125,6 @@ const FeaturedProducts: React.FC = () => {
             View All Products <ArrowRight size={16} className="ml-2" />
           </Link>
         </div>
-      </div>
     </section>
   );
 };

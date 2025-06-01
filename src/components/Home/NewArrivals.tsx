@@ -64,7 +64,7 @@ const NewArrivals: React.FC = () => {
   }
 
   return (
-    <div className="py-8 container mx-auto px-4 md:px-8 lg:px-16 xl:px-24">
+    <div className="py-8">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-red-600">NEW ARRIVALS</h2>
           <Link to="/new-arrivals" className="text-sm text-gray-600 hover:text-gray-900">

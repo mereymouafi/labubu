@@ -9,10 +9,12 @@ const Home: React.FC = () => {
   return (
     <div className="pt-24">
       <HeroBanner />
-      <NewArrivals />
-      <FeaturedProducts />
-      <OnSaleProducts />
-      <TrendingProducts />
+      <div className="container mx-auto px-4 md:px-8 lg:px-16 xl:px-24">
+        <NewArrivals />
+        <FeaturedProducts />
+        <OnSaleProducts />
+        <TrendingProducts />
+      </div>
     </div>
   );
 };

@@ -103,7 +103,6 @@ const OnSaleProducts: React.FC = () => {
 
   return (
     <section className="py-20 bg-gray-50">
-      <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-black">On Sale</h2>
         </div>
@@ -128,7 +127,6 @@ const OnSaleProducts: React.FC = () => {
             View All Sale Items <ArrowRight size={16} className="ml-2" />
           </Link>
         </div>
-      </div>
     </section>
   );
 };

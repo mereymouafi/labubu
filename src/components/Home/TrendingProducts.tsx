@@ -171,7 +171,6 @@ const TrendingProducts: React.FC = () => {
 
   return (
     <section className="py-20 bg-white">
-      <div className="container mx-auto px-4">
         <div className="flex justify-between items-center mb-12">
           <h2 className="text-3xl font-bold text-black">Trending Now</h2>
           <div className="flex gap-2">
@@ -204,7 +203,6 @@ const TrendingProducts: React.FC = () => {
             <ProductCard key={product.id} product={product} />
           ))}
         </motion.div>
-      </div>
     </section>
   );
 };

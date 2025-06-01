@@ -41,12 +41,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <div className="relative overflow-hidden">
           {/* Product Image */}
           <Link to={`/product/${id}`} className="block">
-            <div className="aspect-square bg-popmart-lightgray overflow-hidden">
-              <img
-                src={images[0]}
-                alt={name}
-                className="w-3/5 h-full mx-auto object-contain transition-all duration-700 group-hover:scale-105 transform-gpu scale-y-125"
-              />
+            <div className="aspect-square bg-popmart-lightgray overflow-hidden p-0">
+              <div className="w-full h-full">
+                <img
+                  src={images[0]}
+                  alt={name}
+                  className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
+                  style={{ objectPosition: 'center' }}
+                />
+              </div>
             </div>
 
             {/* Product Status Badges */}
