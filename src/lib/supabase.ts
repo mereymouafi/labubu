@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabaseUrl = 'https://kwpgsqzgmimxodnkjsly.supabase.co';
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt3cGdzcXpnbWlteG9kbmtqc2x5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg2OTkyMzYsImV4cCI6MjA2NDI3NTIzNn0.t5jy6DEkBNXaCofJvqnu3jrvjEXml0W9sj1KSZVu5OI';
 
 if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables');
@@ -132,18 +132,35 @@ export const fetchProducts = async (options?: {
 };
 
 export const fetchProductById = async (id: string): Promise<Product | null> => {
-  const { data, error } = await supabase
+  // First get the product with its basic data
+  const { data: productData, error: productError } = await supabase
     .from('products')
     .select('*')
     .eq('id', id)
     .single();
   
-  if (error) {
-    console.error('Error fetching product:', error);
+  if (productError) {
+    console.error('Error fetching product:', productError);
     return null;
   }
+
+  if (!productData) return null;
   
-  return data;
+  // If we have a category_id, fetch the category name
+  if (productData.category_id) {
+    const { data: categoryData, error: categoryError } = await supabase
+      .from('categories')
+      .select('name')
+      .eq('id', productData.category_id)
+      .single();
+    
+    if (!categoryError && categoryData) {
+      // Update the product's category field with the actual category name
+      productData.category = categoryData.name;
+    }
+  }
+  
+  return productData;
 };
 
 export const fetchProductsByCollection = async (collectionName: string): Promise<Product[]> => {

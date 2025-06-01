@@ -105,10 +105,6 @@ const ProductDetail: React.FC = () => {
             <span className="mx-2">/</span>
             <Link to="/shop" className="hover:text-primary-600">Shop</Link>
             <span className="mx-2">/</span>
-            <Link to={`/collections/${product.collection.toLowerCase().replace(/\s+/g, '-')}`} className="hover:text-primary-600">
-              {product.collection}
-            </Link>
-            <span className="mx-2">/</span>
             <span className="text-gray-900">{product.name}</span>
           </nav>
         </div>
@@ -197,6 +193,16 @@ const ProductDetail: React.FC = () => {
                     Out of Stock
                   </span>
                 )}
+                {product.collection && (
+                  <span className="px-3 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
+                    {product.collection}
+                  </span>
+                )}
+                {product.category && (
+                  <span className="px-3 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800">
+                    {product.category}
+                  </span>
+                )}
               </div>
 
               {/* Product Name */}
@@ -204,11 +210,11 @@ const ProductDetail: React.FC = () => {
                 {product.name}
               </h1>
 
-              {/* Category & Collection */}
-              <div className="text-gray-500 mb-4">
-                <span>Category: {product.category}</span>
-                <span className="mx-2">|</span>
-                <span>Collection: {product.collection}</span>
+
+
+              {/* Category */}
+              <div className="text-gray-600 mb-4">
+                <span>Category: {product.category || 'Not specified'}</span>
               </div>
 
               {/* Price */}
@@ -224,12 +230,14 @@ const ProductDetail: React.FC = () => {
               </div>
 
               {/* Description */}
-              {product.description && (
-                <div className="mb-8">
-                  <h3 className="font-medium text-gray-900 mb-2">Description</h3>
-                  <p className="text-gray-600">{product.description}</p>
+              <div className="mt-8">
+                <h3 className="text-lg font-medium mb-4">DESCRIPTION</h3>
+                <div className="text-gray-600 space-y-3">
+                  <p>{product.description || 'No description available.'}</p>
                 </div>
-              )}
+              </div>
+              
+
 
               {/* Quantity & Add to Cart */}
               <div className="mb-8">
