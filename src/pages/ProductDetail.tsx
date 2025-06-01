@@ -5,6 +5,7 @@ import { Heart, Share2, Star, Truck, Shield, RotateCcw, ChevronLeft, ChevronRigh
 import { Product, fetchProductById, fetchProducts } from '../lib/supabase';
 import ProductCard from '../components/Product/ProductCard';
 import CustomBagIcon from '../components/UI/CustomBagIcon';
+import { useShop } from '../context/ShopContext';
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -13,6 +14,9 @@ const ProductDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [activeImage, setActiveImage] = useState(0);
+  
+  // Use our shop context
+  const { addToCart, addToWishlist, isInWishlist } = useShop();
 
   useEffect(() => {
     const loadProduct = async () => {
@@ -263,6 +267,7 @@ const ProductDetail: React.FC = () => {
                   </div>
                   <button
                     disabled={product.stock_status === 'out-of-stock'}
+                    onClick={() => product && addToCart(product, quantity)}
                     className={`flex-1 btn-primary flex items-center justify-center gap-2 ${
                       product.stock_status === 'out-of-stock'
                         ? 'opacity-60 cursor-not-allowed'
@@ -275,10 +280,15 @@ const ProductDetail: React.FC = () => {
                       : 'Add to Cart'}
                   </button>
                   <button
-                    className="p-3 border border-gray-300 rounded-lg text-gray-600 hover:text-primary-600 hover:border-primary-600 transition-colors duration-300"
+                    onClick={() => product && addToWishlist(product)}
+                    className={`p-3 border rounded-lg transition-colors duration-300 ${
+                      product && isInWishlist(product.id)
+                        ? 'border-primary-600 text-primary-600 bg-primary-50'
+                        : 'border-gray-300 text-gray-600 hover:text-primary-600 hover:border-primary-600'
+                    }`}
                     aria-label="Add to wishlist"
                   >
-                    <Heart size={20} />
+                    <Heart size={20} fill={product && isInWishlist(product.id) ? 'currentColor' : 'none'} />
                   </button>
                 </div>
               </div>

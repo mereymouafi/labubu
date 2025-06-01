@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Heart, Search, User, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { fetchCategories, Category, fetchCharacters, Character } from '../../lib/supabase';
+import { useShop } from '../../context/ShopContext';
 
 // Fonction utilitaire pour formater les URLs d'images Supabase
 const formatImageUrl = (imageUrl: string | undefined) => {
@@ -29,6 +30,9 @@ const Header: React.FC = () => {
   const [isMobileCategoriesOpen, setIsMobileCategoriesOpen] = useState(false);
   const [isMobileCharactersOpen, setIsMobileCharactersOpen] = useState(false);
   const location = useLocation();
+  
+  // Get cart and wishlist counts from shop context
+  const { cartCount, wishlistCount } = useShop();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -234,14 +238,19 @@ const Header: React.FC = () => {
               </button>
               <Link 
                 to="/wishlist" 
-                className="p-2 text-black hover:text-popmart-red transition-colors duration-200 hidden md:block"
+                className="p-2 text-black hover:text-popmart-red transition-colors duration-200 hidden md:block relative"
                 aria-label="Wishlist"
               >
                 <Heart size={20} />
+                {wishlistCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-popmart-red text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {wishlistCount > 99 ? '99+' : wishlistCount}
+                  </span>
+                )}
               </Link>
               <Link 
                 to="/cart" 
-                className="p-2 text-black hover:text-popmart-red transition-colors duration-200 flex items-center"
+                className="p-2 text-black hover:text-popmart-red transition-colors duration-200 flex items-center relative"
                 aria-label="Shopping Cart"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -249,7 +258,11 @@ const Header: React.FC = () => {
                   <path d="M3 6H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   <path d="M16 10C16 11.0609 15.5786 12.0783 14.8284 12.8284C14.0783 13.5786 13.0609 14 12 14C10.9391 14 9.92172 13.5786 9.17157 12.8284C8.42143 12.0783 8 11.0609 8 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
-                <span className="ml-1 text-xs">0</span>
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-popmart-red text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {cartCount > 99 ? '99+' : cartCount}
+                  </span>
+                )}
               </Link>
             </div>
           </div>

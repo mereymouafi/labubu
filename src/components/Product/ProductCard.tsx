@@ -3,12 +3,16 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Heart, ShoppingBag } from 'lucide-react';
 import { Product } from '../../lib/supabase';
+import { useShop } from '../../context/ShopContext';
 
 interface ProductCardProps {
   product: Product;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+  // Use shop context
+  const { addToCart, addToWishlist, isInWishlist } = useShop();
+  
   const {
     id,
     name,
@@ -66,16 +70,28 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
             {/* Quick Action Buttons */}
             <button
-              className="absolute top-2 right-2 w-8 h-8 bg-white/80 flex items-center justify-center text-gray-700 hover:text-popmart-red transition-colors duration-300"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                addToWishlist(product);
+              }}
+              className={`absolute top-2 right-2 w-8 h-8 flex items-center justify-center transition-colors duration-300 ${isInWishlist(id) ? 'bg-primary-50 text-primary-600' : 'bg-white/80 text-gray-700 hover:text-popmart-red'}`}
               aria-label="Add to wishlist"
             >
-              <Heart size={16} />
+              <Heart size={16} fill={isInWishlist(id) ? 'currentColor' : 'none'} />
             </button>
 
             {/* Add to Cart Button - Only visible on hover */}
             <div className="absolute -bottom-10 left-0 right-0 group-hover:bottom-0 transition-all duration-300">
               <button
                 disabled={stock_status === 'out-of-stock'}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (stock_status !== 'out-of-stock') {
+                    addToCart(product, 1);
+                  }
+                }}
                 className={`w-full py-2 flex items-center justify-center gap-2 transition-colors duration-300 ${
                   stock_status === 'out-of-stock'
                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
