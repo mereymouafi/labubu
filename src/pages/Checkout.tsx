@@ -378,7 +378,7 @@ const Checkout: React.FC = () => {
                         <p className="text-sm text-gray-500">Quantity: {item.quantity}</p>
                       </div>
                       <div className="text-right">
-                        <p className="font-medium">C${(item.product.price * item.quantity).toFixed(2)}</p>
+                        <p className="font-medium">{(item.product.price * item.quantity).toFixed(2)} MAD</p>
                       </div>
                     </div>
                   ))}
@@ -433,7 +433,7 @@ const Checkout: React.FC = () => {
             <div className="mb-4">
               <div className="flex justify-between mb-2">
                 <span>Subtotal ({cartItems.reduce((sum, item) => sum + item.quantity, 0)} items)</span>
-                <span>C${subtotal.toFixed(2)}</span>
+                <span>{subtotal.toFixed(2)} MAD</span>
               </div>
               
               <div className="flex justify-between mb-2">
@@ -441,7 +441,7 @@ const Checkout: React.FC = () => {
                 {shippingCost === 0 ? (
                   <span className="text-green-600">Free</span>
                 ) : (
-                  <span>C${shippingCost.toFixed(2)}</span>
+                  <span>{shippingCost.toFixed(2)} MAD</span>
                 )}
               </div>
             </div>
@@ -450,7 +450,7 @@ const Checkout: React.FC = () => {
               <div className="flex justify-between font-bold">
                 <span>Total</span>
                 <div className="text-right">
-                  <span className="text-xl">C${total.toFixed(2)}</span>
+                  <span className="text-xl">{total.toFixed(2)} MAD</span>
                   <span className="block text-xs text-gray-500">MAD</span>
                 </div>
               </div>

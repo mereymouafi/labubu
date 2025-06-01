@@ -104,11 +104,11 @@ const NewArrivals: React.FC = () => {
                     <h3 className="text-sm font-medium mb-2 line-clamp-2">{product.name}</h3>
                     <div className="flex items-center justify-between">
                       <span className="text-base font-bold text-red-600">
-                        C${product.price.toFixed(2)}
+                        {product.price.toFixed(2)} MAD
                       </span>
                       {product.original_price && (
                         <span className="text-sm text-gray-500 line-through">
-                          C${product.original_price.toFixed(2)}
+                          {product.original_price.toFixed(2)} MAD
                         </span>
                       )}
                     </div>

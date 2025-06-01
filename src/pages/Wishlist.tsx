@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Trash2, ArrowLeft, ShoppingBag } from 'lucide-react';
+import { ArrowLeft, ShoppingBag } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 
 const Wishlist: React.FC = () => {
@@ -63,7 +63,7 @@ const Wishlist: React.FC = () => {
                     </div>
                     <div className="mt-2 sm:mt-0 text-right">
                       <p className="font-bold text-xl">
-                        C${product.price.toFixed(2)}
+                        {product.price.toFixed(2)} MAD
                       </p>
                       <button
                         onClick={() => removeFromWishlist(product.id)}

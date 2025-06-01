@@ -170,7 +170,7 @@ const Cart: React.FC = () => {
                       
                       <div className="flex justify-between items-end">
                         <div>
-                          <p className="font-medium text-lg">C${item.product.price.toFixed(2)}</p>
+                          <p className="font-medium text-lg">{item.product.price.toFixed(2)} MAD</p>
                           
                           <div className="flex items-center border border-gray-300 mt-2 inline-block">
                             <button 
@@ -208,7 +208,7 @@ const Cart: React.FC = () => {
             <div className="bg-gray-50 p-6 sticky top-24">
               <h3 className="text-sm font-medium mb-4">Subtotal</h3>
               <div className="flex justify-between items-center mb-2">
-                <span className="text-xl font-bold">C${subtotal.toFixed(2)}</span>
+                <span className="text-xl font-bold">{subtotal.toFixed(2)} MAD</span>
                 <span className="text-xs text-gray-500">MAD</span>
               </div>
               
@@ -223,7 +223,7 @@ const Cart: React.FC = () => {
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium">Total({Object.values(selectedItems).filter(Boolean).length})</span>
                   <div className="flex items-baseline">
-                    <span className="text-xl font-bold mr-1">C${subtotal.toFixed(2)}</span>
+                    <span className="text-xl font-bold mr-1">{subtotal.toFixed(2)} MAD</span>
                     <span className="text-xs text-gray-500">MAD</span>
                   </div>
                 </div>
