@@ -19,6 +19,8 @@ const Checkout = lazy(() => import('./pages/Checkout'));
 const Wishlist = lazy(() => import('./pages/Wishlist'));
 const NewArrivalsPage = lazy(() => import('./pages/NewArrivalsPage'));
 const NotFound = lazy(() => import('./pages/NotFound'));
+// Page for new and featured products
+const NewAndFeaturedPage = lazy(() => import('./pages/NewAndFeaturedPage'));
 
 // Loading component
 const PageLoader = () => (
@@ -46,6 +48,7 @@ function App() {
               <Route path="shop" element={<Shop />} />
               <Route path="product/:id" element={<ProductDetail />} />
               <Route path="new-arrivals" element={<NewArrivalsPage />} />
+              <Route path="new-featured" element={<NewAndFeaturedPage />} />
               <Route path="cart" element={<Cart />} />
               <Route path="checkout" element={<Checkout />} />
               <Route path="wishlist" element={<Wishlist />} />
