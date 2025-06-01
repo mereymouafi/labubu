@@ -5,6 +5,8 @@ import Layout from './components/Layout/Layout';
 
 // Lazily load page components
 const Home = lazy(() => import('./pages/Home'));
+const Categories = lazy(() => import('./pages/Categories'));
+const CategoryProducts = lazy(() => import('./pages/CategoryProducts'));
 const Collections = lazy(() => import('./pages/Collections'));
 const CollectionDetail = lazy(() => import('./pages/CollectionDetail'));
 const Shop = lazy(() => import('./pages/Shop'));
@@ -27,6 +29,8 @@ function App() {
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
+            <Route path="categories" element={<Categories />} />
+            <Route path="categories/:slug" element={<CategoryProducts />} />
             <Route path="collections" element={<Collections />} />
             <Route path="collections/:slug" element={<CollectionDetail />} />
             <Route path="shop" element={<Shop />} />

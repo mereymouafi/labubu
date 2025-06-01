@@ -105,12 +105,13 @@ const Header: React.FC = () => {
                 >
                   {item.name === 'CATEGORIES' ? (
                     <div className="flex items-center cursor-pointer">
-                      <span 
+                      <Link 
+                        to="/categories"
                         className={`font-medium py-4 px-3 text-black hover:text-popmart-red transition-colors duration-200 uppercase text-base font-bold tracking-wider popmart-nav-font ${location.pathname.startsWith('/categories') ? 'text-popmart-red' : ''}`}
                       >
                         {item.name}
                         <ChevronDown size={16} className="inline ml-1 pb-1" />
-                      </span>
+                      </Link>
                       
                       {/* Categories Dropdown */}
                       {isCategoriesDropdownOpen && categories.length > 0 && (
