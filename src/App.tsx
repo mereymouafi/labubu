@@ -15,6 +15,7 @@ const CollectionDetail = lazy(() => import('./pages/CollectionDetail'));
 const Shop = lazy(() => import('./pages/Shop'));
 const ProductDetail = lazy(() => import('./pages/ProductDetail'));
 const Cart = lazy(() => import('./pages/Cart'));
+const Checkout = lazy(() => import('./pages/Checkout'));
 const Wishlist = lazy(() => import('./pages/Wishlist'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
@@ -44,6 +45,7 @@ function App() {
               <Route path="shop" element={<Shop />} />
               <Route path="product/:id" element={<ProductDetail />} />
               <Route path="cart" element={<Cart />} />
+              <Route path="checkout" element={<Checkout />} />
               <Route path="wishlist" element={<Wishlist />} />
               <Route path="*" element={<NotFound />} />
             </Route>

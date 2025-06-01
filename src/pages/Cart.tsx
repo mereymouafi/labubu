@@ -8,6 +8,7 @@ const Cart: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'delivery' | 'now'>('delivery');
   const [selectAll, setSelectAll] = useState(false);
   const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>({});
+  const [showAlert, setShowAlert] = useState(false);
   
   // Calculate total price based on selected items only
   const subtotal = cartItems.reduce(
@@ -71,6 +72,15 @@ const Cart: React.FC = () => {
     exit: { opacity: 0, transition: { duration: 0.2 } }
   };
 
+  const handleCheckoutClick = (e: React.MouseEvent) => {
+    const hasSelectedItems = Object.values(selectedItems).some(Boolean);
+    if (!hasSelectedItems) {
+      e.preventDefault();
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 3000);
+    }
+  };
+
   return (
     <motion.div 
       initial="initial"
@@ -79,6 +89,14 @@ const Cart: React.FC = () => {
       variants={pageVariants}
       className="container mx-auto px-4 py-8 max-w-6xl"
     >
+      {/* Alert message */}
+      {showAlert && (
+        <div className="fixed top-20 left-0 right-0 mx-auto w-max z-50">
+          <div className="bg-red-500 text-white py-2 px-4 rounded-md shadow-md">
+            Please select an item
+          </div>
+        </div>
+      )}
       {/* Tab navigation */}
       <div className="flex border-b border-gray-200 mb-6">
         <button
@@ -211,9 +229,13 @@ const Cart: React.FC = () => {
                 </div>
               </div>
               
-              <button className="w-full py-3 bg-popmart-red text-white font-medium tracking-wide uppercase hover:bg-red-700 transition-colors">
-                CHECK OUT
-              </button>
+              <Link to="/checkout" className="block" onClick={handleCheckoutClick}>
+                <button 
+                  className="w-full py-3 bg-popmart-red text-white font-medium tracking-wide uppercase hover:bg-red-700 transition-colors"
+                >
+                  CHECK OUT
+                </button>
+              </Link>
             </div>
           </div>
         </div>

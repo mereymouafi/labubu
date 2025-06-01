@@ -65,6 +65,36 @@ export type Product = {
   character_id?: string;
 };
 
+export type OrderItem = {
+  product_id: string;
+  product_name: string;
+  product_image: string;
+  price: number;
+  quantity: number;
+};
+
+export type ShippingInfo = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  state: string;
+  zip: string;
+};
+
+export type Order = {
+  id?: string;
+  user_id?: string;
+  shipping_info: ShippingInfo;
+  order_items: OrderItem[];
+  total_amount: number;
+  payment_method: string;
+  status: 'pending' | 'processing' | 'completed' | 'cancelled';
+  created_at?: string;
+};
+
 export const fetchBanners = async (): Promise<Banner[]> => {
   const { data, error } = await supabase.from('banners').select('*');
   
@@ -225,4 +255,48 @@ export const fetchProductsByCharacter = async (characterSlug: string): Promise<P
   }
   
   return data || [];
+};
+
+export const createOrder = async (order: Order): Promise<{ success: boolean; orderId?: string; error?: any }> => {
+  try {
+    console.log('Attempting to create order:', order);
+    
+    // Verify the 'orders' table exists by checking table structure
+    const { error: tableError } = await supabase
+      .from('orders')
+      .select('id')
+      .limit(1);
+      
+    if (tableError) {
+      console.error('Table check error, table may not exist:', tableError);
+      return { success: false, error: `Table error: ${tableError.message}` };
+    }
+    
+    // Proceed with insertion
+    const { data, error } = await supabase
+      .from('orders')
+      .insert([{
+        shipping_info: order.shipping_info,
+        order_items: order.order_items,
+        total_amount: order.total_amount,
+        payment_method: order.payment_method,
+        status: order.status || 'pending',
+        user_id: order.user_id
+      }])
+      .select('id')
+      .single();
+    
+    if (error) {
+      console.error('Insert error details:', error);
+      throw error;
+    }
+    
+    return { success: true, orderId: data?.id };
+  } catch (error: any) {
+    console.error('Error creating order:', error);
+    return { 
+      success: false, 
+      error: error?.message || 'Unknown error occurred when creating order'
+    };
+  }
 };
