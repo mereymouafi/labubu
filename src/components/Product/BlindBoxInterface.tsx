@@ -15,35 +15,71 @@ const BlindBoxInterface: React.FC = () => {
   const [animatingBox, setAnimatingBox] = useState<number | null>(null);
   const [revealedBox, setRevealedBox] = useState<number | null>(null);
   const [selectedLevel, setSelectedLevel] = useState<string>('level1');
-  // Audio element reference for sound effects
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  // Using Web Audio API for instant sound playback with zero delay
+  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
+  const audioBufferRef = useRef<AudioBuffer | null>(null);
+  const audioInitializedRef = useRef<boolean>(false);
   
+  // Initialize audio context
   useEffect(() => {
-    // Create audio element when component mounts
-    audioRef.current = new Audio('/sounds/277672071-shake-box-8.m4a');
+    const initAudio = () => {
+      try {
+        // Create audio context
+        const context = new (window.AudioContext || (window as any).webkitAudioContext)();
+        setAudioContext(context);
+        
+        // Preload sound immediately
+        fetch('/sounds/277672071-shake-box-8.m4a')
+          .then(response => response.arrayBuffer())
+          .then(arrayBuffer => context.decodeAudioData(arrayBuffer))
+          .then(audioBuffer => {
+            audioBufferRef.current = audioBuffer;
+            audioInitializedRef.current = true;
+          })
+          .catch(error => console.error('Error loading sound:', error));
+      } catch (error) {
+        console.error('Web Audio API not supported:', error);
+      }
+    };
     
-    // Clean up audio element on unmount
+    // Initialize audio on component mount
+    initAudio();
+    
+    // Also initialize on first user interaction to handle mobile browsers
+    const initOnFirstInteraction = () => {
+      if (!audioContext) initAudio();
+    };
+    
+    window.addEventListener('click', initOnFirstInteraction, { once: true });
+    window.addEventListener('touchstart', initOnFirstInteraction, { once: true });
+    
     return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.src = '';
+      window.removeEventListener('click', initOnFirstInteraction);
+      window.removeEventListener('touchstart', initOnFirstInteraction);
+      if (audioContext) {
+        audioContext.close().catch(console.error);
       }
     };
   }, []);
   
-  // Function to play shaking sound from the provided audio file
+  // Improved playShakeSound function using Web Audio API
   const playShakeSound = () => {
     try {
-      if (audioRef.current) {
-        // Reset the audio to the beginning in case it was already played
-        audioRef.current.currentTime = 0;
-        // Play the sound
-        audioRef.current.play().catch(error => {
-          console.error('Error playing audio file:', error);
-        });
+      // Create a simple dummy sound if audio isn't loaded yet
+      if (!audioContext || !audioBufferRef.current) {
+        // Fallback to basic Audio API
+        const fallbackAudio = new Audio('/sounds/277672071-shake-box-8.m4a');
+        fallbackAudio.play().catch(console.error);
+        return;
       }
+      
+      // Use Web Audio API for precise, immediate playback
+      const source = audioContext.createBufferSource();
+      source.buffer = audioBufferRef.current;
+      source.connect(audioContext.destination);
+      source.start(0); // Start immediately (zero delay)
     } catch (error) {
-      console.error('Error playing sound:', error);
+      console.error('Error playing shake sound:', error);
     }
   };
 
@@ -107,18 +143,19 @@ const BlindBoxInterface: React.FC = () => {
   const { name: productName, price: productPrice } = getProductInfo(selectedLevel);
 
   const handleBoxClick = (id: number) => {
-    setSelectedBox(id);
-    
-    // Play sound when a box is clicked
+    // First play the sound - this is now top priority
     playShakeSound();
     
-    // Start shaking the box when clicked
-    setAnimatingBox(id);
-    
-    // Stop shaking after animation completes
+    // Very small delay to ensure audio starts before animation
+    // This helps with the perceived synchronization
     setTimeout(() => {
-      setAnimatingBox(null);
-    }, 800); // Match the shake animation duration
+      setSelectedBox(id);
+      setAnimatingBox(id);
+      
+      setTimeout(() => {
+        setAnimatingBox(null);
+      }, 800);
+    }, 10); // Tiny delay to prioritize audio startup
   };
 
   const handleShakeBox = () => {
@@ -308,7 +345,7 @@ const BlindBoxInterface: React.FC = () => {
                       </motion.div>
                     ) : (
                       <img 
-                        src="/images/blind-box-custom.png" 
+                        src={selectedLevel === 'level1' ? "/images/blind-box-custom.png" : "/images/blind-box-level2.png"}
                         alt="Blind Box" 
                         className="w-full h-full object-cover"
                       />
