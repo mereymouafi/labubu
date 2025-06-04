@@ -14,6 +14,7 @@ const BlindBoxInterface: React.FC = () => {
   const [selectedBox, setSelectedBox] = useState<number | null>(null);
   const [animatingBox, setAnimatingBox] = useState<number | null>(null);
   const [revealedBox, setRevealedBox] = useState<number | null>(null);
+  const [selectedLevel, setSelectedLevel] = useState<string>('level1');
   // Audio element reference for sound effects
   const audioRef = useRef<HTMLAudioElement | null>(null);
   
@@ -46,26 +47,64 @@ const BlindBoxInterface: React.FC = () => {
     }
   };
 
-  // Mock data for blind boxes - 4x4 grid = 16 boxes
-  const blindBoxes: BlindBoxItem[] = Array.from({ length: 16 }, (_, i) => {
-    // Assign random rarity to each box
-    const rarities = ['common', 'common', 'common', 'common', 'rare', 'rare', 'ultra-rare', 'secret'] as const;
-    const randomRarity = rarities[Math.floor(Math.random() * rarities.length)];
-    const characters = ['Coco', 'Luna', 'Zephyr', 'Momo', 'Blitz', 'Nova', 'Pixel', 'Bubbles'];
-    const randomChar = characters[Math.floor(Math.random() * characters.length)];
-    
-    return {
-      id: i + 1,
-      name: 'HACIPUPU Box',
-      productId: `BTM-${(10000 + i).toString()}`,
-      character: randomChar,
-      rarity: randomRarity,
-    };
-  });
+  // Mock data sets for different levels
+  const createBlindBoxSet = (prefix: string, length: number): BlindBoxItem[] => {
+    return Array.from({ length }, (_, i) => {
+      // Assign random rarity to each box
+      const rarities = ['common', 'common', 'common', 'common', 'rare', 'rare', 'ultra-rare', 'secret'] as const;
+      const randomRarity = rarities[Math.floor(Math.random() * rarities.length)];
+      const characters = ['Coco', 'Luna', 'Zephyr', 'Momo', 'Blitz', 'Nova', 'Pixel', 'Bubbles'];
+      const randomChar = characters[Math.floor(Math.random() * characters.length)];
+      
+      return {
+        id: i + 1,
+        name: `${prefix} Box`,
+        productId: `${prefix}-${(10000 + i).toString()}`,
+        character: randomChar,
+        rarity: randomRarity,
+      };
+    });
+  };
+  
+  // Create sets for each level
+  const level1Boxes = createBlindBoxSet('L1', 16); // Level 1 boxes
+  const level2Boxes = createBlindBoxSet('L2', 16); // Level 2 boxes
+  
+  // Get the appropriate boxes based on selected level
+  const getBoxesForLevel = (level: string): BlindBoxItem[] => {
+    switch (level) {
+      case 'level1': return level1Boxes;
+      case 'level2': return level2Boxes;
+      default: return level1Boxes;
+    }
+  };
+  
+  // Current blind boxes based on selected level
+  const blindBoxes = getBoxesForLevel(selectedLevel);
 
-  // Product information
-  const productName = 'HACIPUPU Rolling Time Machine Series';
-  const productPrice = '$15.99';
+  // Product information based on selected level
+  const getProductInfo = (level: string) => {
+    switch (level) {
+      case 'level1':
+        return {
+          name: 'HACIPUPU Level 1 Series',
+          price: '$15.99'
+        };
+      case 'level2':
+        return {
+          name: 'HACIPUPU Level 2 Premium Series',
+          price: '$19.99'
+        };
+      default:
+        return {
+          name: 'HACIPUPU Rolling Time Machine Series',
+          price: '$15.99'
+        };
+    }
+  };
+  
+  // Get current product info based on selected level
+  const { name: productName, price: productPrice } = getProductInfo(selectedLevel);
 
   const handleBoxClick = (id: number) => {
     setSelectedBox(id);
@@ -117,8 +156,42 @@ const BlindBoxInterface: React.FC = () => {
     }
   };
 
+  // Handle level selection
+  const handleLevelSelect = (level: string) => {
+    setSelectedLevel(level);
+    // Reset selections when changing levels
+    setSelectedBox(null);
+    setRevealedBox(null);
+    setAnimatingBox(null);
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
+      {/* Level selection - Simple horizontal line */}
+      <div className="mb-8">
+        <h2 className="text-xl font-bold mb-4">Select Level</h2>
+        
+        <div className="flex space-x-4">
+          <button 
+            onClick={() => handleLevelSelect('level1')}
+            className={`px-6 py-2 rounded-md text-lg ${selectedLevel === 'level1' 
+              ? 'bg-primary-500 text-white font-bold' 
+              : 'bg-gray-100 hover:bg-gray-200'}`}
+          >
+            Level 1
+          </button>
+          
+          <button 
+            onClick={() => handleLevelSelect('level2')}
+            className={`px-6 py-2 rounded-md text-lg ${selectedLevel === 'level2' 
+              ? 'bg-primary-500 text-white font-bold' 
+              : 'bg-gray-100 hover:bg-gray-200'}`}
+          >
+            Level 2
+          </button>
+        </div>
+      </div>
+
       {/* Surprise reveal modal */}
       <AnimatePresence>
         {revealedBox !== null && (
@@ -209,7 +282,7 @@ const BlindBoxInterface: React.FC = () => {
               <motion.div
                 key={box.id}
                 className={`aspect-square cursor-pointer rounded-lg ${
-                  selectedBox === box.id ? 'ring-2 ring-primary-500' : ''
+                  selectedBox === box.id ? 'border-4 border-blue-500 p-1 bg-blue-50' : ''
                 }`}
                 onClick={() => handleBoxClick(box.id)}
                 initial="initial"
@@ -223,8 +296,8 @@ const BlindBoxInterface: React.FC = () => {
                 whileHover="hover"
                 variants={boxVariants}
               >
-                <div className="w-full h-full bg-gradient-to-br from-purple-500 to-pink-500 rounded-md p-1 flex flex-col items-center justify-center transform rotate-3 shadow-sm">
-                  <div className="bg-white/20 rounded-md p-0.5 w-full h-full flex items-center justify-center">
+                <div className="w-full h-full overflow-hidden rounded-md shadow-sm">
+                  <div className="w-full h-full flex items-center justify-center">
                     {revealedBox === box.id ? (
                       <motion.div
                         initial={{ opacity: 0, scale: 0 }}
@@ -235,9 +308,9 @@ const BlindBoxInterface: React.FC = () => {
                       </motion.div>
                     ) : (
                       <img 
-                        src="/images/blind-box-surprise-animated.svg" 
+                        src="/images/blind-box-custom.png" 
                         alt="Blind Box" 
-                        className="w-8 h-8 object-contain"
+                        className="w-full h-full object-cover"
                       />
                     )}
                   </div>
