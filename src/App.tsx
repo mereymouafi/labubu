@@ -19,6 +19,7 @@ const Checkout = lazy(() => import('./pages/Checkout'));
 const Wishlist = lazy(() => import('./pages/Wishlist'));
 const NewArrivalsPage = lazy(() => import('./pages/NewArrivalsPage'));
 const NotFound = lazy(() => import('./pages/NotFound'));
+const BlindBoxPage = lazy(() => import('./pages/BlindBoxPage'));
 // Page for new and featured products
 const NewAndFeaturedPage = lazy(() => import('./pages/NewAndFeaturedPage'));
 
@@ -49,6 +50,7 @@ function App() {
               <Route path="product/:id" element={<ProductDetail />} />
               <Route path="new-arrivals" element={<NewArrivalsPage />} />
               <Route path="new-featured" element={<NewAndFeaturedPage />} />
+              <Route path="blind-box" element={<BlindBoxPage />} />
               <Route path="cart" element={<Cart />} />
               <Route path="checkout" element={<Checkout />} />
               <Route path="wishlist" element={<Wishlist />} />

@@ -1,0 +1,336 @@
+import React, { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ShoppingBag, ChevronRight, Sparkles, Gift } from 'lucide-react';
+
+interface BlindBoxItem {
+  id: number;
+  name: string;
+  productId: string;
+  character?: string;
+  rarity?: 'common' | 'rare' | 'ultra-rare' | 'secret';
+}
+
+const BlindBoxInterface: React.FC = () => {
+  const [selectedBox, setSelectedBox] = useState<number | null>(null);
+  const [animatingBox, setAnimatingBox] = useState<number | null>(null);
+  const [revealedBox, setRevealedBox] = useState<number | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  
+  // Initialize audio context when needed (to comply with browser autoplay policies)
+  useEffect(() => {
+    return () => {
+      // Cleanup audio context on unmount
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+      }
+    };
+  }, []);
+  
+  // Function to play shaking sound
+  const playShakeSound = () => {
+    try {
+      // Create AudioContext on-demand (must be from user interaction)
+      if (!audioContextRef.current) {
+        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      }
+      
+      const context = audioContextRef.current;
+      
+      // Create a series of short sounds to mimic shaking
+      const shakeSounds = 10;
+      const duration = 0.8; // Match the shake animation duration
+      
+      for (let i = 0; i < shakeSounds; i++) {
+        // Schedule each sound at a different time
+        const time = context.currentTime + (i * duration / shakeSounds);
+        
+        // Create oscillator (sound generator)
+        const oscillator = context.createOscillator();
+        const gainNode = context.createGain();
+        
+        // Connect nodes
+        oscillator.connect(gainNode);
+        gainNode.connect(context.destination);
+        
+        // Set properties for a rattling sound
+        oscillator.type = 'triangle';
+        oscillator.frequency.value = 100 + Math.random() * 50;
+        
+        // Set volume
+        gainNode.gain.value = 0.07; // Keep volume low
+        gainNode.gain.setValueAtTime(0.07, time);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, time + 0.1);
+        
+        // Start and stop
+        oscillator.start(time);
+        oscillator.stop(time + 0.15);
+      }
+    } catch (error) {
+      console.error('Error playing sound:', error);
+    }
+  };
+
+  // Mock data for blind boxes - 4x4 grid = 16 boxes
+  const blindBoxes: BlindBoxItem[] = Array.from({ length: 16 }, (_, i) => {
+    // Assign random rarity to each box
+    const rarities = ['common', 'common', 'common', 'common', 'rare', 'rare', 'ultra-rare', 'secret'] as const;
+    const randomRarity = rarities[Math.floor(Math.random() * rarities.length)];
+    const characters = ['Coco', 'Luna', 'Zephyr', 'Momo', 'Blitz', 'Nova', 'Pixel', 'Bubbles'];
+    const randomChar = characters[Math.floor(Math.random() * characters.length)];
+    
+    return {
+      id: i + 1,
+      name: 'HACIPUPU Box',
+      productId: `BTM-${(10000 + i).toString()}`,
+      character: randomChar,
+      rarity: randomRarity,
+    };
+  });
+
+  // Product information
+  const productName = 'HACIPUPU Rolling Time Machine Series';
+  const productPrice = '$15.99';
+
+  const handleBoxClick = (id: number) => {
+    setSelectedBox(id);
+  };
+
+  const handleShakeBox = () => {
+    if (selectedBox !== null) {
+      setAnimatingBox(selectedBox);
+      setRevealedBox(null);
+      playShakeSound(); // Play the shaking sound
+      
+      // After shake animation completes, reveal the surprise
+      setTimeout(() => {
+        setAnimatingBox(null);
+        setRevealedBox(selectedBox);
+      }, 1000); // Animation duration
+    }
+  };
+  
+  // Reset everything when selecting a new box
+  useEffect(() => {
+    setRevealedBox(null);
+    setAnimatingBox(null);
+  }, [selectedBox]);
+
+  const boxVariants = {
+    initial: { scale: 1, y: 0 },
+    selected: { scale: 1.05, boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.2)' },
+    hover: { scale: 1.02, y: -5 },
+    shake: {
+      rotate: [0, -10, 10, -10, 10, -5, 5, -5, 5, 0],
+      transition: { duration: 0.8 }
+    }
+  };
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      {/* Surprise reveal modal */}
+      <AnimatePresence>
+        {revealedBox !== null && (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ type: 'spring', damping: 20 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+            onClick={() => setRevealedBox(null)}
+          >
+            <motion.div 
+              className="bg-white rounded-xl p-6 max-w-sm w-full shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+              initial={{ y: 50 }}
+              animate={{ y: 0 }}
+            >
+              <div className="text-center">
+                <div className="w-32 h-32 mx-auto mb-4 relative">
+                  <motion.div 
+                    initial={{ rotateY: 0 }}
+                    animate={{ rotateY: 360 }}
+                    transition={{ duration: 1, delay: 0.3 }}
+                    className="w-full h-full flex items-center justify-center"
+                  >
+                    <div className={`p-4 rounded-full ${revealedBox ? 
+                      blindBoxes[revealedBox-1].rarity === 'common' ? 'bg-blue-100' :
+                      blindBoxes[revealedBox-1].rarity === 'rare' ? 'bg-purple-100' :
+                      blindBoxes[revealedBox-1].rarity === 'ultra-rare' ? 'bg-amber-100' : 'bg-pink-100'
+                    : ''}`}>
+                      <Sparkles className={`w-16 h-16 ${revealedBox ? 
+                        blindBoxes[revealedBox-1].rarity === 'common' ? 'text-blue-500' :
+                        blindBoxes[revealedBox-1].rarity === 'rare' ? 'text-purple-500' :
+                        blindBoxes[revealedBox-1].rarity === 'ultra-rare' ? 'text-amber-500' : 'text-pink-500'
+                      : ''}`} />
+                    </div>
+                  </motion.div>
+                  <motion.div 
+                    className="absolute -top-3 -right-3"
+                    animate={{ 
+                      rotate: [0, -10, 10, -10, 10, 0],
+                      scale: [1, 1.1, 1, 1.1, 1]
+                    }}
+                    transition={{ 
+                      repeat: Infinity, 
+                      duration: 2,
+                      repeatDelay: 1
+                    }}
+                  >
+                    {revealedBox && blindBoxes[revealedBox-1].rarity === 'secret' && (
+                      <span className="bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs px-2 py-1 rounded-full">SECRET!</span>
+                    )}
+                  </motion.div>
+                </div>
+                
+                <h3 className="text-xl font-bold mb-1">{revealedBox && blindBoxes[revealedBox-1].character}</h3>
+                
+                <div className="mb-3">
+                  <span className={`text-xs px-2 py-1 rounded-full ${revealedBox ? 
+                    blindBoxes[revealedBox-1].rarity === 'common' ? 'bg-blue-100 text-blue-700' :
+                    blindBoxes[revealedBox-1].rarity === 'rare' ? 'bg-purple-100 text-purple-700' :
+                    blindBoxes[revealedBox-1].rarity === 'ultra-rare' ? 'bg-amber-100 text-amber-700' : 
+                    'bg-pink-100 text-pink-700'
+                  : ''}`}>
+                    {revealedBox && blindBoxes[revealedBox-1].rarity?.toUpperCase()}
+                  </span>
+                </div>
+                
+                <p className="text-gray-600 text-sm mb-6">You got {revealedBox && blindBoxes[revealedBox-1].character} from Box #{revealedBox}!</p>
+                
+                <button 
+                  className="w-full py-2 bg-primary-500 text-white rounded-full hover:bg-primary-600 transition-all"
+                  onClick={() => setRevealedBox(null)}
+                >
+                  Continue Shopping
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="flex flex-col lg:flex-row gap-8">
+        {/* Left side: Grid of blind boxes */}
+        <div className="w-full lg:w-2/3">
+          <div className="grid grid-cols-4 gap-2 perspective-800 max-w-lg mx-auto">
+            {blindBoxes.map((box) => (
+              <motion.div
+                key={box.id}
+                className={`aspect-square cursor-pointer rounded-lg ${
+                  selectedBox === box.id ? 'ring-2 ring-primary-500' : ''
+                }`}
+                onClick={() => handleBoxClick(box.id)}
+                initial="initial"
+                animate={
+                  animatingBox === box.id
+                    ? 'shake'
+                    : selectedBox === box.id
+                    ? 'selected'
+                    : 'initial'
+                }
+                whileHover="hover"
+                variants={boxVariants}
+              >
+                <div className="w-full h-full bg-gradient-to-br from-purple-500 to-pink-500 rounded-md p-1 flex flex-col items-center justify-center transform rotate-3 shadow-sm">
+                  <div className="bg-white/20 rounded-md p-0.5 w-full h-full flex items-center justify-center">
+                    {revealedBox === box.id ? (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="flex items-center justify-center"
+                      >
+                        <Gift className="w-6 h-6 text-white" />
+                      </motion.div>
+                    ) : (
+                      <img 
+                        src="/images/blind-box-surprise-animated.svg" 
+                        alt="Blind Box" 
+                        className="w-8 h-8 object-contain"
+                      />
+                    )}
+                  </div>
+                  <div className="flex items-center text-[10px] font-medium text-white mt-0.5">
+                    <span>#{box.id}</span>
+                    {(revealedBox === box.id || box.rarity === 'secret') && (
+                      <motion.div 
+                        initial={{ opacity: 0, scale: 0 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="ml-1"
+                      >
+                        <Sparkles className="w-2 h-2" />
+                      </motion.div>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* Right side: Product information */}
+        <div className="w-full lg:w-1/3 bg-white p-6 rounded-xl shadow-md">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <h2 className="text-2xl font-bold mb-2">{productName}</h2>
+            <div className="text-sm text-gray-500 mb-2">
+              Product ID: {selectedBox ? blindBoxes[selectedBox - 1].productId : 'Select a box'}
+            </div>
+            <div className="text-xl font-semibold text-primary-600 mb-6">{productPrice}</div>
+
+            <div className="mb-6 p-3 bg-yellow-50 rounded-md text-sm">
+              <p className="text-amber-800">
+                <strong>Note:</strong> No duplicates if picking from the SAME SET.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <motion.button
+                onClick={handleShakeBox}
+                disabled={selectedBox === null}
+                className={`w-full py-3 px-4 rounded-full font-medium flex items-center justify-center gap-2 ${
+                  selectedBox === null
+                    ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                    : 'bg-primary-500 text-white hover:bg-primary-600'
+                }`}
+                whileTap={{ scale: 0.95 }}
+              >
+                {animatingBox !== null ? (
+                  <span className="flex items-center">
+                    <motion.span
+                      animate={{ rotate: [-10, 10, -10, 10, -5, 5, -5, 5, 0] }}
+                      transition={{ duration: 0.8 }}
+                    >
+                      Shaking...
+                    </motion.span>
+                  </span>
+                ) : (
+                  'Pick One to Shake'
+                )}
+              </motion.button>
+              
+              <button className="w-full py-3 px-4 bg-white border-2 border-primary-500 text-primary-500 rounded-full font-medium flex items-center justify-center gap-2 hover:bg-primary-50">
+                <ShoppingBag size={18} />
+                Buy Multiple Boxes
+              </button>
+            </div>
+
+            <div className="mt-8 pt-4 border-t border-gray-200">
+              <a 
+                href="#" 
+                className="inline-flex items-center text-sm text-primary-600 hover:text-primary-800"
+              >
+                Explore More Series
+                <ChevronRight size={16} className="ml-1" />
+              </a>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default BlindBoxInterface;
