@@ -1,34 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Heart, Search, User, ChevronDown } from 'lucide-react';
+import { Menu, X, Heart, Search, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { fetchCategories, Category, fetchCharacters, Character } from '../../lib/supabase';
 import { useShop } from '../../context/ShopContext';
-
-// Fonction utilitaire pour formater les URLs d'images Supabase
-const formatImageUrl = (imageUrl: string | undefined) => {
-  if (!imageUrl) return '';
-  
-  // Si l'URL est déjà complète, la retourner telle quelle
-  if (imageUrl.startsWith('http')) {
-    return imageUrl;
-  }
-  
-  // Format attendu pour le stockage Supabase
-  const supabaseProjectUrl = import.meta.env.VITE_SUPABASE_URL;
-  return `https://${supabaseProjectUrl}/storage/v1/object/public/${imageUrl}`;
-};
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [characters, setCharacters] = useState<Character[]>([]);
   const [isCategoriesDropdownOpen, setIsCategoriesDropdownOpen] = useState(false);
-  const [isCharactersDropdownOpen, setIsCharactersDropdownOpen] = useState(false);
   const [isMobileCategoriesOpen, setIsMobileCategoriesOpen] = useState(false);
-  const [isMobileCharactersOpen, setIsMobileCharactersOpen] = useState(false);
   const location = useLocation();
   
   // Get cart and wishlist counts from shop context
@@ -47,35 +28,23 @@ const Header: React.FC = () => {
     setIsMenuOpen(false);
     setIsSearchOpen(false);
     setIsCategoriesDropdownOpen(false);
-    setIsCharactersDropdownOpen(false);
     setIsMobileCategoriesOpen(false);
-    setIsMobileCharactersOpen(false);
   }, [location]);
-
-  useEffect(() => {
-    const loadCategories = async () => {
-      const categoryData = await fetchCategories();
-      console.log('Categories loaded:', categoryData);
-      setCategories(categoryData);
-    };
-    
-    const loadCharacters = async () => {
-      const characterData = await fetchCharacters();
-      console.log('Characters loaded:', characterData);
-      setCharacters(characterData);
-    };
-    
-    loadCategories();
-    loadCharacters();
-  }, []);
 
   // Updated to match POPMART's navigation items
   const navItems = [
-    { name: 'NEW & FEATURED', path: '/new-featured' },
-    { name: 'CATEGORIES', path: '/categories' },
-    { name: 'CHARACTERS', path: '/characters' },
-    { name: 'ACCESSORIES', path: '/accessories' },
-    { name: 'MEGA', path: '/mega' },
+    { name: 'BLIND BOX', path: '/blind-box' },
+    { name: 'T-SHIRTS', path: '/t-shirts' },
+    { name: 'FIGURINGS', path: '/figurings' },
+    { 
+      name: 'ACCESSORIES',
+      path: '/accessories',
+      dropdownItems: [
+        { name: 'MUGS', path: '/accessories/mugs' },
+        { name: 'PORT CLÉS', path: '/accessories/port-cles' },
+        { name: 'POCHETTES', path: '/accessories/pochettes' }
+      ]
+    }
   ];
 
   return (
@@ -117,88 +86,33 @@ const Header: React.FC = () => {
               {navItems.map((item) => (
                 <div key={item.name} className="relative"
                   onMouseEnter={() => {
-                    if (item.name === 'CATEGORIES') setIsCategoriesDropdownOpen(true);
-                    if (item.name === 'CHARACTERS') setIsCharactersDropdownOpen(true);
+                    if (item.name === 'ACCESSORIES') setIsCategoriesDropdownOpen(true);
                   }}
                   onMouseLeave={() => {
-                    if (item.name === 'CATEGORIES') setIsCategoriesDropdownOpen(false);
-                    if (item.name === 'CHARACTERS') setIsCharactersDropdownOpen(false);
+                    if (item.name === 'ACCESSORIES') setIsCategoriesDropdownOpen(false);
                   }}
                 >
-                  {(item.name === 'CATEGORIES' || item.name === 'CHARACTERS') ? (
+                  {item.dropdownItems ? (
                     <div className="flex items-center cursor-pointer">
                       <Link 
-                        to={item.name === 'CATEGORIES' ? '/categories' : '/characters'}
+                        to={item.path}
                         className={`font-medium py-4 px-3 text-black hover:text-popmart-red transition-colors duration-200 uppercase text-base font-bold tracking-wider popmart-nav-font ${location.pathname.startsWith(item.path) ? 'text-popmart-red' : ''}`}
                       >
                         {item.name}
                         <ChevronDown size={16} className="inline ml-1 pb-1" />
                       </Link>
                       
-                      {/* Categories Dropdown */}
-                      {item.name === 'CATEGORIES' && isCategoriesDropdownOpen && categories.length > 0 && (
-                        <div className="absolute top-full left-0 bg-white shadow-lg z-50 w-[600px] p-4">
-                          <div className="grid grid-cols-4 grid-rows-2 gap-3">
-                            {categories.map((category) => (
+                      {/* Accessories Dropdown */}
+                      {isCategoriesDropdownOpen && (
+                        <div className="absolute top-full left-0 bg-white shadow-lg z-50 w-[200px] p-4">
+                          <div className="flex flex-col space-y-3">
+                            {item.dropdownItems.map((dropdownItem) => (
                               <Link
-                                key={category.id}
-                                to={`/categories/${category.slug}`}
-                                className="flex flex-col items-center hover:text-popmart-red transition-transform duration-200 hover:scale-105"
+                                key={dropdownItem.name}
+                                to={dropdownItem.path}
+                                className="text-sm font-medium hover:text-popmart-red transition-colors duration-200 uppercase"
                               >
-                                {category.image ? (
-                                  <div className="w-[120px] h-[70px] overflow-hidden mb-2">
-                                    <img 
-                                      src={formatImageUrl(category.image)} 
-                                      alt={category.name} 
-                                      className="w-3/5 h-full mx-auto object-contain transform-gpu scale-y-125"
-                                      onError={(e) => {
-                                        console.error(`Error loading image: ${category.image}`);
-                                        e.currentTarget.onerror = null;
-                                        e.currentTarget.src = 'https://via.placeholder.com/120x70?text=' + encodeURIComponent(category.name);
-                                      }}
-                                    />
-                                  </div>
-                                ) : (
-                                  <div className="w-[120px] h-[70px] bg-gray-100 flex items-center justify-center mb-2">
-                                    <span className="text-gray-400">{category.name}</span>
-                                  </div>
-                                )}
-                                <span className="text-xs text-center uppercase font-medium">{category.name}</span>
-                              </Link>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                      
-                      {/* Characters Dropdown */}
-                      {item.name === 'CHARACTERS' && isCharactersDropdownOpen && characters.length > 0 && (
-                        <div className="absolute top-full left-0 bg-white shadow-lg z-50 w-[600px] p-4">
-                          <div className="grid grid-cols-3 grid-rows-2 gap-4">
-                            {characters.map((character) => (
-                              <Link
-                                key={character.id}
-                                to={`/characters/${character.slug}`}
-                                className="flex flex-col items-center hover:text-popmart-red transition-transform duration-200 hover:scale-105"
-                              >
-                                {character.image ? (
-                                  <div className="w-[120px] h-[70px] overflow-hidden mb-2">
-                                    <img 
-                                      src={formatImageUrl(character.image)} 
-                                      alt={character.name} 
-                                      className="w-3/5 h-full mx-auto object-contain transform-gpu scale-y-125"
-                                      onError={(e) => {
-                                        console.error(`Error loading image: ${character.image}`);
-                                        e.currentTarget.onerror = null;
-                                        e.currentTarget.src = 'https://via.placeholder.com/120x70?text=' + encodeURIComponent(character.name);
-                                      }}
-                                    />
-                                  </div>
-                                ) : (
-                                  <div className="w-[120px] h-[70px] bg-gray-100 flex items-center justify-center mb-2">
-                                    <span className="text-gray-500 font-medium">{character.name}</span>
-                                  </div>
-                                )}
-                                <span className="text-sm text-center font-medium">{character.name}</span>
+                                {dropdownItem.name}
                               </Link>
                             ))}
                           </div>
@@ -315,87 +229,31 @@ const Header: React.FC = () => {
               <ul className="space-y-3">
                 {navItems.map((item) => (
                   <li key={item.name}>
-                    {(item.name === 'CATEGORIES' || item.name === 'CHARACTERS') ? (
+                    {item.dropdownItems ? (
                       <div>
                         <button
-                          onClick={() => {
-                            if (item.name === 'CATEGORIES') setIsMobileCategoriesOpen(!isMobileCategoriesOpen);
-                            if (item.name === 'CHARACTERS') setIsMobileCharactersOpen(!isMobileCharactersOpen);
-                          }}
+                          onClick={() => setIsMobileCategoriesOpen(!isMobileCategoriesOpen)}
                           className="flex items-center justify-between w-full py-2 text-black hover:text-popmart-red transition-colors duration-200 uppercase font-bold tracking-wider popmart-nav-font"
                         >
                           <span>{item.name}</span>
                           <ChevronDown 
                             size={16} 
-                            className={`transform transition-transform ${(item.name === 'CATEGORIES' && isMobileCategoriesOpen) || (item.name === 'CHARACTERS' && isMobileCharactersOpen) ? 'rotate-180' : ''}`} 
+                            className={`transform transition-transform ${isMobileCategoriesOpen ? 'rotate-180' : ''}`} 
                           />
                         </button>
 
-                        {/* Mobile Categories Dropdown */}
-                        {item.name === 'CATEGORIES' && isMobileCategoriesOpen && categories.length > 0 && (
+                        {/* Mobile Accessories Dropdown */}
+                        {isMobileCategoriesOpen && (
                           <div className="pl-4 py-2">
-                            <div className="grid grid-cols-2 gap-2">
-                              {categories.map((category) => (
-                                <div key={category.id}>
-                                  <Link
-                                    to={`/categories/${category.slug}`}
-                                    className="flex flex-col items-center py-2 text-xs text-gray-700 hover:text-popmart-red"
-                                  >
-                                    {category.image ? (
-                                      <div className="w-[50px] h-[40px] mb-1 overflow-hidden">
-                                        <img
-                                          src={formatImageUrl(category.image)}
-                                          alt={category.name}
-                                          className="w-3/5 h-full mx-auto object-contain transform-gpu scale-y-125"
-                                          onError={(e) => {
-                                            e.currentTarget.onerror = null;
-                                            e.currentTarget.src = 'https://via.placeholder.com/50x40?text=' + encodeURIComponent(category.name);
-                                          }}
-                                        />
-                                      </div>
-                                    ) : (
-                                      <div className="w-[50px] h-[40px] mb-1 bg-gray-100 flex items-center justify-center">
-                                        <span className="text-gray-400 text-xs">{category.name}</span>
-                                      </div>
-                                    )}
-                                    <span className="text-center">{category.name}</span>
-                                  </Link>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                        
-                        {/* Mobile Characters Dropdown */}
-                        {item.name === 'CHARACTERS' && isMobileCharactersOpen && characters.length > 0 && (
-                          <div className="pl-4 py-2">
-                            <div className="grid grid-cols-2 gap-2">
-                              {characters.map((character) => (
-                                <div key={character.id}>
-                                  <Link
-                                    to={`/characters/${character.slug}`}
-                                    className="flex flex-col items-center py-2 text-xs text-gray-700 hover:text-popmart-red"
-                                  >
-                                    {character.image ? (
-                                      <div className="w-[50px] h-[40px] mb-1 overflow-hidden">
-                                        <img
-                                          src={formatImageUrl(character.image)}
-                                          alt={character.name}
-                                          className="w-3/5 h-full mx-auto object-contain transform-gpu scale-y-125"
-                                          onError={(e) => {
-                                            e.currentTarget.onerror = null;
-                                            e.currentTarget.src = 'https://via.placeholder.com/50x40?text=' + encodeURIComponent(character.name);
-                                          }}
-                                        />
-                                      </div>
-                                    ) : (
-                                      <div className="w-[50px] h-[40px] mb-1 bg-gray-100 flex items-center justify-center">
-                                        <span className="text-gray-500 text-xs">{character.name}</span>
-                                      </div>
-                                    )}
-                                    <span className="text-center">{character.name}</span>
-                                  </Link>
-                                </div>
+                            <div className="flex flex-col space-y-2">
+                              {item.dropdownItems.map((dropdownItem) => (
+                                <Link
+                                  key={dropdownItem.name}
+                                  to={dropdownItem.path}
+                                  className="text-sm text-gray-700 hover:text-popmart-red uppercase"
+                                >
+                                  {dropdownItem.name}
+                                </Link>
                               ))}
                             </div>
                           </div>
