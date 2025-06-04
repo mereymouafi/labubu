@@ -69,6 +69,17 @@ const BlindBoxInterface: React.FC = () => {
 
   const handleBoxClick = (id: number) => {
     setSelectedBox(id);
+    
+    // Play sound when a box is clicked
+    playShakeSound();
+    
+    // Start shaking the box when clicked
+    setAnimatingBox(id);
+    
+    // Stop shaking after animation completes
+    setTimeout(() => {
+      setAnimatingBox(null);
+    }, 800); // Match the shake animation duration
   };
 
   const handleShakeBox = () => {
@@ -85,10 +96,10 @@ const BlindBoxInterface: React.FC = () => {
     }
   };
   
-  // Reset everything when selecting a new box
+  // Only reset revealed box when selecting a new one
   useEffect(() => {
     setRevealedBox(null);
-    setAnimatingBox(null);
+    // Don't reset animatingBox here, as it interferes with the click animation
   }, [selectedBox]);
 
   const boxVariants = {
@@ -96,8 +107,13 @@ const BlindBoxInterface: React.FC = () => {
     selected: { scale: 1.05, boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.2)' },
     hover: { scale: 1.02, y: -5 },
     shake: {
-      rotate: [0, -10, 10, -10, 10, -5, 5, -5, 5, 0],
-      transition: { duration: 0.8 }
+      rotate: [0, -15, 15, -15, 15, -10, 10, -5, 5, 0],
+      x: [0, -5, 5, -5, 5, -3, 3, 0],
+      transition: {
+        duration: 0.8,
+        ease: "easeInOut",
+        times: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 1]
+      }
     }
   };
 
