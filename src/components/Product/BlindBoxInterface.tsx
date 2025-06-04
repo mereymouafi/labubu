@@ -14,56 +14,32 @@ const BlindBoxInterface: React.FC = () => {
   const [selectedBox, setSelectedBox] = useState<number | null>(null);
   const [animatingBox, setAnimatingBox] = useState<number | null>(null);
   const [revealedBox, setRevealedBox] = useState<number | null>(null);
-  const audioContextRef = useRef<AudioContext | null>(null);
+  // Audio element reference for sound effects
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   
-  // Initialize audio context when needed (to comply with browser autoplay policies)
   useEffect(() => {
+    // Create audio element when component mounts
+    audioRef.current = new Audio('/sounds/277672071-shake-box-8.m4a');
+    
+    // Clean up audio element on unmount
     return () => {
-      // Cleanup audio context on unmount
-      if (audioContextRef.current) {
-        audioContextRef.current.close();
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = '';
       }
     };
   }, []);
   
-  // Function to play shaking sound
+  // Function to play shaking sound from the provided audio file
   const playShakeSound = () => {
     try {
-      // Create AudioContext on-demand (must be from user interaction)
-      if (!audioContextRef.current) {
-        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
-      }
-      
-      const context = audioContextRef.current;
-      
-      // Create a series of short sounds to mimic shaking
-      const shakeSounds = 10;
-      const duration = 0.8; // Match the shake animation duration
-      
-      for (let i = 0; i < shakeSounds; i++) {
-        // Schedule each sound at a different time
-        const time = context.currentTime + (i * duration / shakeSounds);
-        
-        // Create oscillator (sound generator)
-        const oscillator = context.createOscillator();
-        const gainNode = context.createGain();
-        
-        // Connect nodes
-        oscillator.connect(gainNode);
-        gainNode.connect(context.destination);
-        
-        // Set properties for a rattling sound
-        oscillator.type = 'triangle';
-        oscillator.frequency.value = 100 + Math.random() * 50;
-        
-        // Set volume
-        gainNode.gain.value = 0.07; // Keep volume low
-        gainNode.gain.setValueAtTime(0.07, time);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, time + 0.1);
-        
-        // Start and stop
-        oscillator.start(time);
-        oscillator.stop(time + 0.15);
+      if (audioRef.current) {
+        // Reset the audio to the beginning in case it was already played
+        audioRef.current.currentTime = 0;
+        // Play the sound
+        audioRef.current.play().catch(error => {
+          console.error('Error playing audio file:', error);
+        });
       }
     } catch (error) {
       console.error('Error playing sound:', error);
