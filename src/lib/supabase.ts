@@ -298,8 +298,8 @@ export const fetchTShirtOptions = async (): Promise<TShirtOption[]> => {
     return [];
   }
   
-  // Add default background colors based on index position
-  const bgColors = ['#ff6b6b', '#4d96ff', '#50c878', '#ffb6c1', '#9370db', '#ffa07a'];
+  // Add default background colors based on index position - using clear pastel colors
+  const bgColors = ['#FFCDD2', '#FFF9C4', '#E1BEE7', '#BBDEFB']; // Clear pastel pink, yellow, purple, blue
   
   return (data || []).map((option, index) => ({
     ...option,

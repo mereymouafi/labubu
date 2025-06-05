@@ -507,7 +507,7 @@ const TShirtDetailPage: React.FC = () => {
         
         {/* Gallery Section - Full Width Banner Style */}
         {tshirtOption?.gallery_images && tshirtOption.gallery_images.length > 0 && (
-          <div className="w-full mt-8 mb-16">
+          <div className="w-full mt-8 mb-8">
             <div className="bg-white w-full">
               <div className="py-6">
                 <h2 className="text-2xl font-bold mb-4 text-center">{tshirt.option_name.toUpperCase()} GALLERY</h2>
@@ -519,6 +519,53 @@ const TShirtDetailPage: React.FC = () => {
             </div>
           </div>
         )}
+        
+        {/* Game Rules Section */}
+        <div className="w-full mb-16">
+          <div className="bg-white w-full">
+            <div className="py-10">
+              <h2 className="text-4xl font-bold text-center mb-12">GAME RULES</h2>
+              <div className="container mx-auto px-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {/* Single Box */}
+                  <div className="bg-gray-50 p-8 rounded-lg shadow-md flex flex-col items-center text-center">
+                    <div className="w-64 h-64 mb-6">
+                      <img 
+                        src="/src/pics/single-box.png" 
+                        alt="Single Box" 
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                    <h3 className="text-3xl font-bold mb-2">SINGLE BOX</h3>
+                    <h4 className="text-xl font-semibold mb-4">One figure per blind box.</h4>
+                    <p className="text-gray-700">
+                      No one knows what's inside the box before it is opened - including us. Each regular figure has the 
+                      odds of 1/6, secret figure with odds of 1/72.
+                    </p>
+                  </div>
+                  
+                  {/* Whole Sets */}
+                  <div className="bg-gray-50 p-8 rounded-lg shadow-md flex flex-col items-center text-center">
+                    <div className="w-64 h-64 mb-6">
+                      <img 
+                        src="/src/pics/whole-set.png" 
+                        alt="Whole Sets" 
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                    <h3 className="text-3xl font-bold mb-2">WHOLE SETS</h3>
+                    <h4 className="text-xl font-semibold mb-4">One figure per blind box.</h4>
+                    <p className="text-gray-700">
+                      The whole set <strong>contains 6 blind boxes</strong> with no repetitions. In case your set 
+                      contains a repeated figure, we will take the extra one back and send you 
+                      the missing figure.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

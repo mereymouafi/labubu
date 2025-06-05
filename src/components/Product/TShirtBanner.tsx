@@ -37,7 +37,7 @@ const TShirtBanner: React.FC<TShirtBannerProps> = ({ styles }) => {
     if (autoPlay) {
       timerRef.current = setInterval(() => {
         setCurrentSlide((prev) => (prev + 1) % styles.length);
-      }, 1000); // Change slide every 5 seconds
+      }, 2000); // Change slide every 5 seconds
     }
     
     return () => {
@@ -64,11 +64,13 @@ const TShirtBanner: React.FC<TShirtBannerProps> = ({ styles }) => {
   };
 
   return (
-    <div 
-      className="relative w-full h-[600px] overflow-hidden" 
-      onMouseLeave={handleMouseLeave}
-      onMouseEnter={() => setAutoPlay(false)}
-    >
+    <div className="container mx-auto px-4 md:px-8 lg:px-16 xl:px-24 mt-6 relative">
+      <div className="relative">
+        <div 
+          className="relative h-[570px] overflow-hidden px-3 md:px-6 lg:px-12 xl:px-18" 
+          onMouseLeave={handleMouseLeave}
+          onMouseEnter={() => setAutoPlay(false)}
+        >
       {/* Main banner */}
       <AnimatePresence mode="wait">
         <motion.div
@@ -81,7 +83,7 @@ const TShirtBanner: React.FC<TShirtBannerProps> = ({ styles }) => {
           style={{ backgroundColor: styles[currentSlide].bgColor }}
         >
           <div className="container mx-auto px-8 flex flex-col md:flex-row items-center justify-between">
-            <div className="md:w-1/2 text-white space-y-4 mb-8 md:mb-0">
+            <div className="md:w-1/2 text-black space-y-4 mb-8 md:mb-0">
               <motion.h2 
                 className="text-5xl md:text-6xl font-bold"
                 initial={{ y: 20, opacity: 0 }}
@@ -98,15 +100,6 @@ const TShirtBanner: React.FC<TShirtBannerProps> = ({ styles }) => {
               >
                 {getDescription(styles[currentSlide])}
               </motion.p>
-              <motion.button
-                className="bg-white text-gray-900 px-10 py-4 rounded-md font-medium text-xl mt-6"
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.6 }}
-                whileHover={{ scale: 1.05 }}
-              >
-                Shop Now
-              </motion.button>
             </div>
             <div className="md:w-1/2 flex justify-center items-center">
               <div className="w-72 h-72 md:w-[450px] md:h-[450px] relative overflow-hidden rounded-full">
@@ -119,7 +112,7 @@ const TShirtBanner: React.FC<TShirtBannerProps> = ({ styles }) => {
                   />
                 ) : (
                   <div className="w-full h-full bg-white bg-opacity-20 flex items-center justify-center">
-                    <span className="text-white text-xl">{getDisplayName(styles[currentSlide])} Option</span>
+                    <span className="text-black text-xl">{getDisplayName(styles[currentSlide])} Option</span>
                   </div>
                 )}
               </div>
@@ -133,13 +126,13 @@ const TShirtBanner: React.FC<TShirtBannerProps> = ({ styles }) => {
         className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-30 hover:bg-opacity-50 rounded-full p-2"
         onClick={prevSlide}
       >
-        <ChevronLeft className="w-8 h-8 text-white" />
+        <ChevronLeft className="w-8 h-8 text-black" />
       </button>
       <button 
         className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-30 hover:bg-opacity-50 rounded-full p-2"
         onClick={nextSlide}
       >
-        <ChevronRight className="w-8 h-8 text-white" />
+        <ChevronRight className="w-8 h-8 text-black" />
       </button>
 
       {/* Dots indicator */}
@@ -148,11 +141,13 @@ const TShirtBanner: React.FC<TShirtBannerProps> = ({ styles }) => {
           <button
             key={index}
             className={`w-3 h-3 rounded-full transition-all ${
-              index === currentSlide ? 'bg-white scale-125' : 'bg-white opacity-50'
+              index === currentSlide ? 'bg-black scale-125' : 'bg-black opacity-50'
             }`}
             onClick={() => setCurrentSlide(index)}
           />
         ))}
+      </div>
+        </div>
       </div>
     </div>
   );
