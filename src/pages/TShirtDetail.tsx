@@ -10,6 +10,9 @@ const TShirtDetailPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const [selectedSize, setSelectedSize] = useState<string>('');
+  const [selectedColor, setSelectedColor] = useState<string>('');
+  const [selectedStyle, setSelectedStyle] = useState<string>('');
   const autoScrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
   
   useEffect(() => {
@@ -21,6 +24,10 @@ const TShirtDetailPage: React.FC = () => {
         const detail = await fetchTShirtDetail(id);
         if (detail) {
           setTshirt(detail);
+          // Set default selections if available
+          if (detail.size && detail.size.length > 0) setSelectedSize(detail.size[0]);
+          if (detail.color && detail.color.length > 0) setSelectedColor(detail.color[0]);
+          if (detail.style && detail.style.length > 0) setSelectedStyle(detail.style[0]);
         }
         
         // Fetch the option details separately
@@ -38,6 +45,9 @@ const TShirtDetailPage: React.FC = () => {
     // Reset state when id changes
     setCurrentImageIndex(0);
     setQuantity(1);
+    setSelectedSize('');
+    setSelectedColor('');
+    setSelectedStyle('');
     
     // Clean up any existing interval
     if (autoScrollIntervalRef.current) {
@@ -236,7 +246,10 @@ const TShirtDetailPage: React.FC = () => {
                   {tshirt.size.map((size, idx) => (
                     <button 
                       key={idx}
-                      className="py-2 px-4 border border-gray-300 rounded-md hover:border-primary-500 hover:bg-primary-50"
+                      onClick={() => setSelectedSize(size)}
+                      className={`py-2 px-4 border rounded-md transition-colors ${selectedSize === size 
+                        ? 'border-primary-500 bg-primary-500 text-white font-medium' 
+                        : 'border-gray-300 hover:border-primary-500 hover:bg-primary-50'}`}
                     >
                       {size}
                     </button>
@@ -251,7 +264,10 @@ const TShirtDetailPage: React.FC = () => {
                   {tshirt.color.map((color, idx) => (
                     <button 
                       key={idx}
-                      className="py-2 px-4 border border-gray-300 rounded-md hover:border-primary-500 hover:bg-primary-50"
+                      onClick={() => setSelectedColor(color)}
+                      className={`py-2 px-4 border rounded-md transition-colors ${selectedColor === color 
+                        ? 'border-primary-500 bg-primary-500 text-white font-medium' 
+                        : 'border-gray-300 hover:border-primary-500 hover:bg-primary-50'}`}
                     >
                       {color}
                     </button>
@@ -266,7 +282,10 @@ const TShirtDetailPage: React.FC = () => {
                   {tshirt.style.map((style, idx) => (
                     <button 
                       key={idx}
-                      className="py-2 px-4 border border-gray-300 rounded-md hover:border-primary-500 hover:bg-primary-50"
+                      onClick={() => setSelectedStyle(style)}
+                      className={`py-2 px-4 border rounded-md transition-colors ${selectedStyle === style 
+                        ? 'border-primary-500 bg-primary-500 text-white font-medium' 
+                        : 'border-gray-300 hover:border-primary-500 hover:bg-primary-50'}`}
                     >
                       {style}
                     </button>
@@ -315,7 +334,11 @@ const TShirtDetailPage: React.FC = () => {
               </div>
               
               {/* Add to cart */}
-              <button className="w-full py-4 bg-primary-500 hover:bg-primary-600 text-white font-medium text-lg rounded-md transition-colors mb-4">
+              <button 
+                className="w-full py-4 bg-primary-500 hover:bg-primary-600 text-white font-medium text-lg rounded-md transition-colors mb-4"
+                disabled={!selectedSize || !selectedColor || !selectedStyle}
+                title={!selectedSize || !selectedColor || !selectedStyle ? "Please select size, color, and style" : ""}
+              >
                 Add to Cart
               </button>
               
