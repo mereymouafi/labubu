@@ -16,7 +16,8 @@ const TShirtDetailPage: React.FC = () => {
   const [selectedStyle, setSelectedStyle] = useState<string>('');
   const autoScrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
-  const { addToCart } = useShop();
+  const [inWishlist, setInWishlist] = useState(false);
+  const { addToCart, addToWishlist, isInWishlist } = useShop();
   const navigate = useNavigate();
   
   useEffect(() => {
@@ -32,6 +33,9 @@ const TShirtDetailPage: React.FC = () => {
           if (detail.size && detail.size.length > 0) setSelectedSize(detail.size[0]);
           if (detail.color && detail.color.length > 0) setSelectedColor(detail.color[0]);
           if (detail.style && detail.style.length > 0) setSelectedStyle(detail.style[0]);
+          
+          // Check if item is already in wishlist
+          setInWishlist(isInWishlist(detail.id));
         }
         
         // Fetch the option details separately
@@ -201,15 +205,51 @@ const TShirtDetailPage: React.FC = () => {
                 )}
               </div>
 
-              {/* Thumbnails removed as requested */}
+              {/* Thumbnails navigation */}
+              {tshirtOption.image_urls && tshirtOption.image_urls.length > 1 && (
+                <div className="flex mt-4 space-x-2 overflow-x-auto">
+                  {tshirtOption.image_urls.map((imgUrl, idx) => (
+                    <div 
+                      key={idx} 
+                      onClick={() => setCurrentImageIndex(idx)}
+                      className={`cursor-pointer border-2 ${currentImageIndex === idx ? 'border-primary-600' : 'border-transparent'}`}
+                    >
+                      <img 
+                        src={imgUrl} 
+                        alt={`${tshirt.option_name} thumbnail ${idx + 1}`} 
+                        className="w-16 h-16 object-cover" 
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Product Info */}
             <div className="md:w-1/2 p-8">
               <div className="flex justify-between items-start mb-2">
                 <h1 className="text-3xl font-bold">{tshirt.option_name}</h1>
-                <button className="p-2 text-gray-400 hover:text-red-500">
-                  <Heart size={24} />
+                <button 
+                  className={`p-2 transition-colors ${inWishlist ? 'text-red-500' : 'text-gray-400 hover:text-red-500'}`}
+                  onClick={() => {
+                    if (tshirt) {
+                      // Convert TShirt to Product format for wishlist
+                      const productForWishlist = {
+                        id: tshirt.id,
+                        name: tshirt.option_name,
+                        price: tshirt.price,
+                        images: tshirtOption?.image_urls || [],
+                        description: tshirtOption?.option_description || ''
+                      };
+                      
+                      // Add/remove from wishlist (toggle)
+                      addToWishlist(productForWishlist as any);
+                      setInWishlist(!inWishlist);
+                    }
+                  }}
+                  aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
+                >
+                  <Heart size={24} fill={inWishlist ? "currentColor" : "none"} />
                 </button>
               </div>
               
@@ -299,55 +339,87 @@ const TShirtDetailPage: React.FC = () => {
               
               {/* Features section removed as requested */}
               
-              {/* Add to cart */}
-              <button 
-                className={`w-full py-4 ${isAddedToCart ? 'bg-green-500 hover:bg-green-600' : 'bg-red-600 hover:bg-red-700'} text-white font-medium text-lg rounded-md transition-colors mb-4 flex items-center justify-center gap-2`}
-                disabled={!selectedSize || !selectedColor || !selectedStyle}
-                title={!selectedSize || !selectedColor || !selectedStyle ? "Please select size, color, and style" : ""}
-                onClick={() => {
-                  if (tshirt && selectedSize && selectedColor && selectedStyle) {
-                    // Convert TShirt to Product format for cart
-                    const productForCart = {
-                      id: tshirt.id,
-                      name: tshirt.option_name,
-                      price: tshirt.price,
-                      // Use images array instead of image_url to match Cart.tsx expectations
-                      images: tshirtOption?.image_urls || [],
-                      description: tshirtOption?.option_description || '',
-                      // Add selected options as custom properties
-                      selectedSize,
-                      selectedColor,
-                      selectedStyle,
-                      quantity
-                    };
-                    
-                    // Add to cart
-                    addToCart(productForCart as any, quantity);
-                    
-                    // Show success feedback
-                    setIsAddedToCart(true);
-                    
-                    // Reset after 2 seconds
-                    setTimeout(() => {
-                      setIsAddedToCart(false);
-                      // Navigate to cart page
-                      navigate('/cart');
-                    }, 1000);
-                  }
-                }}
-              >
-                {isAddedToCart ? (
-                  <>
-                    <Check size={20} />
-                    Added to Cart
-                  </>
-                ) : (
-                  <>
-                    <ShoppingCart size={20} />
-                    Add to Cart
-                  </>
-                )}
-              </button>
+              {/* Buttons container */}
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                {/* Add to cart */}
+                <button 
+                  className={`py-4 ${isAddedToCart ? 'bg-green-500 hover:bg-green-600' : 'bg-red-600 hover:bg-red-700'} text-white font-medium text-lg rounded-md transition-colors flex items-center justify-center gap-2`}
+                  disabled={!selectedSize || !selectedColor || !selectedStyle}
+                  title={!selectedSize || !selectedColor || !selectedStyle ? "Please select size, color, and style" : ""}
+                  onClick={() => {
+                    if (tshirt && selectedSize && selectedColor && selectedStyle) {
+                      // Convert TShirt to Product format for cart
+                      const productForCart = {
+                        id: tshirt.id,
+                        name: tshirt.option_name,
+                        price: tshirt.price,
+                        // Use images array instead of image_url to match Cart.tsx expectations
+                        images: tshirtOption?.image_urls || [],
+                        description: tshirtOption?.option_description || '',
+                        // Add selected options as custom properties
+                        selectedSize,
+                        selectedColor,
+                        selectedStyle,
+                        quantity
+                      };
+                      
+                      // Add to cart
+                      addToCart(productForCart as any, quantity);
+                      
+                      // Show success feedback
+                      setIsAddedToCart(true);
+                      
+                      // Reset after 2 seconds
+                      setTimeout(() => {
+                        setIsAddedToCart(false);
+                        // Navigate to cart page
+                        navigate('/cart');
+                      }, 1000);
+                    }
+                  }}
+                >
+                  {isAddedToCart ? (
+                    <>
+                      <Check size={20} />
+                      Added to Cart
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingCart size={20} />
+                      Add to Cart
+                    </>
+                  )}
+                </button>
+                
+                {/* Shop Now button - direct to checkout */}
+                <button 
+                  className="py-4 bg-black hover:bg-gray-900 text-white font-medium text-lg rounded-md transition-colors flex items-center justify-center gap-2"
+                  disabled={!selectedSize || !selectedColor || !selectedStyle}
+                  title={!selectedSize || !selectedColor || !selectedStyle ? "Please select size, color, and style" : ""}
+                  onClick={() => {
+                    if (tshirt && selectedSize && selectedColor && selectedStyle) {
+                      // Convert TShirt to Product format for cart
+                      const productForCart = {
+                        id: tshirt.id,
+                        name: tshirt.option_name,
+                        price: tshirt.price,
+                        images: tshirtOption?.image_urls || [],
+                        description: tshirtOption?.option_description || '',
+                        selectedSize,
+                        selectedColor,
+                        selectedStyle,
+                        quantity
+                      };
+                      
+                      // Add to cart and go directly to checkout
+                      addToCart(productForCart as any, quantity);
+                      navigate('/checkout');
+                    }
+                  }}
+                >
+                  Shop Now
+                </button>
+              </div>
               
               {/* Share */}
               <div className="flex items-center gap-3 text-gray-500 justify-center">
