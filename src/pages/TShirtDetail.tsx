@@ -150,79 +150,81 @@ const TShirtDetailPage: React.FC = () => {
           <div className="flex flex-col md:flex-row">
             {/* Product Images */}
             <div className="md:w-1/2">
-              {/* Main Image */}
-              <div className="relative aspect-square">
-                {tshirtOption.image_urls && tshirtOption.image_urls.length > 0 ? (
-                  <>
-                    <img 
-                      src={tshirtOption.image_urls[currentImageIndex]}
-                      alt={tshirt.option_name}
-                      className="w-full h-full object-cover"
-                      onMouseEnter={() => {
-                        // Pause auto-scroll on hover
-                        if (autoScrollIntervalRef.current) {
-                          clearInterval(autoScrollIntervalRef.current);
-                          autoScrollIntervalRef.current = null;
-                        }
-                      }}
-                      onMouseLeave={() => {
-                        // Resume auto-scroll when mouse leaves
-                        if (!autoScrollIntervalRef.current && tshirtOption?.image_urls && tshirtOption.image_urls.length > 1) {
-                          autoScrollIntervalRef.current = setInterval(() => {
-                            nextImage();
-                          }, 3000);
-                        }
-                      }}
-                    />
-                    
-                    {/* Image navigation */}
-                    {tshirtOption.image_urls.length > 1 && (
-                      <>
-                        <button
-                          onClick={prevImage}
-                          className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/75 hover:bg-white p-2 rounded-full shadow-md"
-                          aria-label="Previous image"
-                        >
-                          <ChevronLeft size={20} />
-                        </button>
-                        <button
-                          onClick={nextImage}
-                          className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/75 hover:bg-white p-2 rounded-full shadow-md"
-                          aria-label="Next image"
-                        >
-                          <ChevronRight size={20} />
-                        </button>
-                      </>
-                    )}
-                  </>
-                ) : (
-                  <div 
-                    className="h-full w-full flex items-center justify-center text-white text-2xl font-bold"
-                    style={{ backgroundColor: tshirtOption.bgColor }}
-                  >
-                    {tshirt.option_name}
+              <div className="flex flex-row gap-4">
+                {/* Thumbnails navigation - vertical on left */}
+                {tshirtOption.image_urls && tshirtOption.image_urls.length > 1 && (
+                  <div className="flex flex-col space-y-2 overflow-y-auto max-h-[500px] py-1">
+                    {tshirtOption.image_urls.map((imgUrl, idx) => (
+                      <div 
+                        key={idx} 
+                        onClick={() => setCurrentImageIndex(idx)}
+                        className={`cursor-pointer border-2 ${currentImageIndex === idx ? 'border-primary-600' : 'border-transparent'}`}
+                      >
+                        <img 
+                          src={imgUrl} 
+                          alt={`${tshirt.option_name} thumbnail ${idx + 1}`} 
+                          className="w-14 h-14 object-cover" 
+                        />
+                      </div>
+                    ))}
                   </div>
                 )}
-              </div>
-
-              {/* Thumbnails navigation */}
-              {tshirtOption.image_urls && tshirtOption.image_urls.length > 1 && (
-                <div className="flex mt-4 space-x-2 overflow-x-auto">
-                  {tshirtOption.image_urls.map((imgUrl, idx) => (
-                    <div 
-                      key={idx} 
-                      onClick={() => setCurrentImageIndex(idx)}
-                      className={`cursor-pointer border-2 ${currentImageIndex === idx ? 'border-primary-600' : 'border-transparent'}`}
-                    >
+                
+                {/* Main Image */}
+                <div className="relative flex-1 aspect-square">
+                  {tshirtOption.image_urls && tshirtOption.image_urls.length > 0 ? (
+                    <>
                       <img 
-                        src={imgUrl} 
-                        alt={`${tshirt.option_name} thumbnail ${idx + 1}`} 
-                        className="w-16 h-16 object-cover" 
+                        src={tshirtOption.image_urls[currentImageIndex]}
+                        alt={tshirt.option_name}
+                        className="w-full h-full object-cover"
+                        onMouseEnter={() => {
+                          // Pause auto-scroll on hover
+                          if (autoScrollIntervalRef.current) {
+                            clearInterval(autoScrollIntervalRef.current);
+                            autoScrollIntervalRef.current = null;
+                          }
+                        }}
+                        onMouseLeave={() => {
+                          // Resume auto-scroll when mouse leaves
+                          if (!autoScrollIntervalRef.current && tshirtOption?.image_urls && tshirtOption.image_urls.length > 1) {
+                            autoScrollIntervalRef.current = setInterval(() => {
+                              nextImage();
+                            }, 3000);
+                          }
+                        }}
                       />
+                      
+                      {/* Image navigation */}
+                      {tshirtOption.image_urls.length > 1 && (
+                        <>
+                          <button
+                            onClick={prevImage}
+                            className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/75 hover:bg-white p-2 rounded-full shadow-md"
+                            aria-label="Previous image"
+                          >
+                            <ChevronLeft size={20} />
+                          </button>
+                          <button
+                            onClick={nextImage}
+                            className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/75 hover:bg-white p-2 rounded-full shadow-md"
+                            aria-label="Next image"
+                          >
+                            <ChevronRight size={20} />
+                          </button>
+                        </>
+                      )}
+                    </>
+                  ) : (
+                    <div 
+                      className="h-full w-full flex items-center justify-center text-white text-2xl font-bold"
+                      style={{ backgroundColor: tshirtOption.bgColor }}
+                    >
+                      {tshirt.option_name}
                     </div>
-                  ))}
+                  )}
                 </div>
-              )}
+              </div>
             </div>
 
             {/* Product Info */}
