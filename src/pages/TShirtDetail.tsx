@@ -24,9 +24,9 @@ const GallerySlideshow: React.FC<GallerySlideshowProps> = ({ images, productName
   if (!images || images.length === 0) return null;
   
   return (
-    <div className="relative w-full">
+    <div className="relative w-full max-w-5xl mx-auto">
       {/* Current Image Container */}
-      <div className="relative w-full aspect-[16/9] overflow-hidden rounded-lg border border-gray-200 shadow-lg">
+      <div className="relative w-full aspect-[16/9] overflow-hidden">
         <img 
           src={images[currentIndex]} 
           alt={`${productName} gallery ${currentIndex + 1}`}
@@ -505,15 +505,17 @@ const TShirtDetailPage: React.FC = () => {
           </div>
         </div>
         
-        {/* Gallery Section */}
+        {/* Gallery Section - Full Width Banner Style */}
         {tshirtOption?.gallery_images && tshirtOption.gallery_images.length > 0 && (
-          <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-16 mt-8">
-            <div className="p-6">
-              <h2 className="text-2xl font-bold mb-4 text-center">{tshirt.option_name.toUpperCase()} GALLERY</h2>
-              <p className="text-gray-600 mb-6 text-center">Explore more images of this collection</p>
-              
-              {/* Image Slideshow Gallery */}
-              <GallerySlideshow images={tshirtOption.gallery_images} productName={tshirt.option_name} />
+          <div className="w-full mt-8 mb-16">
+            <div className="bg-white w-full">
+              <div className="py-6">
+                <h2 className="text-2xl font-bold mb-4 text-center">{tshirt.option_name.toUpperCase()} GALLERY</h2>
+                <p className="text-gray-600 mb-6 text-center">Explore more images of this collection</p>
+                
+                {/* Image Slideshow Gallery */}
+                <GallerySlideshow images={tshirtOption.gallery_images} productName={tshirt.option_name} />
+              </div>
             </div>
           </div>
         )}
