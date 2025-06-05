@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import TShirtBanner from '../components/Product/TShirtBanner';
@@ -14,7 +14,46 @@ const TShirtsPage: React.FC = () => {
   // Track current image index for each option
   const [currentImageIndexes, setCurrentImageIndexes] = useState<Record<string, number>>({});
   
+  // Track which options should have auto-scrolling paused (e.g., when hovered)
+  const [pausedOptions, setPausedOptions] = useState<Record<string, boolean>>({});
+  
+  // Timer references for auto-scrolling
+  const timersRef = useRef<Record<string, NodeJS.Timeout>>({});
+  
   // Fetch T-shirt options from the database
+  // Set up automatic image scrolling for all options
+  useEffect(() => {
+    // Clean up function to clear all timers
+    const cleanupTimers = () => {
+      Object.values(timersRef.current).forEach(timer => clearInterval(timer));
+      timersRef.current = {};
+    };
+    
+    // Only set up timers if we have options and they're not loading
+    if (!loading && tshirtOptions.length > 0) {
+      tshirtOptions.forEach(option => {
+        // Only set up timer if option has multiple images and isn't paused
+        if (option.image_urls && option.image_urls.length > 1 && !pausedOptions[option.id]) {
+          // Clear any existing timer for this option
+          if (timersRef.current[option.id]) {
+            clearInterval(timersRef.current[option.id]);
+          }
+          
+          // Set up a new timer
+          timersRef.current[option.id] = setInterval(() => {
+            setCurrentImageIndexes(prev => ({
+              ...prev,
+              [option.id]: (prev[option.id] + 1) % option.image_urls!.length
+            }));
+          }, 2000); // Scroll every 3 seconds
+        }
+      });
+    }
+    
+    // Clean up timers when component unmounts
+    return cleanupTimers;
+  }, [loading, tshirtOptions, pausedOptions]);
+  
   useEffect(() => {
     const loadTShirtOptions = async () => {
       try {
@@ -22,12 +61,15 @@ const TShirtsPage: React.FC = () => {
         const options = await fetchTShirtOptions();
         setTshirtOptions(options);
         
-        // Initialize image indexes for each option
+        // Initialize image indexes and pause states for each option
         const initialIndexes: Record<string, number> = {};
+        const initialPaused: Record<string, boolean> = {};
         options.forEach(option => {
           initialIndexes[option.id] = 0; // Start with first image
+          initialPaused[option.id] = false; // Auto-scrolling enabled by default
         });
         setCurrentImageIndexes(initialIndexes);
+        setPausedOptions(initialPaused);
         
         setError(null);
       } catch (err) {
@@ -60,6 +102,37 @@ const TShirtsPage: React.FC = () => {
       ...prev,
       [optionId]: (prev[optionId] - 1 + imagesLength) % imagesLength
     }));
+  };
+  
+  // Functions to control auto-scrolling
+  const pauseAutoScroll = (optionId: string) => {
+    setPausedOptions(prev => ({ ...prev, [optionId]: true }));
+    
+    // Clear the timer if it exists
+    if (timersRef.current[optionId]) {
+      clearInterval(timersRef.current[optionId]);
+      delete timersRef.current[optionId];
+    }
+  };
+  
+  const resumeAutoScroll = (optionId: string, imagesLength: number) => {
+    setPausedOptions(prev => ({ ...prev, [optionId]: false }));
+    
+    // Only set up timer if there are multiple images
+    if (imagesLength > 1) {
+      // Clear any existing timer
+      if (timersRef.current[optionId]) {
+        clearInterval(timersRef.current[optionId]);
+      }
+      
+      // Set up a new timer
+      timersRef.current[optionId] = setInterval(() => {
+        setCurrentImageIndexes(prev => ({
+          ...prev,
+          [optionId]: (prev[optionId] + 1) % imagesLength
+        }));
+      }, 3000); // Scroll every 3 seconds
+    }
   };
   
   // Fallback data in case the database fetch fails
@@ -139,6 +212,8 @@ const TShirtsPage: React.FC = () => {
               >
                 <div 
                   className="h-80 relative overflow-hidden"
+                  onMouseEnter={() => pauseAutoScroll(option.id)}
+                  onMouseLeave={() => resumeAutoScroll(option.id, option.image_urls?.length || 1)}
                 >
                   {option.image_urls && option.image_urls.length > 0 ? (
                     <>
