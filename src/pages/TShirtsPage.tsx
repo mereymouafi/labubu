@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import TShirtBanner from '../components/Product/TShirtBanner';
 import { fetchTShirtOptions, TShirtOption } from '../lib/supabase';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const TShirtsPage: React.FC = () => {
   const navigate = useNavigate();
   const [tshirtOptions, setTshirtOptions] = useState<TShirtOption[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Track current image index for each option
+  const [currentImageIndexes, setCurrentImageIndexes] = useState<Record<string, number>>({});
   
   // Fetch T-shirt options from the database
   useEffect(() => {
@@ -18,6 +21,14 @@ const TShirtsPage: React.FC = () => {
         setLoading(true);
         const options = await fetchTShirtOptions();
         setTshirtOptions(options);
+        
+        // Initialize image indexes for each option
+        const initialIndexes: Record<string, number> = {};
+        options.forEach(option => {
+          initialIndexes[option.id] = 0; // Start with first image
+        });
+        setCurrentImageIndexes(initialIndexes);
+        
         setError(null);
       } catch (err) {
         console.error('Error loading T-shirt options:', err);
@@ -34,6 +45,21 @@ const TShirtsPage: React.FC = () => {
   const handleChooseOption = (optionId: string) => {
     // Navigate to t-shirt product details page with the option ID
     navigate(`/t-shirts/${optionId}`);
+  };
+  
+  // Image navigation functions
+  const nextImage = (optionId: string, imagesLength: number) => {
+    setCurrentImageIndexes(prev => ({
+      ...prev,
+      [optionId]: (prev[optionId] + 1) % imagesLength
+    }));
+  };
+  
+  const prevImage = (optionId: string, imagesLength: number) => {
+    setCurrentImageIndexes(prev => ({
+      ...prev,
+      [optionId]: (prev[optionId] - 1 + imagesLength) % imagesLength
+    }));
   };
   
   // Fallback data in case the database fetch fails
@@ -115,11 +141,59 @@ const TShirtsPage: React.FC = () => {
                   className="h-80 relative overflow-hidden"
                 >
                   {option.image_urls && option.image_urls.length > 0 ? (
-                    <img 
-                      src={option.image_urls[0]} 
-                      alt={option.option_name} 
-                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                    />
+                    <>
+                      <AnimatePresence mode="wait">
+                        <motion.img 
+                          key={`${option.id}-${currentImageIndexes[option.id]}`}
+                          src={option.image_urls[currentImageIndexes[option.id] || 0]} 
+                          alt={`${option.option_name} - Image ${currentImageIndexes[option.id] + 1}`} 
+                          className="w-full h-full object-cover"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.3 }}
+                        />
+                      </AnimatePresence>
+                      
+                      {/* Navigation controls */}
+                      {option.image_urls.length > 1 && (
+                        <>
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              prevImage(option.id, option.image_urls?.length || 1);
+                            }}
+                            className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-75 rounded-full p-2 z-10"
+                          >
+                            <ChevronLeft className="w-5 h-5 text-white" />
+                          </button>
+                          
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              nextImage(option.id, option.image_urls?.length || 1);
+                            }}
+                            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-75 rounded-full p-2 z-10"
+                          >
+                            <ChevronRight className="w-5 h-5 text-white" />
+                          </button>
+                          
+                          {/* Dots indicator */}
+                          <div className="absolute bottom-2 left-0 right-0 flex justify-center space-x-1.5">
+                            {option.image_urls.map((_, index) => (
+                              <button
+                                key={index}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setCurrentImageIndexes(prev => ({ ...prev, [option.id]: index }));
+                                }}
+                                className={`w-2 h-2 rounded-full transition-all ${index === (currentImageIndexes[option.id] || 0) ? 'bg-white scale-125' : 'bg-white opacity-50'}`}
+                              />
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </>
                   ) : (
                     <div 
                       className="h-full w-full flex items-center justify-center text-white text-2xl font-bold"

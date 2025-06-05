@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Heart, ShoppingCart, ChevronLeft } from 'lucide-react';
+import { Heart, ShoppingCart, ChevronLeft, Loader2 } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
-import { supabase } from '../lib/supabase';
+import { supabase, TShirtOption, fetchTShirtOptions } from '../lib/supabase';
 
 // Interface representing the tshirts table structure in the database
 interface TShirt {
@@ -12,9 +12,9 @@ interface TShirt {
   description: string;
   price: number;
   original_price?: number;
-  style_name: string;
-  style_description: string;
-  style_id: number;
+  option_name: string;
+  option_description: string;
+  option_id: string;
   colors: string[];
   sizes: string[];
   images: string[];
@@ -27,6 +27,7 @@ interface TShirt {
   is_new: boolean;
   is_trending: boolean;
   is_on_sale: boolean;
+  features?: string[];
 }
 
 const TShirtProductDetail: React.FC = () => {
@@ -41,6 +42,9 @@ const TShirtProductDetail: React.FC = () => {
   const [selectedSize, setSelectedSize] = useState<string>('M');
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState<number>(0);
+  const [tshirtOptions, setTshirtOptions] = useState<TShirtOption[]>([]); 
+  const [selectedOption, setSelectedOption] = useState<TShirtOption | null>(null);
+  const [loadingOptions, setLoadingOptions] = useState<boolean>(true);
 
   const { addToCart, addToWishlist, isInWishlist } = useShop();
   
@@ -80,9 +84,30 @@ const TShirtProductDetail: React.FC = () => {
         setLoading(false);
       }
     };
+
+    const fetchOptions = async () => {
+      try {
+        setLoadingOptions(true);
+        const options = await fetchTShirtOptions();
+        setTshirtOptions(options);
+        
+        // If we have a tshirt, find the matching option
+        if (tshirt && tshirt.option_id) {
+          const matchingOption = options.find(opt => opt.id === tshirt.option_id);
+          if (matchingOption) {
+            setSelectedOption(matchingOption);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching t-shirt options:', err);
+      } finally {
+        setLoadingOptions(false);
+      }
+    };
     
     fetchTshirt();
-  }, [id]);
+    fetchOptions();
+  }, [id, tshirt?.option_id]);
 
   // If loading or error, show appropriate feedback
   if (loading) {
@@ -150,18 +175,27 @@ const TShirtProductDetail: React.FC = () => {
     }
   };
   
-  if (!selectedStyle) {
+  if (!tshirt) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold mb-4">T-shirt style not found</h2>
+          <h2 className="text-2xl font-bold mb-4">T-shirt not found</h2>
           <button 
             onClick={() => navigate('/t-shirts')}
             className="bg-primary-500 text-white px-6 py-2 rounded-md"
           >
-            Back to T-shirt Styles
+            Back to T-shirt Options
           </button>
         </div>
+      </div>
+    );
+  }
+  
+  if (loadingOptions) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Loader2 className="w-12 h-12 animate-spin text-primary-600" />
+        <span className="ml-3 text-lg font-medium">Loading T-shirt options...</span>
       </div>
     );
   }
@@ -208,7 +242,7 @@ const TShirtProductDetail: React.FC = () => {
                   onClick={() => setSelectedImage(index)}
                 <h3 className="text-lg font-medium mb-3">Color: <span className="font-bold text-primary-600">{selectedColor}</span></h3>
                 <div className="flex flex-wrap gap-4">
-                  {selectedStyle.colors.map(color => (
+                  {tshirt.colors.map(color => (
                     <div 
                       key={color}
                       onClick={() => setSelectedColor(color)}
@@ -245,7 +279,7 @@ const TShirtProductDetail: React.FC = () => {
               <div className="mb-6">
                 <h3 className="text-lg font-medium mb-3">Size: <span className="font-bold text-primary-600">{selectedSize}</span></h3>
                 <div className="flex flex-wrap gap-4">
-                  {selectedStyle.sizes.map(size => (
+                  {tshirt.sizes.map(size => (
                     <div 
                       key={size}
                       onClick={() => setSelectedSize(size)}
@@ -295,20 +329,91 @@ const TShirtProductDetail: React.FC = () => {
                 </button>
                 <button 
                   onClick={handleAddToWishlist}
-                  className="flex-1 border border-gray-300 hover:border-primary-500 py-3 px-6 rounded-md flex items-center justify-center font-medium"
-                >
-                  <Heart 
-                    className={`w-5 h-5 mr-2 ${isInWishlist(`tshirt-${selectedStyle.id}-${selectedColor}-${selectedSize}`.toLowerCase().replace(/\s+/g, '-')) ? 'fill-pink-500 text-pink-500' : ''}`} 
                   />
-                  {isInWishlist(`tshirt-${selectedStyle.id}-${selectedColor}-${selectedSize}`.toLowerCase().replace(/\s+/g, '-')) ? 'Remove from Wishlist' : 'Add to Wishlist'}
-                </button>
+                </div>
+              ))}
+            </div>
+          </div>
+          {/* Product Details */}
+          <div>
+            <h1 className="text-3xl font-bold mb-4">{tshirt.name}</h1>
+            
+            <h3 className="text-lg font-medium mb-3">Color: <span className="font-bold text-primary-600">{selectedColor}</span></h3>
+            <div className="flex flex-wrap gap-4">
+              {tshirt.colors.map(color => (
+                <div 
+                  key={color}
+                  onClick={() => setSelectedColor(color)}
+                  className={`cursor-pointer text-center`}
+                >
+                  <div 
+                    className={`w-16 h-16 rounded-full mx-auto mb-2 border-2 ${selectedColor === color ? 'border-primary-600 border-4' : 'border-gray-300'}`}
+                    style={{ 
+                      backgroundColor: 
+                        color.toLowerCase() === 'white' ? '#ffffff' : 
+                        color.toLowerCase() === 'black' ? '#000000' :
+                        color.toLowerCase() === 'gray' ? '#808080' :
+                        color.toLowerCase() === 'red' ? '#ff0000' :
+                        color.toLowerCase() === 'blue' ? '#0000ff' :
+                        color.toLowerCase() === 'green' ? '#008000' :
+                        color.toLowerCase() === 'pink' ? '#FFC0CB' :
+                        color.toLowerCase() === 'navy' ? '#000080' :
+                        color.toLowerCase() === 'olive' ? '#808000' :
+                        color.toLowerCase() === 'rust' ? '#B7410E' :
+                        color.toLowerCase() === 'burgundy' ? '#800020' :
+                        color.toLowerCase() === 'light blue' ? '#ADD8E6' :
+                        color.toLowerCase() === 'beige' ? '#F5F5DC' : '#cccccc'
+                    }}
+                  ></div>
+                  <div className={`font-medium ${selectedColor === color ? 'text-primary-600 font-bold' : ''}`}>
+                    {color}
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            {/* Size selection */}
+            <div className="mb-6">
+              <h3 className="text-lg font-medium mb-3">Size: <span className="font-bold text-primary-600">{selectedSize}</span></h3>
+              <div className="flex flex-wrap gap-4">
+                {tshirt.sizes.map(size => (
+                  <div 
+                    key={size}
+                    onClick={() => setSelectedSize(size)}
+                    className={`cursor-pointer w-16 h-16 flex items-center justify-center ${selectedSize === size ? 
+                      'bg-primary-500 text-white font-bold border-2 border-primary-600 shadow-lg' : 
+                      'bg-white text-gray-800 border-2 border-gray-300'} rounded-lg`}
+                  >
+                    <span className="text-xl">{size}</span>
+                  </div>
+                ))}
               </div>
+            </div>
+            
+            {/* Quantity */}
+            <div className="mb-6">
+              <h3 className="text-lg font-medium mb-3">Quantity: <span className="text-primary-600 font-bold">{quantity}</span></h3>
               
-              {/* Features */}
-              <div className="mt-10">
-                <h3 className="text-lg font-medium mb-3">Features:</h3>
+              <div className="flex items-center gap-4">
+                <div 
+                  onClick={() => setQuantity(prev => Math.max(1, prev - 1))}
+                  className="cursor-pointer w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center shadow-md"
+                >
+                  <span className="text-3xl font-bold text-gray-700">−</span>
+                </div>
+                
+                <div className="w-14 h-14 border-2 border-gray-300 rounded-lg flex items-center justify-center bg-white">
+                  <span className="text-2xl font-bold">{quantity}</span>
+                </div>
+                
+                <div 
+                  onClick={() => setQuantity(prev => prev + 1)}
+                  className="cursor-pointer w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center shadow-md"
+                >
+                  <span className="text-3xl font-bold text-gray-700">+</span>
+                </div>
                 <ul className="list-disc pl-5 space-y-1 text-gray-600">
-                  {selectedStyle.features.map((feature, index) => (
+                  {tshirt.features ? tshirt.features.map((feature, index) => (
                     <li key={index}>{feature}</li>
                   ))}
                 </ul>
