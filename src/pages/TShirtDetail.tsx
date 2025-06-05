@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Heart, Share2, Star, Truck, Shield, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
 import { fetchTShirtDetail, fetchTShirtOptions, TShirtOption, TShirtDetail } from '../lib/supabase';
@@ -10,6 +10,7 @@ const TShirtDetailPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const autoScrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
   
   useEffect(() => {
     const loadTShirtDetail = async () => {
@@ -37,6 +38,12 @@ const TShirtDetailPage: React.FC = () => {
     // Reset state when id changes
     setCurrentImageIndex(0);
     setQuantity(1);
+    
+    // Clean up any existing interval
+    if (autoScrollIntervalRef.current) {
+      clearInterval(autoScrollIntervalRef.current);
+      autoScrollIntervalRef.current = null;
+    }
   }, [id]);
   
   const incrementQuantity = () => {
@@ -56,6 +63,25 @@ const TShirtDetailPage: React.FC = () => {
     if (!tshirtOption?.image_urls || tshirtOption.image_urls.length <= 1) return;
     setCurrentImageIndex(prev => (prev - 1 + tshirtOption.image_urls.length) % tshirtOption.image_urls.length);
   };
+  
+  // Set up auto-scrolling effect
+  useEffect(() => {
+    // Only set up auto-scroll if we have multiple images
+    if (tshirtOption?.image_urls && tshirtOption.image_urls.length > 1) {
+      // Start the auto-scroll interval
+      autoScrollIntervalRef.current = setInterval(() => {
+        nextImage();
+      }, 3000); // Scroll every 3 seconds
+    }
+    
+    // Clean up the interval when component unmounts
+    return () => {
+      if (autoScrollIntervalRef.current) {
+        clearInterval(autoScrollIntervalRef.current);
+        autoScrollIntervalRef.current = null;
+      }
+    };
+  }, [tshirtOption]);
   
   if (loading) {
     return (
@@ -114,6 +140,21 @@ const TShirtDetailPage: React.FC = () => {
                       src={tshirtOption.image_urls[currentImageIndex]}
                       alt={tshirt.option_name}
                       className="w-full h-full object-cover"
+                      onMouseEnter={() => {
+                        // Pause auto-scroll on hover
+                        if (autoScrollIntervalRef.current) {
+                          clearInterval(autoScrollIntervalRef.current);
+                          autoScrollIntervalRef.current = null;
+                        }
+                      }}
+                      onMouseLeave={() => {
+                        // Resume auto-scroll when mouse leaves
+                        if (!autoScrollIntervalRef.current && tshirtOption?.image_urls && tshirtOption.image_urls.length > 1) {
+                          autoScrollIntervalRef.current = setInterval(() => {
+                            nextImage();
+                          }, 3000);
+                        }
+                      }}
                     />
                     
                     {/* Image navigation */}
@@ -146,24 +187,7 @@ const TShirtDetailPage: React.FC = () => {
                 )}
               </div>
 
-              {/* Image thumbnails */}
-              {tshirtOption.image_urls && tshirtOption.image_urls.length > 1 && (
-                <div className="p-4 flex gap-2 overflow-x-auto">
-                  {tshirtOption.image_urls.map((url, idx) => (
-                    <div 
-                      key={idx}
-                      onClick={() => setCurrentImageIndex(idx)}
-                      className={`w-20 h-20 flex-shrink-0 cursor-pointer border-2 rounded overflow-hidden ${currentImageIndex === idx ? 'border-primary-500' : 'border-transparent'}`}
-                    >
-                      <img 
-                        src={url} 
-                        alt={`${tshirt.option_name} thumbnail ${idx + 1}`}
-                        className="w-full h-full object-cover" 
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
+              {/* Thumbnails removed as requested */}
             </div>
 
             {/* Product Info */}
