@@ -278,6 +278,17 @@ export type TShirtOption = {
   bgColor?: string; // Added for frontend display
 };
 
+export type TShirtDetail = {
+  id: string;
+  option_name: string;
+  size: string[];
+  color: string[];
+  style: string[];
+  price_original: number;
+  price: number;
+  created_at?: string;
+};
+
 export const fetchTShirtOptions = async (): Promise<TShirtOption[]> => {
   const { data, error } = await supabase.from('tshirt_options').select('*');
   
@@ -293,6 +304,52 @@ export const fetchTShirtOptions = async (): Promise<TShirtOption[]> => {
     ...option,
     bgColor: bgColors[index % bgColors.length]
   }));
+};
+
+export const fetchTShirtDetail = async (optionId: string): Promise<TShirtDetail | null> => {
+  // First get the option to get the option_name
+  const { data: optionData, error: optionError } = await supabase
+    .from('tshirt_options')
+    .select('option_name')
+    .eq('id', optionId)
+    .single();
+  
+  if (optionError) {
+    console.error('Error fetching T-shirt option:', optionError);
+    return getMockTShirtDetail(optionId);
+  }
+  
+  if (!optionData) {
+    return getMockTShirtDetail(optionId);
+  }
+  
+  // Now get the details using the option_name to match
+  const { data, error } = await supabase
+    .from('tshirt_details')
+    .select('*')
+    .eq('option_name', optionData.option_name)
+    .single();
+  
+  if (error) {
+    console.error('Error fetching T-shirt details:', error);
+    return getMockTShirtDetail(optionId, optionData.option_name);
+  }
+  
+  return data || getMockTShirtDetail(optionId, optionData.option_name);
+};
+
+// Provide mock details if database fetch fails
+const getMockTShirtDetail = (id: string, optionName?: string): TShirtDetail => {
+  return {
+    id,
+    option_name: optionName || 'T-Shirt Option',
+    size: ['S', 'M', 'L', 'XL', 'XXL'],
+    color: ['Black', 'White', 'Blue', 'Red'],
+    style: ['Regular Fit', 'Slim Fit', 'Oversized'],
+    price_original: 39.99,
+    price: 29.99,
+    created_at: new Date().toISOString()
+  };
 };
 
 export const createOrder = async (order: Order): Promise<{ success: boolean; orderId?: string; error?: any }> => {
