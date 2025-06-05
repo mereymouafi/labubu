@@ -269,6 +269,32 @@ export const fetchProductsByCharacter = async (characterSlug: string): Promise<P
   return data || [];
 };
 
+export type TShirtOption = {
+  id: string;
+  option_name: string;
+  option_description: string;
+  image_urls: string[];
+  created_at?: string;
+  bgColor?: string; // Added for frontend display
+};
+
+export const fetchTShirtOptions = async (): Promise<TShirtOption[]> => {
+  const { data, error } = await supabase.from('tshirt_options').select('*');
+  
+  if (error) {
+    console.error('Error fetching T-shirt options:', error);
+    return [];
+  }
+  
+  // Add default background colors based on index position
+  const bgColors = ['#ff6b6b', '#4d96ff', '#50c878', '#ffb6c1', '#9370db', '#ffa07a'];
+  
+  return (data || []).map((option, index) => ({
+    ...option,
+    bgColor: bgColors[index % bgColors.length]
+  }));
+};
+
 export const createOrder = async (order: Order): Promise<{ success: boolean; orderId?: string; error?: any }> => {
   try {
     console.log('Attempting to create order:', order);

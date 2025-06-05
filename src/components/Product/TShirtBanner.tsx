@@ -1,19 +1,33 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { TShirtOption } from '../../lib/supabase';
 
-interface TShirtStyle {
-  id: number;
-  name: string;
-  description: string;
+// Compatibility interface to handle both new TShirtOption and legacy TShirtStyle
+interface TShirtBannerItem {
+  id: string | number;
+  name?: string;  // For legacy support
+  option_name?: string; // New structure
+  description?: string; // For legacy support
+  option_description?: string; // New structure
   bgColor: string;
+  image_urls?: string[];
 }
 
 interface TShirtBannerProps {
-  styles: TShirtStyle[];
+  styles: TShirtBannerItem[] | TShirtOption[];
 }
 
 const TShirtBanner: React.FC<TShirtBannerProps> = ({ styles }) => {
+  // Helper function to get the display name for a T-shirt option
+  const getDisplayName = (item: any): string => {
+    return item.option_name || item.name || 'T-shirt Option';
+  };
+  
+  // Helper function to get the description for a T-shirt option
+  const getDescription = (item: any): string => {
+    return item.option_description || item.description || 'Unique t-shirt design';
+  };
   const [currentSlide, setCurrentSlide] = useState(0);
   const [autoPlay, setAutoPlay] = useState(true);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -74,7 +88,7 @@ const TShirtBanner: React.FC<TShirtBannerProps> = ({ styles }) => {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.2 }}
               >
-                {styles[currentSlide].name}
+                {getDisplayName(styles[currentSlide])}
               </motion.h2>
               <motion.p 
                 className="text-2xl md:text-3xl max-w-lg"
@@ -82,7 +96,7 @@ const TShirtBanner: React.FC<TShirtBannerProps> = ({ styles }) => {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.4 }}
               >
-                {styles[currentSlide].description}
+                {getDescription(styles[currentSlide])}
               </motion.p>
               <motion.button
                 className="bg-white text-gray-900 px-10 py-4 rounded-md font-medium text-xl mt-6"
@@ -95,9 +109,19 @@ const TShirtBanner: React.FC<TShirtBannerProps> = ({ styles }) => {
               </motion.button>
             </div>
             <div className="md:w-1/2 flex justify-center items-center">
-              {/* Image would go here in production */}
-              <div className="w-72 h-72 md:w-[450px] md:h-[450px] bg-white bg-opacity-20 flex items-center justify-center rounded-full">
-                <span className="text-white text-xl">{styles[currentSlide].name} Style</span>
+              <div className="w-72 h-72 md:w-[450px] md:h-[450px] relative overflow-hidden rounded-full">
+                {styles[currentSlide].image_urls && styles[currentSlide].image_urls.length > 0 ? (
+                  <img 
+                    src={styles[currentSlide].image_urls[0]} 
+                    alt={getDisplayName(styles[currentSlide])}
+                    className="w-full h-full object-cover"
+                    style={{objectFit: 'cover', borderRadius: '100%'}}
+                  />
+                ) : (
+                  <div className="w-full h-full bg-white bg-opacity-20 flex items-center justify-center">
+                    <span className="text-white text-xl">{getDisplayName(styles[currentSlide])} Option</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
