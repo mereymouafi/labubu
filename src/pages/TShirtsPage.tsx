@@ -24,30 +24,6 @@ const TShirtsPage: React.FC = () => {
       name: "Oversized T-shirt",
       description: "Larger and longer than standard fit, often unisex",
       bgColor: "#4d96ff"
-    },
-    {
-      id: 3,
-      name: "Boxy Fit",
-      description: "Straight-cut with a square shape, no waist taper",
-      bgColor: "#6b66ff"
-    },
-    {
-      id: 4,
-      name: "Drop Shoulder Tee",
-      description: "Seam falls below shoulder, gives a relaxed look",
-      bgColor: "#38b000"
-    },
-    {
-      id: 5,
-      name: "Boyfriend Fit",
-      description: "Like oversized but for women (styled like a men's shirt)",
-      bgColor: "#ff7b00"
-    },
-    {
-      id: 6,
-      name: "Standard Fit / Classic Cut",
-      description: "Normal unisex shape, not tight, not loose",
-      bgColor: "#9d4edd"
     }
   ];
 
@@ -68,12 +44,12 @@ const TShirtsPage: React.FC = () => {
         </p>
         
         {/* T-shirt styles grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+        <div className="flex flex-col md:flex-row justify-center items-center gap-8 mb-16 max-w-4xl mx-auto">
           {tshirtStyles.map(style => (
             <motion.div 
               key={style.id}
               whileHover={{ scale: 1.03 }}
-              className="bg-white rounded-lg overflow-hidden shadow-lg"
+              className="bg-white rounded-lg overflow-hidden shadow-lg w-full md:w-[400px]"
             >
               <div 
                 className="h-64 flex items-center justify-center text-white text-xl font-bold" 
