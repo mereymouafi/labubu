@@ -22,8 +22,9 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 const BlindBoxPage = lazy(() => import('./pages/BlindBoxPage'));
 // Page for new and featured products
 const NewAndFeaturedPage = lazy(() => import('./pages/NewAndFeaturedPage'));
-// T-shirts page with style options
+// T-shirts pages
 const TShirtsPage = lazy(() => import('./pages/TShirtsPage'));
+const TShirtProductDetail = lazy(() => import('./pages/TShirtProductDetail'));
 
 // Loading component
 const PageLoader = () => (
@@ -54,6 +55,7 @@ function App() {
               <Route path="new-featured" element={<NewAndFeaturedPage />} />
               <Route path="blind-box" element={<BlindBoxPage />} />
               <Route path="t-shirts" element={<TShirtsPage />} />
+              <Route path="t-shirts/:id" element={<TShirtProductDetail />} />
               <Route path="cart" element={<Cart />} />
               <Route path="checkout" element={<Checkout />} />
               <Route path="wishlist" element={<Wishlist />} />

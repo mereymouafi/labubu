@@ -23,7 +23,7 @@ const TShirtBanner: React.FC<TShirtBannerProps> = ({ styles }) => {
     if (autoPlay) {
       timerRef.current = setInterval(() => {
         setCurrentSlide((prev) => (prev + 1) % styles.length);
-      }, 5000); // Change slide every 5 seconds
+      }, 1000); // Change slide every 5 seconds
     }
     
     return () => {

@@ -1,8 +1,16 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import TShirtBanner from '../components/Product/TShirtBanner';
 
 const TShirtsPage: React.FC = () => {
+  const navigate = useNavigate();
+  
+  // Function to handle style selection
+  const handleChooseStyle = (styleId: number) => {
+    // Navigate to t-shirt product details page with the style ID
+    navigate(`/t-shirts/${styleId}`);
+  };
   // T-shirt styles data for the banner
   const tshirtStyles = [
     {
@@ -76,8 +84,11 @@ const TShirtsPage: React.FC = () => {
               <div className="p-5">
                 <h3 className="text-xl font-bold mb-2">{style.name}</h3>
                 <p className="text-gray-600 mb-4">{style.description}</p>
-                <button className="w-full py-3 bg-primary-500 hover:bg-primary-600 text-white font-medium rounded-md transition-colors">
-                  View Collection
+                <button 
+                  onClick={() => handleChooseStyle(style.id)}
+                  className="w-full py-3 bg-primary-500 hover:bg-primary-600 text-white font-medium rounded-md transition-colors"
+                >
+                  Choose this style
                 </button>
               </div>
             </motion.div>
