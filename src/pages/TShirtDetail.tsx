@@ -530,35 +530,51 @@ const TShirtDetailPage: React.FC = () => {
                   {/* Single Box */}
                   <div className="bg-gray-50 p-8 rounded-lg shadow-md flex flex-col items-center text-center">
                     <div className="w-64 h-64 mb-6">
-                      <img 
-                        src="/src/pics/single-box.png" 
-                        alt="Single Box" 
-                        className="w-full h-full object-contain"
-                      />
+                      {tshirtOption?.rules_image1 && tshirtOption.rules_image1.length > 0 ? (
+                        <img 
+                          src={tshirtOption.rules_image1[0]} 
+                          alt="Single Box" 
+                          className="w-full h-full object-contain"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gray-200 rounded-full">
+                          <span className="text-gray-600">Image not available</span>
+                        </div>
+                      )}
                     </div>
-                    <h3 className="text-3xl font-bold mb-2">SINGLE BOX</h3>
-                    <h4 className="text-xl font-semibold mb-4">One figure per blind box.</h4>
+                    <h3 className="text-3xl font-bold mb-2">SINGLE T-SHIRT</h3>
+                    <h4 className="text-xl font-semibold mb-4">1 TEE, 1 SURPRISE
+                    Design unknown. Fun guaranteed!</h4>
                     <p className="text-gray-700">
-                      No one knows what's inside the box before it is opened - including us. Each regular figure has the 
-                      odds of 1/6, secret figure with odds of 1/72.
+                      Choose your color, style, and size — surprise on the design!
+                      You select the T-shirt's size, color, and style, but the character and illustration will be a surprise when you receive it!
+                      🎁 Plus, every T-shirt comes with a small gift from us — just for you! ❤️
                     </p>
                   </div>
                   
                   {/* Whole Sets */}
                   <div className="bg-gray-50 p-8 rounded-lg shadow-md flex flex-col items-center text-center">
                     <div className="w-64 h-64 mb-6">
-                      <img 
-                        src="/src/pics/whole-set.png" 
-                        alt="Whole Sets" 
-                        className="w-full h-full object-contain"
-                      />
+                      {tshirtOption?.rules_image2 && tshirtOption.rules_image2.length > 0 ? (
+                        <img 
+                          src={tshirtOption.rules_image2[0]} 
+                          alt="Whole Sets" 
+                          className="w-full h-full object-contain"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gray-200 rounded-full">
+                          <span className="text-gray-600">Image not available</span>
+                        </div>
+                      )}
                     </div>
-                    <h3 className="text-3xl font-bold mb-2">WHOLE SETS</h3>
-                    <h4 className="text-xl font-semibold mb-4">One figure per blind box.</h4>
+                    <h3 className="text-3xl font-bold mb-2">T-SHIRT BUNDLE (SET OF 6)</h3>
+                    <h4 className="text-xl font-semibold mb-4">COLLECTOR’S PACK – 6 UNIQUE TEES
+                    No repeats, just fresh designs!</h4>
                     <p className="text-gray-700">
-                      The whole set <strong>contains 6 blind boxes</strong> with no repetitions. In case your set 
-                      contains a repeated figure, we will take the extra one back and send you 
-                      the missing figure.
+                      The whole set <strong>contains 6 blind boxes</strong>Choose your styles, no duplicates guaranteed!
+Buy a set of 6 T-shirts and get 6 different character designs — no repeats!
+You still pick the sizes, colors, and styles.
+🎁 And yes, gifts included with each T-shirt in the bundle! ❤️
                     </p>
                   </div>
                 </div>
