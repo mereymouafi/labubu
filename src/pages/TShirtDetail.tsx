@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Heart, Share2, Star, Truck, Shield, RotateCcw, ChevronLeft, ChevronRight, ShoppingCart, Check } from 'lucide-react';
+import { Heart, Share2, ChevronLeft, ChevronRight, ShoppingCart, Check } from 'lucide-react';
 import { fetchTShirtDetail, fetchTShirtOptions, TShirtOption, TShirtDetail } from '../lib/supabase';
 import { useShop } from '../context/ShopContext';
 
@@ -311,7 +311,8 @@ const TShirtDetailPage: React.FC = () => {
                       id: tshirt.id,
                       name: tshirt.option_name,
                       price: tshirt.price,
-                      image_url: tshirtOption?.image_urls?.[0] || '',
+                      // Use images array instead of image_url to match Cart.tsx expectations
+                      images: tshirtOption?.image_urls || [],
                       description: tshirtOption?.option_description || '',
                       // Add selected options as custom properties
                       selectedSize,
