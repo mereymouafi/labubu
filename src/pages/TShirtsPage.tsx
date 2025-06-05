@@ -15,15 +15,27 @@ const TShirtsPage: React.FC = () => {
   const tshirtStyles = [
     {
       id: 1,
-      name: "Crop Top",
-      description: "Above the waistline, often paired with high-waisted pants",
+      name: "Special T-shirts",
+      description: "Unique designs for special occasions and celebrations",
       bgColor: "#ff6b6b"
     },
     {
       id: 2,
-      name: "Oversized T-shirt",
-      description: "Larger and longer than standard fit, often unisex",
+      name: "Illustrated T-shirts",
+      description: "Artistic graphics and detailed illustrations on premium fabric",
       bgColor: "#4d96ff"
+    },
+    {
+      id: 3,
+      name: "Big into Energy",
+      description: "Bold statements and vibrant colors for expressive style",
+      bgColor: "#50c878"
+    },
+    {
+      id: 4,
+      name: "Macaron",
+      description: "Soft pastels and delicate designs for a sweet aesthetic",
+      bgColor: "#ffb6c1"
     }
   ];
 
@@ -44,25 +56,25 @@ const TShirtsPage: React.FC = () => {
         </p>
         
         {/* T-shirt styles grid */}
-        <div className="flex flex-col md:flex-row justify-center items-center gap-8 mb-16 max-w-4xl mx-auto">
+        <div className="flex flex-col md:flex-row flex-wrap justify-center items-center gap-10 mb-16 max-w-6xl mx-auto">
           {tshirtStyles.map(style => (
             <motion.div 
               key={style.id}
               whileHover={{ scale: 1.03 }}
-              className="bg-white rounded-lg overflow-hidden shadow-lg w-full md:w-[400px]"
+              className="bg-white rounded-lg overflow-hidden shadow-lg w-full md:w-[500px] lg:w-[550px]"
             >
               <div 
-                className="h-64 flex items-center justify-center text-white text-xl font-bold" 
+                className="h-80 flex items-center justify-center text-white text-2xl font-bold" 
                 style={{ backgroundColor: style.bgColor }}
               >
                 {style.name}
               </div>
               <div className="p-5">
-                <h3 className="text-xl font-bold mb-2">{style.name}</h3>
-                <p className="text-gray-600 mb-4">{style.description}</p>
+                <h3 className="text-2xl font-bold mb-3">{style.name}</h3>
+                <p className="text-gray-600 text-lg mb-6">{style.description}</p>
                 <button 
                   onClick={() => handleChooseStyle(style.id)}
-                  className="w-full py-3 bg-primary-500 hover:bg-primary-600 text-white font-medium rounded-md transition-colors"
+                  className="w-full py-4 bg-primary-500 hover:bg-primary-600 text-white font-medium text-lg rounded-md transition-colors"
                 >
                   Choose this style
                 </button>

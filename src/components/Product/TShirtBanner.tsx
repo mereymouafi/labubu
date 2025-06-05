@@ -51,7 +51,7 @@ const TShirtBanner: React.FC<TShirtBannerProps> = ({ styles }) => {
 
   return (
     <div 
-      className="relative w-full h-[500px] overflow-hidden" 
+      className="relative w-full h-[600px] overflow-hidden" 
       onMouseLeave={handleMouseLeave}
       onMouseEnter={() => setAutoPlay(false)}
     >
@@ -69,7 +69,7 @@ const TShirtBanner: React.FC<TShirtBannerProps> = ({ styles }) => {
           <div className="container mx-auto px-8 flex flex-col md:flex-row items-center justify-between">
             <div className="md:w-1/2 text-white space-y-4 mb-8 md:mb-0">
               <motion.h2 
-                className="text-4xl md:text-5xl font-bold"
+                className="text-5xl md:text-6xl font-bold"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.2 }}
@@ -77,7 +77,7 @@ const TShirtBanner: React.FC<TShirtBannerProps> = ({ styles }) => {
                 {styles[currentSlide].name}
               </motion.h2>
               <motion.p 
-                className="text-xl md:text-2xl max-w-md"
+                className="text-2xl md:text-3xl max-w-lg"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.4 }}
@@ -85,7 +85,7 @@ const TShirtBanner: React.FC<TShirtBannerProps> = ({ styles }) => {
                 {styles[currentSlide].description}
               </motion.p>
               <motion.button
-                className="bg-white text-gray-900 px-8 py-3 rounded-md font-medium mt-4"
+                className="bg-white text-gray-900 px-10 py-4 rounded-md font-medium text-xl mt-6"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.6 }}
@@ -96,7 +96,7 @@ const TShirtBanner: React.FC<TShirtBannerProps> = ({ styles }) => {
             </div>
             <div className="md:w-1/2 flex justify-center items-center">
               {/* Image would go here in production */}
-              <div className="w-64 h-64 md:w-96 md:h-96 bg-white bg-opacity-20 flex items-center justify-center rounded-full">
+              <div className="w-72 h-72 md:w-[450px] md:h-[450px] bg-white bg-opacity-20 flex items-center justify-center rounded-full">
                 <span className="text-white text-xl">{styles[currentSlide].name} Style</span>
               </div>
             </div>
