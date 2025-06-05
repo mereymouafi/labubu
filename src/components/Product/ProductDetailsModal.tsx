@@ -141,9 +141,9 @@ const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
                       
                       {/* Price */}
                       <div className="flex items-center mb-6">
-                        <span className="text-2xl font-bold text-primary-600">${productDetails.price.toFixed(2)}</span>
+                        <span className="text-2xl font-bold text-primary-600">{productDetails.price.toFixed(2)} MAD</span>
                         {productDetails.price_original > productDetails.price && (
-                          <span className="ml-2 text-lg text-gray-500 line-through">${productDetails.price_original.toFixed(2)}</span>
+                          <span className="ml-2 text-lg text-gray-500 line-through">{productDetails.price_original.toFixed(2)} MAD</span>
                         )}
                       </div>
                       

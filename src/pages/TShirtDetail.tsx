@@ -313,9 +313,9 @@ const TShirtDetailPage: React.FC = () => {
               
               {/* Price */}
               <div className="flex items-center mb-4">
-                <span className="text-xl font-bold text-primary-600">${tshirt.price.toFixed(2)}</span>
+                <span className="text-xl font-bold text-primary-600">{tshirt.price.toFixed(2)} MAD</span>
                 {tshirt.price_original > tshirt.price && (
-                  <span className="ml-2 text-lg text-gray-500 line-through">${tshirt.price_original.toFixed(2)}</span>
+                  <span className="ml-2 text-lg text-gray-500 line-through">{tshirt.price_original.toFixed(2)} MAD</span>
                 )}
               </div>
               

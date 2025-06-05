@@ -225,11 +225,11 @@ const ProductDetail: React.FC = () => {
               <div className="flex items-center mb-6">
                 {product.original_price && (
                   <span className="text-gray-400 line-through text-lg mr-2">
-                    ${product.original_price}
+                    {product.original_price} MAD
                   </span>
                 )}
                 <span className="text-2xl font-bold text-gray-900">
-                  ${product.price}
+                  {product.price} MAD
                 </span>
               </div>
 

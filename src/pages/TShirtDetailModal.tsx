@@ -126,9 +126,9 @@ const TShirtDetailModal: React.FC<TShirtDetailModalProps> = ({
                 {/* Price */}
                 <div className="flex items-center gap-2 mb-6">
                   {selectedTShirt.price_original > selectedTShirt.price && (
-                    <span className="text-gray-400 line-through">${selectedTShirt.price_original.toFixed(2)}</span>
+                    <span className="text-gray-400 line-through">{selectedTShirt.price_original.toFixed(2)} MAD</span>
                   )}
-                  <span className="text-xl font-bold">${selectedTShirt.price.toFixed(2)}</span>
+                  <span className="text-xl font-bold">{selectedTShirt.price.toFixed(2)} MAD</span>
                 </div>
                 
                 {/* Description */}

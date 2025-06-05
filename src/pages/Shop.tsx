@@ -192,8 +192,8 @@ const Shop: React.FC = () => {
                 <h3 className="font-medium mb-3 text-gray-800">Price Range</h3>
                 <div className="space-y-3">
                   <div className="flex justify-between text-sm">
-                    <span>${filters.minPrice}</span>
-                    <span>${filters.maxPrice}</span>
+                    <span>{filters.minPrice} MAD</span>
+                    <span>{filters.maxPrice} MAD</span>
                   </div>
                   <input
                     type="range"

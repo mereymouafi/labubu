@@ -124,17 +124,17 @@ const BlindBoxInterface: React.FC = () => {
       case 'level1':
         return {
           name: 'HACIPUPU Level 1 Series',
-          price: '$15.99'
+          price: '159.90 MAD'
         };
       case 'level2':
         return {
           name: 'HACIPUPU Level 2 Premium Series',
-          price: '$19.99'
+          price: '199.90 MAD'
         };
       default:
         return {
           name: 'HACIPUPU Rolling Time Machine Series',
-          price: '$15.99'
+          price: '159.90 MAD'
         };
     }
   };
@@ -424,8 +424,7 @@ const BlindBoxInterface: React.FC = () => {
                 href="#" 
                 className="inline-flex items-center text-sm text-primary-600 hover:text-primary-800"
               >
-                Explore More Series
-                <ChevronRight size={16} className="ml-1" />
+               
               </a>
             </div>
           </motion.div>
