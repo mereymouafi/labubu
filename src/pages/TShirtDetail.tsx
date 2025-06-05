@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { Heart, Share2, Star, Truck, Shield, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { Heart, Share2, Star, Truck, Shield, RotateCcw, ChevronLeft, ChevronRight, ShoppingCart, Check } from 'lucide-react';
 import { fetchTShirtDetail, fetchTShirtOptions, TShirtOption, TShirtDetail } from '../lib/supabase';
+import { useShop } from '../context/ShopContext';
 
 const TShirtDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -14,6 +15,9 @@ const TShirtDetailPage: React.FC = () => {
   const [selectedColor, setSelectedColor] = useState<string>('');
   const [selectedStyle, setSelectedStyle] = useState<string>('');
   const autoScrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [isAddedToCart, setIsAddedToCart] = useState(false);
+  const { addToCart } = useShop();
+  const navigate = useNavigate();
   
   useEffect(() => {
     const loadTShirtDetail = async () => {
@@ -293,53 +297,55 @@ const TShirtDetailPage: React.FC = () => {
                 </div>
               </div>
               
-              {/* Features */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-600">
-                    <Truck size={20} />
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900">Fast Shipping</h4>
-                    <p className="text-sm text-gray-500">2-3 business days</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-600">
-                    <Shield size={20} />
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900">100% Authentic</h4>
-                    <p className="text-sm text-gray-500">Genuine product</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-600">
-                    <RotateCcw size={20} />
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900">Easy Returns</h4>
-                    <p className="text-sm text-gray-500">30 day return policy</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-600">
-                    <Star size={20} />
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900">Premium Quality</h4>
-                    <p className="text-sm text-gray-500">High quality materials</p>
-                  </div>
-                </div>
-              </div>
+              {/* Features section removed as requested */}
               
               {/* Add to cart */}
               <button 
-                className="w-full py-4 bg-primary-500 hover:bg-primary-600 text-white font-medium text-lg rounded-md transition-colors mb-4"
+                className={`w-full py-4 ${isAddedToCart ? 'bg-green-500 hover:bg-green-600' : 'bg-red-600 hover:bg-red-700'} text-white font-medium text-lg rounded-md transition-colors mb-4 flex items-center justify-center gap-2`}
                 disabled={!selectedSize || !selectedColor || !selectedStyle}
                 title={!selectedSize || !selectedColor || !selectedStyle ? "Please select size, color, and style" : ""}
+                onClick={() => {
+                  if (tshirt && selectedSize && selectedColor && selectedStyle) {
+                    // Convert TShirt to Product format for cart
+                    const productForCart = {
+                      id: tshirt.id,
+                      name: tshirt.option_name,
+                      price: tshirt.price,
+                      image_url: tshirtOption?.image_urls?.[0] || '',
+                      description: tshirtOption?.option_description || '',
+                      // Add selected options as custom properties
+                      selectedSize,
+                      selectedColor,
+                      selectedStyle,
+                      quantity
+                    };
+                    
+                    // Add to cart
+                    addToCart(productForCart as any, quantity);
+                    
+                    // Show success feedback
+                    setIsAddedToCart(true);
+                    
+                    // Reset after 2 seconds
+                    setTimeout(() => {
+                      setIsAddedToCart(false);
+                      // Navigate to cart page
+                      navigate('/cart');
+                    }, 1000);
+                  }
+                }}
               >
-                Add to Cart
+                {isAddedToCart ? (
+                  <>
+                    <Check size={20} />
+                    Added to Cart
+                  </>
+                ) : (
+                  <>
+                    <ShoppingCart size={20} />
+                    Add to Cart
+                  </>
+                )}
               </button>
               
               {/* Share */}
