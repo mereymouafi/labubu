@@ -509,8 +509,8 @@ const TShirtDetailPage: React.FC = () => {
         {tshirtOption?.gallery_images && tshirtOption.gallery_images.length > 0 && (
           <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-16 mt-8">
             <div className="p-6">
-              <h2 className="text-2xl font-bold mb-4">GALLERY</h2>
-              <p className="text-gray-600 mb-6">Explore more images of {tshirt.option_name}</p>
+              <h2 className="text-2xl font-bold mb-4 text-center">{tshirt.option_name.toUpperCase()} GALLERY</h2>
+              <p className="text-gray-600 mb-6 text-center">Explore more images of this collection</p>
               
               {/* Image Slideshow Gallery */}
               <GallerySlideshow images={tshirtOption.gallery_images} productName={tshirt.option_name} />
