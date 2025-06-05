@@ -275,6 +275,7 @@ export type TShirtOption = {
   option_description: string;
   image_urls: string[];
   created_at?: string;
+  gallery_images?: string[]; // Added for gallery section
   bgColor?: string; // Added for frontend display
 };
 

@@ -1,8 +1,62 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Heart, Share2, ChevronLeft, ChevronRight, ShoppingCart, Check } from 'lucide-react';
+import { Heart, Share2, ChevronLeft, ChevronRight, ShoppingCart, Check, ArrowLeft, ArrowRight } from 'lucide-react';
 import { fetchTShirtDetail, fetchTShirtOptions, TShirtOption, TShirtDetail } from '../lib/supabase';
 import { useShop } from '../context/ShopContext';
+
+// Gallery Slideshow Component
+interface GallerySlideshowProps {
+  images: string[];
+  productName: string;
+}
+
+const GallerySlideshow: React.FC<GallerySlideshowProps> = ({ images, productName }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  
+  const nextImage = () => {
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
+  };
+  
+  const prevImage = () => {
+    setCurrentIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
+  };
+  
+  if (!images || images.length === 0) return null;
+  
+  return (
+    <div className="relative w-full">
+      {/* Current Image Container */}
+      <div className="relative w-full aspect-[16/9] overflow-hidden rounded-lg border border-gray-200 shadow-lg">
+        <img 
+          src={images[currentIndex]} 
+          alt={`${productName} gallery ${currentIndex + 1}`}
+          className="w-full h-full object-contain"
+        />
+        
+        {/* Navigation buttons */}
+        <button 
+          className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white p-3 rounded-full shadow-lg transition-all z-10"
+          onClick={prevImage}
+          aria-label="Previous image"
+        >
+          <ArrowLeft size={24} />
+        </button>
+        <button 
+          className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white p-3 rounded-full shadow-lg transition-all z-10"
+          onClick={nextImage}
+          aria-label="Next image"
+        >
+          <ArrowRight size={24} />
+        </button>
+      </div>
+      
+      {/* Image counter */}
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/70 text-white px-3 py-1 rounded-full text-sm">
+        {currentIndex + 1} / {images.length}
+      </div>
+    </div>
+  );
+};
 
 const TShirtDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -450,6 +504,19 @@ const TShirtDetailPage: React.FC = () => {
             </div>
           </div>
         </div>
+        
+        {/* Gallery Section */}
+        {tshirtOption?.gallery_images && tshirtOption.gallery_images.length > 0 && (
+          <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-16 mt-8">
+            <div className="p-6">
+              <h2 className="text-2xl font-bold mb-4">GALLERY</h2>
+              <p className="text-gray-600 mb-6">Explore more images of {tshirt.option_name}</p>
+              
+              {/* Image Slideshow Gallery */}
+              <GallerySlideshow images={tshirtOption.gallery_images} productName={tshirt.option_name} />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
