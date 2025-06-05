@@ -228,9 +228,9 @@ const TShirtDetailPage: React.FC = () => {
             </div>
 
             {/* Product Info */}
-            <div className="md:w-1/2 p-8">
+            <div className="md:w-1/2 p-4">
               <div className="flex justify-between items-start mb-2">
-                <h1 className="text-3xl font-bold">{tshirt.option_name}</h1>
+                <h1 className="text-2xl font-bold">{tshirt.option_name}</h1>
                 <button 
                   className={`p-2 transition-colors ${inWishlist ? 'text-red-500' : 'text-gray-400 hover:text-red-500'}`}
                   onClick={() => {
@@ -255,30 +255,30 @@ const TShirtDetailPage: React.FC = () => {
                 </button>
               </div>
               
-              <p className="text-gray-600 mb-6">{tshirtOption.option_description}</p>
+              <p className="text-gray-600 mb-4 text-sm">{tshirtOption.option_description}</p>
               
               {/* Price */}
-              <div className="flex items-center mb-8">
-                <span className="text-2xl font-bold text-primary-600">${tshirt.price.toFixed(2)}</span>
+              <div className="flex items-center mb-4">
+                <span className="text-xl font-bold text-primary-600">${tshirt.price.toFixed(2)}</span>
                 {tshirt.price_original > tshirt.price && (
                   <span className="ml-2 text-lg text-gray-500 line-through">${tshirt.price_original.toFixed(2)}</span>
                 )}
               </div>
               
               {/* Quantity */}
-              <div className="mb-8">
-                <h3 className="text-lg font-semibold mb-2">Quantity</h3>
-                <div className="flex items-center border border-gray-300 rounded-md inline-flex">
+              <div className="mb-4">
+                <h3 className="text-sm font-semibold mb-1">QUANTITY</h3>
+                <div className="flex items-center border border-gray-300 rounded-md inline-flex text-sm">
                   <button 
                     onClick={decrementQuantity}
-                    className="py-2 px-4 border-r border-gray-300"
+                    className="py-1 px-3 border-r border-gray-300"
                   >
                     -
                   </button>
-                  <span className="py-2 px-4">{quantity}</span>
+                  <span className="py-1 px-3">{quantity}</span>
                   <button 
                     onClick={incrementQuantity}
-                    className="py-2 px-4 border-l border-gray-300"
+                    className="py-1 px-3 border-l border-gray-300"
                   >
                     +
                   </button>
@@ -286,14 +286,14 @@ const TShirtDetailPage: React.FC = () => {
               </div>
               
               {/* Sizes */}
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-2">Size</h3>
-                <div className="flex flex-wrap gap-2">
+              <div className="mb-3">
+                <h3 className="text-sm font-semibold mb-1">SIZE</h3>
+                <div className="flex flex-wrap gap-1">
                   {tshirt.size.map((size, idx) => (
                     <button 
                       key={idx}
                       onClick={() => setSelectedSize(size)}
-                      className={`py-2 px-4 border rounded-md transition-colors ${selectedSize === size 
+                      className={`py-1 px-3 border rounded-md transition-colors text-xs ${selectedSize === size 
                         ? 'border-primary-500 bg-primary-500 text-white font-medium' 
                         : 'border-gray-300 hover:border-primary-500 hover:bg-primary-50'}`}
                     >
@@ -304,14 +304,14 @@ const TShirtDetailPage: React.FC = () => {
               </div>
               
               {/* Colors */}
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-2">Color</h3>
-                <div className="flex flex-wrap gap-2">
+              <div className="mb-3">
+                <h3 className="text-sm font-semibold mb-1">COLOR</h3>
+                <div className="flex flex-wrap gap-1">
                   {tshirt.color.map((color, idx) => (
                     <button 
                       key={idx}
                       onClick={() => setSelectedColor(color)}
-                      className={`py-2 px-4 border rounded-md transition-colors ${selectedColor === color 
+                      className={`py-1 px-3 border rounded-md transition-colors text-xs ${selectedColor === color 
                         ? 'border-primary-500 bg-primary-500 text-white font-medium' 
                         : 'border-gray-300 hover:border-primary-500 hover:bg-primary-50'}`}
                     >
@@ -322,14 +322,14 @@ const TShirtDetailPage: React.FC = () => {
               </div>
               
               {/* Styles */}
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-2">Style</h3>
-                <div className="flex flex-wrap gap-2">
+              <div className="mb-3">
+                <h3 className="text-sm font-semibold mb-1">STYLE</h3>
+                <div className="flex flex-wrap gap-1">
                   {tshirt.style.map((style, idx) => (
                     <button 
                       key={idx}
                       onClick={() => setSelectedStyle(style)}
-                      className={`py-2 px-4 border rounded-md transition-colors ${selectedStyle === style 
+                      className={`py-1 px-3 border rounded-md transition-colors text-xs ${selectedStyle === style 
                         ? 'border-primary-500 bg-primary-500 text-white font-medium' 
                         : 'border-gray-300 hover:border-primary-500 hover:bg-primary-50'}`}
                     >
@@ -342,10 +342,10 @@ const TShirtDetailPage: React.FC = () => {
               {/* Features section removed as requested */}
               
               {/* Buttons container */}
-              <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="grid grid-cols-2 gap-2 mb-3">
                 {/* Add to cart */}
                 <button 
-                  className={`py-4 ${isAddedToCart ? 'bg-green-500 hover:bg-green-600' : 'bg-red-600 hover:bg-red-700'} text-white font-medium text-lg rounded-md transition-colors flex items-center justify-center gap-2`}
+                  className={`py-2 ${isAddedToCart ? 'bg-green-500 hover:bg-green-600' : 'bg-red-600 hover:bg-red-700'} text-white font-medium text-sm rounded-md transition-colors flex items-center justify-center gap-1`}
                   disabled={!selectedSize || !selectedColor || !selectedStyle}
                   title={!selectedSize || !selectedColor || !selectedStyle ? "Please select size, color, and style" : ""}
                   onClick={() => {
@@ -382,12 +382,12 @@ const TShirtDetailPage: React.FC = () => {
                 >
                   {isAddedToCart ? (
                     <>
-                      <Check size={20} />
+                      <Check size={16} />
                       Added to Cart
                     </>
                   ) : (
                     <>
-                      <ShoppingCart size={20} />
+                      <ShoppingCart size={16} />
                       Add to Cart
                     </>
                   )}
@@ -395,7 +395,7 @@ const TShirtDetailPage: React.FC = () => {
                 
                 {/* Shop Now button - direct to checkout */}
                 <button 
-                  className="py-4 bg-black hover:bg-gray-900 text-white font-medium text-lg rounded-md transition-colors flex items-center justify-center gap-2"
+                  className="py-2 bg-black hover:bg-gray-900 text-white font-medium text-sm rounded-md transition-colors flex items-center justify-center gap-1"
                   disabled={!selectedSize || !selectedColor || !selectedStyle}
                   title={!selectedSize || !selectedColor || !selectedStyle ? "Please select size, color, and style" : ""}
                   onClick={() => {
