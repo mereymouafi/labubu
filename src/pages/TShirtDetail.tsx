@@ -68,6 +68,7 @@ const TShirtDetailPage: React.FC = () => {
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [selectedColor, setSelectedColor] = useState<string>('');
   const [selectedStyle, setSelectedStyle] = useState<string>('');
+  const [selectedAge, setSelectedAge] = useState<string>('');
   const autoScrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const [inWishlist, setInWishlist] = useState(false);
@@ -87,6 +88,7 @@ const TShirtDetailPage: React.FC = () => {
           if (detail.size && detail.size.length > 0) setSelectedSize(detail.size[0]);
           if (detail.color && detail.color.length > 0) setSelectedColor(detail.color[0]);
           if (detail.style && detail.style.length > 0) setSelectedStyle(detail.style[0]);
+          if (detail.age && detail.age.length > 0) setSelectedAge(detail.age[0]);
           
           // Check if item is already in wishlist
           setInWishlist(isInWishlist(detail.id));
@@ -364,7 +366,10 @@ const TShirtDetailPage: React.FC = () => {
                   {tshirt.age && tshirt.age.map((age, idx) => (
                     <button 
                       key={idx}
-                      className={`py-1 px-3 border rounded-md transition-colors text-xs border-gray-300 hover:border-primary-500 hover:bg-primary-50`}
+                      onClick={() => setSelectedAge(age)}
+                      className={`py-1 px-3 border rounded-md transition-colors text-xs ${selectedAge === age 
+                        ? 'border-primary-500 bg-primary-500 text-white font-medium' 
+                        : 'border-gray-300 hover:border-primary-500 hover:bg-primary-50'}`}
                     >
                       {age}
                     </button>
