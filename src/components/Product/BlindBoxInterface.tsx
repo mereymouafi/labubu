@@ -345,7 +345,11 @@ const BlindBoxInterface: React.FC = () => {
                       </motion.div>
                     ) : (
                       <img 
-                        src={selectedLevel === 'level1' ? "/images/blind-box-custom.png" : "/images/blind-box-level2.png"}
+                        src={
+                          selectedLevel === 'level1'
+                            ? (box.id % 2 === 0 ? "/images/black.jpg" : "/images/pink.jpg")
+                            : (box.id % 2 === 0 ? "/images/white.jpg" : "/images/pink.jpg")
+                        }
                         alt="Blind Box" 
                         className="w-full h-full object-cover"
                       />
