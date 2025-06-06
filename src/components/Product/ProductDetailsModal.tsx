@@ -162,6 +162,21 @@ const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
                         </div>
                       </div>
                       
+                      {/* Age */}
+                      <div className="mb-6">
+                        <h3 className="text-lg font-semibold mb-2">Age</h3>
+                        <div className="flex flex-wrap gap-2">
+                          {productDetails.age.map((age, idx) => (
+                            <button 
+                              key={idx}
+                              className="py-2 px-4 border border-gray-300 rounded-md hover:border-primary-500 hover:bg-primary-50"
+                            >
+                              {age}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      
                       {/* Colors */}
                       <div className="mb-6">
                         <h3 className="text-lg font-semibold mb-2">Color</h3>

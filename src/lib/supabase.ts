@@ -287,6 +287,7 @@ export type TShirtDetail = {
   size: string[];
   color: string[];
   style: string[];
+  age: string[];
   price_original: number;
   price: number;
   created_at?: string;
@@ -349,6 +350,7 @@ const getMockTShirtDetail = (id: string, optionName?: string): TShirtDetail => {
     size: ['S', 'M', 'L', 'XL', 'XXL'],
     color: ['Black', 'White', 'Blue', 'Red'],
     style: ['Regular Fit', 'Slim Fit', 'Oversized'],
+    age: ['Adult', 'Teen', 'Kids'],
     price_original: 39.99,
     price: 29.99,
     created_at: new Date().toISOString()

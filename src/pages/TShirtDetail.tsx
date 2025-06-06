@@ -356,6 +356,21 @@ const TShirtDetailPage: React.FC = () => {
                   ))}
                 </div>
               </div>
+
+              {/* Age */}
+              <div className="mb-3">
+                <h3 className="text-sm font-semibold mb-1">AGE</h3>
+                <div className="flex flex-wrap gap-1">
+                  {tshirt.age && tshirt.age.map((age, idx) => (
+                    <button 
+                      key={idx}
+                      className={`py-1 px-3 border rounded-md transition-colors text-xs border-gray-300 hover:border-primary-500 hover:bg-primary-50`}
+                    >
+                      {age}
+                    </button>
+                  ))}
+                </div>
+              </div>
               
               {/* Colors */}
               <div className="mb-3">
