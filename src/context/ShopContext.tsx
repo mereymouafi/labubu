@@ -38,17 +38,50 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     
     if (savedCart) {
       try {
-        setCartItems(JSON.parse(savedCart));
+        const parsedCart = JSON.parse(savedCart);
+        // Validate the cart structure before setting state
+        if (Array.isArray(parsedCart)) {
+          // Make sure each item has valid product and quantity
+          const validCart = parsedCart.filter(item => 
+            item && 
+            item.product && 
+            typeof item.product === 'object' && 
+            item.product.id && 
+            typeof item.quantity === 'number'
+          );
+          setCartItems(validCart);
+        } else {
+          // If cart is invalid, reset it
+          console.warn('Invalid cart structure, resetting cart');
+          localStorage.setItem('cart', JSON.stringify([]));
+          setCartItems([]);
+        }
       } catch (error) {
         console.error('Error parsing saved cart:', error);
+        // Reset cart if there's an error
+        localStorage.setItem('cart', JSON.stringify([]));
+        setCartItems([]);
       }
     }
     
     if (savedWishlist) {
       try {
-        setWishlistItems(JSON.parse(savedWishlist));
+        const parsedWishlist = JSON.parse(savedWishlist);
+        if (Array.isArray(parsedWishlist)) {
+          // Validate wishlist items
+          const validWishlist = parsedWishlist.filter(item => 
+            item && typeof item === 'object' && item.id
+          );
+          setWishlistItems(validWishlist);
+        } else {
+          console.warn('Invalid wishlist structure, resetting wishlist');
+          localStorage.setItem('wishlist', JSON.stringify([]));
+          setWishlistItems([]);
+        }
       } catch (error) {
         console.error('Error parsing saved wishlist:', error);
+        localStorage.setItem('wishlist', JSON.stringify([]));
+        setWishlistItems([]);
       }
     }
   }, []);
@@ -66,27 +99,65 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   // Add a product to the cart
   const addToCart = (product: Product, quantity: number = 1) => {
-    setCartItems(prevItems => {
-      // Create a deep copy of previous items to avoid reference issues
-      const prevItemsCopy = JSON.parse(JSON.stringify(prevItems));
-      
-      // Check if item already exists in cart
-      const existingItemIndex = prevItemsCopy.findIndex((item: CartItem) => item.product.id === product.id);
-      
-      let updatedItems;
-      if (existingItemIndex >= 0) {
-        // Update quantity of existing item
-        updatedItems = [...prevItemsCopy];
-        updatedItems[existingItemIndex].quantity += quantity;
-      } else {
-        // Add new item
-        updatedItems = [...prevItemsCopy, { product, quantity }];
-      }
-      
-      // Save to localStorage immediately to ensure data is persisted
-      localStorage.setItem('cart', JSON.stringify(updatedItems));
-      return updatedItems;
-    });
+    try {
+      // First, ensure the product object is properly serializable
+      // Create a clean copy of the product with only the necessary properties
+      const cleanProduct: Product = {
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        images: [...product.images], // Make a copy of the images array
+        category: product.category,
+        collection: product.collection,
+        stock_status: product.stock_status,
+        // Include optional properties only if they exist
+        original_price: product.original_price,
+        character: product.character,
+        is_new: product.is_new,
+        is_featured: product.is_featured,
+        is_on_sale: product.is_on_sale,
+        is_popular: product.is_popular,
+        is_trending: product.is_trending,
+        description: product.description,
+        category_id: product.category_id,
+        collection_id: product.collection_id,
+        character_id: product.character_id
+      };
+
+      setCartItems(prevItems => {
+        // Create a clean copy of previous items
+        const prevItemsCopy = prevItems.map(item => ({
+          product: { ...item.product },
+          quantity: item.quantity
+        }));
+        
+        // Check if item already exists in cart
+        const existingItemIndex = prevItemsCopy.findIndex(item => item.product.id === cleanProduct.id);
+        
+        let updatedItems;
+        if (existingItemIndex >= 0) {
+          // Update quantity of existing item
+          updatedItems = [...prevItemsCopy];
+          updatedItems[existingItemIndex].quantity += quantity;
+        } else {
+          // Add new item
+          updatedItems = [...prevItemsCopy, { product: cleanProduct, quantity }];
+        }
+        
+        // Save to localStorage immediately to ensure data is persisted
+        try {
+          localStorage.setItem('cart', JSON.stringify(updatedItems));
+        } catch (storageError) {
+          console.error('Error saving cart to localStorage:', storageError);
+        }
+        
+        return updatedItems;
+      });
+    } catch (error) {
+      console.error('Error adding product to cart:', error);
+      // Provide user feedback that something went wrong
+      alert('There was an error adding this item to your cart. Please try again.');
+    }
   };
 
   // Remove a product from the cart
