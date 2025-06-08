@@ -2,6 +2,7 @@ import React from 'react';
 import HeroBanner from '../components/Home/HeroBanner';
 import TrendingProducts from '../components/Home/TrendingProducts';
 import OnSaleProducts from '../components/Home/OnSaleProducts';
+import TShirtSection from '../components/Home/TShirtSection';
 
 const Home: React.FC = () => {
   return (
@@ -9,6 +10,9 @@ const Home: React.FC = () => {
       <HeroBanner />
       <div className="container mx-auto px-4 md:px-8 lg:px-16 xl:px-24">
         <OnSaleProducts />
+      </div>
+      <TShirtSection />
+      <div className="container mx-auto px-4 md:px-8 lg:px-16 xl:px-24">
         <TrendingProducts />
       </div>
     </div>
