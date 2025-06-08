@@ -26,7 +26,7 @@ const HeroBanner: React.FC = () => {
               title: 'NEW SKULLPANDA COLLECTION',
               subtitle: 'Discover the latest blind boxes and collectible figures',
               button_text: 'Shop Now',
-              button_link: '/collections'
+              button_link: '/shop'
             },
             {
               id: '2',
@@ -82,9 +82,9 @@ const HeroBanner: React.FC = () => {
       <div className="h-[75vh] bg-popmart-lightgray flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-4xl font-bold mb-4 text-black">Welcome to LABUBU</h1>
-          <p className="text-xl mb-8 text-gray-600">Discover our amazing collections</p>
-          <Link to="/collections" className="bg-black text-white py-3 px-8 hover:bg-popmart-red transition-colors duration-300">
-            Explore Collections
+          <p className="text-xl mb-8 text-gray-600">Discover our amazing products</p>
+          <Link to="/shop" className="bg-black text-white py-3 px-8 hover:bg-popmart-red transition-colors duration-300">
+            Shop Now
           </Link>
         </div>
       </div>

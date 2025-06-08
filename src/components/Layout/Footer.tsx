@@ -165,11 +165,6 @@ const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/collections" className="hover:text-white transition-colors duration-200">
-                  MEDIA COLLECTIONS
-                </Link>
-              </li>
-              <li>
                 <Link to="/accessories" className="hover:text-white transition-colors duration-200">
                   ACCESSORIES
                 </Link>

@@ -11,8 +11,6 @@ const Categories = lazy(() => import('./pages/Categories'));
 const CategoryProducts = lazy(() => import('./pages/CategoryProducts'));
 const Characters = lazy(() => import('./pages/Characters'));
 const CharacterProducts = lazy(() => import('./pages/CharacterProducts'));
-const Collections = lazy(() => import('./pages/Collections'));
-const CollectionDetail = lazy(() => import('./pages/CollectionDetail'));
 const Shop = lazy(() => import('./pages/Shop'));
 const ProductDetail = lazy(() => import('./pages/ProductDetail'));
 const Cart = lazy(() => import('./pages/Cart'));
@@ -57,8 +55,6 @@ function App() {
               <Route path="categories/:slug" element={<CategoryProducts />} />
               <Route path="characters" element={<Characters />} />
               <Route path="characters/:slug" element={<CharacterProducts />} />
-              <Route path="collections" element={<Collections />} />
-              <Route path="collections/:slug" element={<CollectionDetail />} />
               <Route path="shop" element={<Shop />} />
               <Route path="product/:id" element={<ProductDetail />} />
               <Route path="new-arrivals" element={<NewArrivalsPage />} />
