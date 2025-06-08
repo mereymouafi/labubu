@@ -1,14 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Product as BaseProduct } from '../lib/supabase';
+import { Product as BaseProduct, fetchProducts } from '../lib/supabase';
+import { Product } from '../types';
 
-// Extend the Product type to include blind box information
-interface Product extends BaseProduct {
-  blindBoxInfo?: {
-    level: string;
-    color: string;
-    quantity: number;
-  };
-}
+// Product type is now imported from '../types'
 
 // Define the shape of our cart item
 type CartItem = {
@@ -26,6 +20,7 @@ type ShopContextType = {
   cartItems: CartItem[];
   wishlistItems: Product[];
   selectedCartItems: CartItem[];
+  products: Product[];
   addToCart: (product: Product, quantity?: number) => void;
   removeFromCart: (productId: string) => void;
   clearCart: () => void;
@@ -46,8 +41,23 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [wishlistItems, setWishlistItems] = useState<Product[]>([]);
   const [selectedCartItems, setSelectedCartItems] = useState<CartItem[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [cartCount, setCartCount] = useState(0);
   const [wishlistCount, setWishlistCount] = useState(0);
+
+  // Load products from Supabase
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        const allProducts = await fetchProducts();
+        setProducts(allProducts);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    };
+    
+    loadProducts();
+  }, []);
 
   // Load cart and wishlist from localStorage on component mount
   useEffect(() => {
@@ -240,6 +250,7 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     cartItems,
     wishlistItems,
     selectedCartItems,
+    products,
     addToCart,
     removeFromCart,
     clearCart,

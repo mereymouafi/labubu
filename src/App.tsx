@@ -33,6 +33,8 @@ const PochettesPage = lazy(() => import('./pages/PochettesPage'));
 const TShirtsPage = lazy(() => import('./pages/TShirtsPage'));
 const TShirtDetail = lazy(() => import('./pages/TShirtDetail'));
 const AccessoriesPage = lazy(() => import('./pages/AccessoriesPage'));
+// Search results page
+const SearchResultsPage = lazy(() => import('./pages/SearchResultsPage'));
 
 // Admin pages
 const AdminLogin = lazy(() => import('./pages/Admin/Login'));
@@ -72,6 +74,7 @@ function App() {
               <Route path="accessories/pochettes" element={<PochettesPage />} />
               <Route path="t-shirts" element={<TShirtsPage />} />
               <Route path="tshirt/:id" element={<TShirtDetail />} />
+              <Route path="search" element={<SearchResultsPage />} />
               <Route path="cart" element={<Cart />} />
               <Route path="checkout" element={<Checkout />} />
               <Route path="wishlist" element={<Wishlist />} />

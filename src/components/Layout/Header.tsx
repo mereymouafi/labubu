@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, Heart, Search, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useShop } from '../../context/ShopContext';
@@ -10,7 +10,9 @@ const Header: React.FC = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isCategoriesDropdownOpen, setIsCategoriesDropdownOpen] = useState(false);
   const [isMobileCategoriesOpen, setIsMobileCategoriesOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const location = useLocation();
+  const navigate = useNavigate();
   
   // Get cart and wishlist counts from shop context
   const { cartCount, wishlistCount } = useShop();
@@ -29,6 +31,7 @@ const Header: React.FC = () => {
     setIsSearchOpen(false);
     setIsCategoriesDropdownOpen(false);
     setIsMobileCategoriesOpen(false);
+    setSearchQuery('');
   }, [location]);
 
   // Updated to match LABUBU MAROC's navigation items
@@ -137,8 +140,24 @@ const Header: React.FC = () => {
                 type="text" 
                 placeholder="SEARCH"
                 className="w-full text-xs uppercase tracking-wider outline-none placeholder-gray-400 labubumaroc-nav-font"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && searchQuery.trim()) {
+                    navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+                  }
+                }}
               />
-              <Search size={16} className="text-gray-400" />
+              <button 
+                onClick={() => {
+                  if (searchQuery.trim()) {
+                    navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+                  }
+                }}
+                className="cursor-pointer"
+              >
+                <Search size={16} className="text-gray-400 hover:text-black" />
+              </button>
             </div>
 
             {/* Desktop Icons */}
@@ -200,8 +219,26 @@ const Header: React.FC = () => {
                   placeholder="SEARCH"
                   className="w-full py-2 pl-10 pr-4 border-b-2 border-gray-200 focus:border-labubumaroc-red outline-none uppercase text-xs tracking-wider"
                   autoFocus
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && searchQuery.trim()) {
+                      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+                      setIsSearchOpen(false);
+                    }
+                  }}
                 />
-                <Search size={20} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <button 
+                  onClick={() => {
+                    if (searchQuery.trim()) {
+                      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+                      setIsSearchOpen(false);
+                    }
+                  }}
+                  className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-labubumaroc-red"
+                >
+                  <Search size={20} />
+                </button>
                 <button
                   onClick={() => setIsSearchOpen(false)}
                   className="absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-labubumaroc-red"
