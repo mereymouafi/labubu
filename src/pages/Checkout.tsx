@@ -6,14 +6,9 @@ import { createOrder, Order, OrderItem, ShippingInfo as SupabaseShippingInfo } f
 
 // Checkout form types
 type ShippingInfo = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
+  fullName: string;
   address: string;
-  city: string;
-  zipCode: string;
-  country: string;
+  phone: string;
 };
 
 type PaymentMethod = 'cash-on-delivery';
@@ -27,14 +22,9 @@ const Checkout: React.FC = () => {
   
   // State for form data
   const [shippingInfo, setShippingInfo] = useState<ShippingInfo>({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
+    fullName: '',
     address: '',
-    city: '',
-    zipCode: '',
-    country: 'Morocco',
+    phone: '',
   });
   
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash-on-delivery');
@@ -82,14 +72,14 @@ const Checkout: React.FC = () => {
       
       // Convert shipping info to match Supabase type
       const formattedShippingInfo: SupabaseShippingInfo = {
-        firstName: shippingInfo.firstName,
-        lastName: shippingInfo.lastName,
-        email: shippingInfo.email,
+        firstName: shippingInfo.fullName.split(' ')[0] || '',
+        lastName: shippingInfo.fullName.split(' ').slice(1).join(' ') || '',
+        email: '',
         phone: shippingInfo.phone,
         address: shippingInfo.address,
-        city: shippingInfo.city,
+        city: '',
         state: '',
-        zip: shippingInfo.zipCode
+        zip: ''
       };
       
       // Create order object
@@ -193,119 +183,61 @@ const Checkout: React.FC = () => {
         <div className="flex-grow">
           {/* Shipping Information */}
           {step === 'shipping' && (
-            <div className="bg-white p-6 border border-gray-200 rounded-md">
-              <h2 className="text-xl font-medium mb-6">Shipping Information</h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <h2 className="text-xl font-bold mb-6">Shipping Information</h2>
+              <form className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">First Name *</label>
-                  <input 
+                  <label htmlFor="fullName" className="block text-gray-700 mb-1">Full Name</label>
+                  <input
                     type="text"
-                    name="firstName"
-                    value={shippingInfo.firstName}
+                    id="fullName"
+                    name="fullName"
+                    value={shippingInfo.fullName}
                     onChange={handleShippingChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-popmart-red"
+                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-300"
                     required
+                    placeholder="Your Full Name"
                   />
                 </div>
+                
                 <div>
-                  <label className="block text-sm font-medium mb-2">Last Name *</label>
-                  <input 
+                  <label htmlFor="address" className="block text-gray-700 mb-1">Address</label>
+                  <input
                     type="text"
-                    name="lastName"
-                    value={shippingInfo.lastName}
+                    id="address"
+                    name="address"
+                    value={shippingInfo.address}
                     onChange={handleShippingChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-popmart-red"
+                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-300"
                     required
+                    placeholder="Your Complete Address"
                   />
                 </div>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                
                 <div>
-                  <label className="block text-sm font-medium mb-2">Email *</label>
-                  <input 
-                    type="email"
-                    name="email"
-                    value={shippingInfo.email}
-                    onChange={handleShippingChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-popmart-red"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Phone *</label>
-                  <input 
+                  <label htmlFor="phone" className="block text-gray-700 mb-1">Phone Number</label>
+                  <input
                     type="tel"
+                    id="phone"
                     name="phone"
                     value={shippingInfo.phone}
                     onChange={handleShippingChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-popmart-red"
+                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-300"
                     required
+                    placeholder="Your Phone Number"
                   />
                 </div>
-              </div>
-              
-              <div className="mb-4">
-                <label className="block text-sm font-medium mb-2">Address *</label>
-                <input 
-                  type="text"
-                  name="address"
-                  value={shippingInfo.address}
-                  onChange={handleShippingChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-popmart-red"
-                  required
-                />
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">City *</label>
-                  <input 
-                    type="text"
-                    name="city"
-                    value={shippingInfo.city}
-                    onChange={handleShippingChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-popmart-red"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Postal Code *</label>
-                  <input 
-                    type="text"
-                    name="zipCode"
-                    value={shippingInfo.zipCode}
-                    onChange={handleShippingChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-popmart-red"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Country *</label>
-                  <select 
-                    name="country"
-                    value={shippingInfo.country}
-                    onChange={handleShippingChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-popmart-red"
-                    required
+                
+                <div className="pt-4">
+                  <button 
+                    type="button" 
+                    onClick={nextStep}
+                    className="w-full px-6 py-3 bg-popmart-red text-white rounded hover:bg-red-700 transition-colors"
                   >
-                    <option value="Morocco">Morocco</option>
-                    <option value="France">France</option>
-                    <option value="Spain">Spain</option>
-                    <option value="United States">United States</option>
-                  </select>
+                    Continue to Payment
+                  </button>
                 </div>
-              </div>
-              
-              <div className="flex justify-end">
-                <button 
-                  onClick={nextStep}
-                  className="px-6 py-2 bg-popmart-red text-white rounded hover:bg-red-700 transition-colors"
-                >
-                  Next: Payment
-                </button>
-              </div>
+              </form>
             </div>
           )}
           
@@ -389,11 +321,8 @@ const Checkout: React.FC = () => {
               <div className="mb-6">
                 <h3 className="font-medium text-lg mb-4">Shipping Address</h3>
                 <div className="p-4 bg-gray-50 rounded-md">
-                  <p className="font-medium">{shippingInfo.firstName} {shippingInfo.lastName}</p>
+                  <p className="font-medium">{shippingInfo.fullName}</p>
                   <p>{shippingInfo.address}</p>
-                  <p>{shippingInfo.city}, {shippingInfo.zipCode}</p>
-                  <p>{shippingInfo.country}</p>
-                  <p>{shippingInfo.email}</p>
                   <p>{shippingInfo.phone}</p>
                 </div>
               </div>
