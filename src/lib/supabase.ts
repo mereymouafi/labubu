@@ -73,6 +73,8 @@ export type OrderItem = {
   product_image: string;
   price: number;
   quantity: number;
+  category_id?: string;
+  category_name?: string;
   // Add t-shirt customization options
   tshirt_options?: {
     size?: string;
@@ -298,6 +300,7 @@ export type TShirtDetail = {
   price_original: number;
   price: number;
   created_at?: string;
+  category_id?: string;
 };
 
 export const fetchTShirtOptions = async (): Promise<TShirtOption[]> => {
@@ -346,7 +349,37 @@ export const fetchTShirtDetail = async (optionId: string): Promise<TShirtDetail 
     return getMockTShirtDetail(optionId, optionData.option_name);
   }
   
-  return data || getMockTShirtDetail(optionId, optionData.option_name);
+  // If we have the details and a category_id, fetch the category name
+  const tshirtDetail = data || getMockTShirtDetail(optionId, optionData.option_name);
+  
+  return tshirtDetail;
+};
+
+export const fetchTShirtDetailWithCategory = async (optionId: string): Promise<{ tshirtDetail: TShirtDetail, categoryName?: string } | null> => {
+  const tshirtDetail = await fetchTShirtDetail(optionId);
+  
+  if (!tshirtDetail) {
+    return null;
+  }
+  
+  // If the tshirt detail has a category_id, fetch the category name
+  if (tshirtDetail.category_id) {
+    try {
+      const { data: categoryData, error } = await supabase
+        .from('categories')
+        .select('name')
+        .eq('id', tshirtDetail.category_id)
+        .single();
+      
+      if (!error && categoryData) {
+        return { tshirtDetail, categoryName: categoryData.name };
+      }
+    } catch (err) {
+      console.error('Error fetching category for tshirt detail:', err);
+    }
+  }
+  
+  return { tshirtDetail };
 };
 
 // Provide mock details if database fetch fails
@@ -360,8 +393,28 @@ const getMockTShirtDetail = (id: string, optionName?: string): TShirtDetail => {
     age: ['Adult', 'Teen', 'Kids'],
     price_original: 39.99,
     price: 29.99,
-    created_at: new Date().toISOString()
+    created_at: new Date().toISOString(),
+    category_id: undefined // Default to undefined for mock data
   };
+};
+
+export const updateTShirtDetailCategory = async (tshirtDetailId: string, categoryId: string): Promise<{ success: boolean; error?: any }> => {
+  try {
+    const { error } = await supabase
+      .from('tshirt_details')
+      .update({ category_id: categoryId })
+      .eq('id', tshirtDetailId);
+    
+    if (error) {
+      console.error('Error updating T-shirt detail category:', error);
+      return { success: false, error };
+    }
+    
+    return { success: true };
+  } catch (err) {
+    console.error('Exception updating T-shirt detail category:', err);
+    return { success: false, error: err };
+  }
 };
 
 export const createOrder = async (order: Order): Promise<{ success: boolean; orderId?: string; error?: any }> => {
@@ -379,12 +432,33 @@ export const createOrder = async (order: Order): Promise<{ success: boolean; ord
       return { success: false, error: `Table error: ${tableError.message}` };
     }
     
+    // Ensure category information is included in order items if available
+    const orderItems = await Promise.all(order.order_items.map(async (item) => {
+      // If the item is a t-shirt and has a category_id but no category_name, fetch the category name
+      if (item.category_id && !item.category_name) {
+        try {
+          const { data: categoryData } = await supabase
+            .from('categories')
+            .select('name')
+            .eq('id', item.category_id)
+            .single();
+          
+          if (categoryData) {
+            return { ...item, category_name: categoryData.name };
+          }
+        } catch (err) {
+          console.error('Error fetching category name:', err);
+        }
+      }
+      return item;
+    }));
+    
     // Proceed with insertion
     const { data, error } = await supabase
       .from('orders')
       .insert([{
         shipping_info: order.shipping_info,
-        order_items: order.order_items,
+        order_items: orderItems,
         total_amount: order.total_amount,
         payment_method: order.payment_method,
         status: order.status || 'pending',
