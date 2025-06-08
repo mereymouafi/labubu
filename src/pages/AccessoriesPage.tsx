@@ -9,19 +9,19 @@ const AccessoriesPage: React.FC = () => {
       name: 'Mugs',
       path: '/mugs',
       description: 'Discover our unique collection of mugs featuring your favorite characters',
-      image: 'https://placehold.co/600x400/png?text=Mugs' // Replace with actual image
+      image: '/images/mugs.jpg'
     },
     {
       name: 'Port Clés',
       path: '/port-cles',
       description: 'Explore our collection of keychains with cute Labubu characters',
-      image: 'https://placehold.co/600x400/png?text=Port+Cles' // Replace with actual image
+      image: '/images/port cle.jpg'
     },
     {
       name: 'Pochettes',
       path: '/accessories/pochettes',
       description: 'Stylish pouches and bags featuring Labubu designs',
-      image: 'https://placehold.co/600x400/png?text=Pochettes' // Replace with actual image
+      image: '' // Using figurings image as placeholder for pochettes
     }
   ];
 

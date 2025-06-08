@@ -94,23 +94,23 @@ const HeroBanner: React.FC = () => {
   const currentBanner = banners[currentIndex];
 
   return (
-    <div className="container mx-auto px-4 md:px-8 lg:px-16 xl:px-24 mt-6 relative">
+    <div className="container mx-auto px-1 mt-6 relative max-w-[1380px]">
       {/* Banner container */}
       <div className="relative">
-        <div className="relative h-[570px] overflow-hidden px-3 md:px-6 lg:px-12 xl:px-18">
+        <div className="relative h-[570px] overflow-hidden">
       {/* Slider Controls */}
       {banners.length > 1 && (
         <>
           <button
             onClick={prevSlide}
-            className="absolute left-4 md:left-8 lg:left-16 xl:left-24 top-1/2 z-10 transform -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-3 md:p-2 lg:p-2 rounded-full transition-colors duration-300"
+            className="absolute left-2 md:left-4 top-1/2 z-10 transform -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-3 md:p-2 lg:p-2 rounded-full transition-colors duration-300"
             aria-label="Previous slide"
           >
             <ChevronLeft size={28} className="md:w-6 md:h-6 lg:w-5 lg:h-5" />
           </button>
           <button
             onClick={nextSlide}
-            className="absolute right-4 md:right-8 lg:right-16 xl:right-24 top-1/2 z-10 transform -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-3 md:p-2 lg:p-2 rounded-full transition-colors duration-300"
+            className="absolute right-2 md:right-4 top-1/2 z-10 transform -translate-y-1/2 bg-black/30 hover:bg-black/50 text-white p-3 md:p-2 lg:p-2 rounded-full transition-colors duration-300"
             aria-label="Next slide"
           >
             <ChevronRight size={28} className="md:w-6 md:h-6 lg:w-5 lg:h-5" />
