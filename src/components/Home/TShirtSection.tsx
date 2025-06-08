@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchTShirtOptions, TShirtOption } from '../../lib/supabase';
+import TShirtCategoryCard from '../Product/TShirtCategoryCard';
 
 // Format Supabase image URL properly
 const formatImageUrl = (imageUrl: string | undefined) => {
@@ -57,40 +58,14 @@ const TShirtSection: React.FC = () => {
             <p className="col-span-full text-center text-gray-500">No T-shirt options found.</p>
           ) : (
             tshirtOptions.map((option) => (
-              <Link
+              <TShirtCategoryCard
                 key={option.id}
-                to={`/t-shirt/${option.id}`}
-                className="group transition-all duration-300 hover:transform hover:-translate-y-2"
-              >
-                <div className="bg-white rounded-lg overflow-hidden shadow" style={{ backgroundColor: option.bgColor || '#ffffff' }}>
-                  <div className="relative aspect-square overflow-hidden">
-                    {option.image_urls && option.image_urls.length > 0 ? (
-                      <img
-                        src={formatImageUrl(option.image_urls[0])}
-                        alt={option.option_name}
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gray-200">
-                        <span className="text-gray-400 text-sm">No image</span>
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="p-4">
-                    <h3 className="text-sm font-medium mb-2 line-clamp-2">{option.option_name}</h3>
-                    <p className="text-xs text-gray-600 mb-2 line-clamp-2">{option.option_description}</p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-base font-bold text-red-600">
-                        Customize Now
-                      </span>
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-              </Link>
+                id={option.id}
+                name={option.option_name}
+                description={option.option_description}
+                imageUrl={option.image_urls && option.image_urls.length > 0 ? formatImageUrl(option.image_urls[0]) : undefined}
+                bgColor={option.bgColor}
+              />
             ))
           )}
         </div>
