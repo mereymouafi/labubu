@@ -134,7 +134,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <div className="pt-4 pb-2 text-center">
           <Link to={`/product/${id}`} className="block">
             <h3 className="text-sm text-gray-600 hover:text-labubumaroc-red transition-colors duration-300 mb-1">
-              {product.collection || 'LABUBU MAROC'}
+              LABUBU MAROC
             </h3>
             <h4 className="font-medium text-black line-clamp-2 hover:text-labubumaroc-red transition-colors duration-300">
               {name}

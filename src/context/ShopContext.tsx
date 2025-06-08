@@ -108,7 +108,7 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         price: product.price,
         images: [...product.images], // Make a copy of the images array
         category: product.category,
-        collection: product.collection,
+
         stock_status: product.stock_status,
         // Include optional properties only if they exist
         original_price: product.original_price,
@@ -120,7 +120,7 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         is_trending: product.is_trending,
         description: product.description,
         category_id: product.category_id,
-        collection_id: product.collection_id,
+
         character_id: product.character_id
       };
 

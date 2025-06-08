@@ -37,13 +37,7 @@ export type Banner = {
   created_at?: string;
 };
 
-export type Collection = {
-  id: string;
-  name: string;
-  image: string;
-  description?: string;
-  created_at?: string;
-};
+
 
 export type Product = {
   id: string;
@@ -52,7 +46,6 @@ export type Product = {
   original_price?: number;
   images: string[];
   category: string;
-  collection: string;
   character?: string;
   is_new?: boolean;
   is_featured?: boolean;
@@ -63,7 +56,6 @@ export type Product = {
   stock_status: string;
   created_at?: string;
   category_id?: string;
-  collection_id?: string;
   character_id?: string;
 };
 
@@ -117,20 +109,10 @@ export const fetchBanners = async (): Promise<Banner[]> => {
   return data || [];
 };
 
-export const fetchCollections = async (): Promise<Collection[]> => {
-  const { data, error } = await supabase.from('collections').select('*');
-  
-  if (error) {
-    console.error('Error fetching collections:', error);
-    return [];
-  }
-  
-  return data || [];
-};
+
 
 export const fetchProducts = async (options?: { 
   category?: string; 
-  collection?: string;
   featured?: boolean;
   new?: boolean;
   onSale?: boolean;
@@ -144,9 +126,7 @@ export const fetchProducts = async (options?: {
     query = query.eq('category', options.category);
   }
   
-  if (options?.collection) {
-    query = query.eq('collection', options.collection);
-  }
+
   
   if (options?.featured) {
     query = query.eq('is_featured', true);
@@ -214,19 +194,7 @@ export const fetchProductById = async (id: string): Promise<Product | null> => {
   return productData;
 };
 
-export const fetchProductsByCollection = async (collectionName: string): Promise<Product[]> => {
-  const { data, error } = await supabase
-    .from('products')
-    .select('*')
-    .eq('collection', collectionName);
-  
-  if (error) {
-    console.error('Error fetching products by collection:', error);
-    return [];
-  }
-  
-  return data || [];
-};
+
 
 export const fetchCategories = async (): Promise<Category[]> => {
   const { data, error } = await supabase.from('categories').select('*');

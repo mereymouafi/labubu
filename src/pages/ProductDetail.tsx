@@ -28,9 +28,9 @@ const ProductDetail: React.FC = () => {
         setProduct(productData);
 
         if (productData) {
-          // Fetch related products from the same collection
+          // Fetch related products from the same category
           const related = await fetchProducts({
-            collection: productData.collection,
+            category: productData.category,
             limit: 4
           });
           
@@ -197,11 +197,7 @@ const ProductDetail: React.FC = () => {
                     Out of Stock
                   </span>
                 )}
-                {product.collection && (
-                  <span className="px-3 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
-                    {product.collection}
-                  </span>
-                )}
+
                 {product.category && (
                   <span className="px-3 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800">
                     {product.category}

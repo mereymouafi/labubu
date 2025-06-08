@@ -37,7 +37,7 @@ const Featured: React.FC = () => {
     <section className="py-12">
       <div className="text-center mb-10">
         <h2 className="text-3xl font-bold uppercase tracking-wide mb-2">FEATURED</h2>
-        <p className="text-gray-600">Discover our featured collections for this season.</p>
+        <p className="text-gray-600">Discover our featured products for this season.</p>
       </div>
 
       {loading ? (
