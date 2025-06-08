@@ -3,6 +3,7 @@ import { Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import Layout from './components/Layout/Layout';
 import { ShopProvider } from './context/ShopContext';
+import AdminRoute from './pages/Admin/components/AdminRoute';
 
 // Lazily load page components
 const Home = lazy(() => import('./pages/Home'));
@@ -25,6 +26,10 @@ const NewAndFeaturedPage = lazy(() => import('./pages/NewAndFeaturedPage'));
 // T-shirts pages
 const TShirtsPage = lazy(() => import('./pages/TShirtsPage'));
 const TShirtDetail = lazy(() => import('./pages/TShirtDetail'));
+
+// Admin pages
+const AdminLogin = lazy(() => import('./pages/Admin/Login'));
+const AdminDashboard = lazy(() => import('./pages/Admin/Dashboard'));
 
 // Loading component
 const PageLoader = () => (
@@ -59,6 +64,15 @@ function App() {
               <Route path="cart" element={<Cart />} />
               <Route path="checkout" element={<Checkout />} />
               <Route path="wishlist" element={<Wishlist />} />
+              
+              {/* Admin Routes */}
+              <Route path="admin/login" element={<AdminLogin />} />
+              <Route path="admin/dashboard" element={
+                <AdminRoute>
+                  <AdminDashboard />
+                </AdminRoute>
+              } />
+              
               <Route path="*" element={<NotFound />} />
             </Route>
           </Routes>
