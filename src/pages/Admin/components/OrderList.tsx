@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Order } from '../../../lib/supabase';
 
 interface OrderListProps {
@@ -150,17 +151,19 @@ const OrderList: React.FC<OrderListProps> = ({ orders, updateOrderStatus }) => {
                             <div className="flex items-center">
                               {item.product_image && (
                                 <div className="flex-shrink-0 h-10 w-10 mr-4">
-                                  <img 
-                                    className="h-10 w-10 rounded-full object-cover" 
-                                    src={item.product_image} 
-                                    alt={item.product_name} 
-                                  />
+                                  <Link to={`/product/${item.product_id}`}>
+                                    <img 
+                                      className="h-10 w-10 rounded-full object-cover cursor-pointer" 
+                                      src={item.product_image} 
+                                      alt={item.product_name} 
+                                    />
+                                  </Link>
                                 </div>
                               )}
                               <div>
-                                <div className="text-sm font-medium text-gray-900">
+                                <Link to={`/product/${item.product_id}`} className="text-sm font-medium text-gray-900 hover:text-blue-600">
                                   {item.product_name}
-                                </div>
+                                </Link>
                                 <div className="text-sm text-gray-500">
                                   ID: {item.product_id.substring(0, 8)}
                                 </div>
