@@ -31,7 +31,7 @@ const Checkout: React.FC = () => {
   
   // Calculate totals
   const subtotal = cartItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
-  const shippingCost = 0; // Free shipping for all orders
+  const shippingCost: number = 0; // Free shipping for all orders
   const total = subtotal + shippingCost;
 
   // Handle shipping form input changes
