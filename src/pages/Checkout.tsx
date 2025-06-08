@@ -17,8 +17,8 @@ const Checkout: React.FC = () => {
   const { cartItems, clearCart } = useShop();
   const navigate = useNavigate();
   
-  // State for checkout steps
-  const [step, setStep] = useState<'shipping' | 'payment' | 'review'>('shipping');
+  // Single step checkout
+  const [isProcessingOrder, setIsProcessingOrder] = useState(false);
   
   // State for form data
   const [shippingInfo, setShippingInfo] = useState<ShippingInfo>({
@@ -27,8 +27,7 @@ const Checkout: React.FC = () => {
     phone: '',
   });
   
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash-on-delivery');
-  const [isProcessing, setIsProcessing] = useState(false);
+  const paymentMethod: PaymentMethod = 'cash-on-delivery';
   
   // Calculate totals
   const subtotal = cartItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
@@ -45,20 +44,11 @@ const Checkout: React.FC = () => {
   };
   
   
-  // Navigate between steps
-  const nextStep = () => {
-    if (step === 'shipping') setStep('payment');
-    else if (step === 'payment') setStep('review');
-  };
-  
-  const prevStep = () => {
-    if (step === 'payment') setStep('shipping');
-    else if (step === 'review') setStep('payment');
-  };
+
   
   // Submit order
   const placeOrder = async () => {
-    setIsProcessing(true);
+    setIsProcessingOrder(true);
     
     try {
       // Prepare order items for database
@@ -115,10 +105,9 @@ const Checkout: React.FC = () => {
       }
     } catch (error: any) {
       console.error('Error placing order:', error);
-      const errorMessage = error?.message || 'Unknown error';
-      alert(`There was an error processing your order: ${errorMessage}\n\nPlease make sure the orders table exists in your Supabase database.`);
+      alert(`Error placing order: ${error.message}`);
     } finally {
-      setIsProcessing(false);
+      setIsProcessingOrder(false);
     }
   };
   
@@ -160,198 +149,67 @@ const Checkout: React.FC = () => {
     >
       <h1 className="text-2xl font-bold mb-8">Checkout</h1>
       
-      {/* Progress bar */}
-      <div className="mb-8">
-        <div className="flex justify-between">
-          <div className={`text-center ${step === 'shipping' ? 'text-popmart-red font-medium' : ''}`}>
-            <div className={`w-10 h-10 mx-auto rounded-full flex items-center justify-center mb-2 ${step === 'shipping' ? 'bg-popmart-red text-white' : 'bg-gray-200'}`}>1</div>
-            <span>Shipping</span>
-          </div>
-          <div className={`text-center ${step === 'payment' ? 'text-popmart-red font-medium' : ''}`}>
-            <div className={`w-10 h-10 mx-auto rounded-full flex items-center justify-center mb-2 ${step === 'payment' ? 'bg-popmart-red text-white' : 'bg-gray-200'}`}>2</div>
-            <span>Payment</span>
-          </div>
-          <div className={`text-center ${step === 'review' ? 'text-popmart-red font-medium' : ''}`}>
-            <div className={`w-10 h-10 mx-auto rounded-full flex items-center justify-center mb-2 ${step === 'review' ? 'bg-popmart-red text-white' : 'bg-gray-200'}`}>3</div>
-            <span>Review</span>
-          </div>
-        </div>
-      </div>
-      
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Main content */}
         <div className="flex-grow">
           {/* Shipping Information */}
-          {step === 'shipping' && (
-            <div>
-              <h2 className="text-xl font-bold mb-6">Shipping Information</h2>
-              <form className="space-y-4">
-                <div>
-                  <label htmlFor="fullName" className="block text-gray-700 mb-1">Full Name</label>
-                  <input
-                    type="text"
-                    id="fullName"
-                    name="fullName"
-                    value={shippingInfo.fullName}
-                    onChange={handleShippingChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-300"
-                    required
-                    placeholder="Your Full Name"
-                  />
-                </div>
-                
-                <div>
-                  <label htmlFor="address" className="block text-gray-700 mb-1">Address</label>
-                  <input
-                    type="text"
-                    id="address"
-                    name="address"
-                    value={shippingInfo.address}
-                    onChange={handleShippingChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-300"
-                    required
-                    placeholder="Your Complete Address"
-                  />
-                </div>
-                
-                <div>
-                  <label htmlFor="phone" className="block text-gray-700 mb-1">Phone Number</label>
-                  <input
-                    type="tel"
-                    id="phone"
-                    name="phone"
-                    value={shippingInfo.phone}
-                    onChange={handleShippingChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-300"
-                    required
-                    placeholder="Your Phone Number"
-                  />
-                </div>
-                
-                <div className="pt-4">
-                  <button 
-                    type="button" 
-                    onClick={nextStep}
-                    className="w-full px-6 py-3 bg-popmart-red text-white rounded hover:bg-red-700 transition-colors"
-                  >
-                    Continue to Payment
-                  </button>
-                </div>
-              </form>
-            </div>
-          )}
-          
-          {/* Payment Method */}
-          {step === 'payment' && (
-            <div className="bg-white p-6 border border-gray-200 rounded-md">
-              <h2 className="text-xl font-medium mb-6">Payment Method</h2>
-              
-              <div className="space-y-4 mb-6">
-                <div className="p-4 border rounded-md border-popmart-red bg-red-50">
-                  <div className="flex items-center">
-                    <input 
-                      type="radio"
-                      id="cash-on-delivery"
-                      name="payment-method"
-                      checked={true}
-                      className="mr-3"
-                      readOnly
-                    />
-                    <label htmlFor="cash-on-delivery" className="flex-grow">
-                      <div className="font-medium">Cash on Delivery</div>
-                      <div className="text-sm text-gray-500">Pay when you receive your order</div>
-                    </label>
-                    <div className="w-10 h-6 bg-green-600 rounded"></div>
-                  </div>
-                </div>
+          <div>
+            <h2 className="text-xl font-bold mb-6">Shipping Information</h2>
+            <form className="space-y-4">
+              <div>
+                <label htmlFor="fullName" className="block text-gray-700 mb-1">Full Name</label>
+                <input
+                  type="text"
+                  id="fullName"
+                  name="fullName"
+                  value={shippingInfo.fullName}
+                  onChange={handleShippingChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-300"
+                  required
+                  placeholder="Your Full Name"
+                />
               </div>
               
-              <div className="bg-gray-50 p-4 rounded-md mb-6">
-                <p className="text-sm">You will pay for your order when it arrives at your address. Please have the exact amount ready.</p>
+              <div>
+                <label htmlFor="address" className="block text-gray-700 mb-1">Address</label>
+                <input
+                  type="text"
+                  id="address"
+                  name="address"
+                  value={shippingInfo.address}
+                  onChange={handleShippingChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-300"
+                  required
+                  placeholder="Your Complete Address"
+                />
               </div>
               
-              <div className="flex justify-between">
+              <div>
+                <label htmlFor="phone" className="block text-gray-700 mb-1">Phone Number</label>
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  value={shippingInfo.phone}
+                  onChange={handleShippingChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-300"
+                  required
+                  placeholder="Your Phone Number"
+                />
+              </div>
+              
+              <div className="pt-4">
                 <button 
-                  onClick={prevStep}
-                  className="px-6 py-2 border border-gray-300 rounded hover:bg-gray-100 transition-colors"
-                >
-                  Back to Shipping
-                </button>
-                <button 
-                  onClick={nextStep}
-                  className="px-6 py-2 bg-popmart-red text-white rounded hover:bg-red-700 transition-colors"
-                >
-                  Next: Review Order
-                </button>
-              </div>
-            </div>
-          )}
-          
-          {/* Order Review */}
-          {step === 'review' && (
-            <div className="bg-white p-6 border border-gray-200 rounded-md">
-              <h2 className="text-xl font-medium mb-6">Review Your Order</h2>
-              
-              {/* Order Items */}
-              <div className="mb-6">
-                <h3 className="font-medium text-lg mb-4">Items</h3>
-                <div className="divide-y divide-gray-200">
-                  {cartItems.map((item) => (
-                    <div key={item.product.id} className="py-4 flex">
-                      <div className="w-16 h-16 flex-shrink-0 mr-4">
-                        <img 
-                          src={item.product.images[0]} 
-                          alt={item.product.name}
-                          className="w-full h-full object-contain" 
-                        />
-                      </div>
-                      <div className="flex-grow">
-                        <h4 className="font-medium">{item.product.name}</h4>
-                        <p className="text-sm text-gray-500">Quantity: {item.quantity}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-medium">{(item.product.price * item.quantity).toFixed(2)} MAD</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              
-              {/* Shipping Address */}
-              <div className="mb-6">
-                <h3 className="font-medium text-lg mb-4">Shipping Address</h3>
-                <div className="p-4 bg-gray-50 rounded-md">
-                  <p className="font-medium">{shippingInfo.fullName}</p>
-                  <p>{shippingInfo.address}</p>
-                  <p>{shippingInfo.phone}</p>
-                </div>
-              </div>
-              
-              {/* Payment Method */}
-              <div className="mb-6">
-                <h3 className="font-medium text-lg mb-4">Payment Method</h3>
-                <div className="p-4 bg-gray-50 rounded-md">
-                  <p className="font-medium">Cash on Delivery</p>
-                </div>
-              </div>
-              
-              <div className="flex justify-between">
-                <button 
-                  onClick={prevStep}
-                  className="px-6 py-2 border border-gray-300 rounded hover:bg-gray-100 transition-colors"
-                >
-                  Back to Payment
-                </button>
-                <button 
+                  type="button" 
                   onClick={placeOrder}
-                  disabled={isProcessing}
-                  className={`px-6 py-2 bg-popmart-red text-white rounded hover:bg-red-700 transition-colors ${isProcessing ? 'opacity-70 cursor-not-allowed' : ''}`}
+                  disabled={isProcessingOrder}
+                  className={`w-full px-6 py-3 bg-popmart-red text-white rounded hover:bg-red-700 transition-colors ${isProcessingOrder ? 'opacity-70 cursor-not-allowed' : ''}`}
                 >
-                  {isProcessing ? 'Processing...' : 'Place Order'}
+                  {isProcessingOrder ? 'Processing...' : 'Place Order'}
                 </button>
               </div>
-            </div>
-          )}
+            </form>
+          </div>
         </div>
         
         {/* Order Summary */}
@@ -385,33 +243,13 @@ const Checkout: React.FC = () => {
               </div>
             </div>
             
-            {step === 'shipping' && (
-              <button 
-                onClick={nextStep}
-                className="w-full px-6 py-3 bg-popmart-red text-white rounded hover:bg-red-700 transition-colors"
-              >
-                Continue to Payment
-              </button>
-            )}
-            
-            {step === 'payment' && (
-              <button 
-                onClick={nextStep}
-                className="w-full px-6 py-3 bg-popmart-red text-white rounded hover:bg-red-700 transition-colors"
-              >
-                Review Order
-              </button>
-            )}
-            
-            {step === 'review' && (
-              <button 
-                onClick={placeOrder}
-                disabled={isProcessing}
-                className={`w-full px-6 py-3 bg-popmart-red text-white rounded hover:bg-red-700 transition-colors ${isProcessing ? 'opacity-70 cursor-not-allowed' : ''}`}
-              >
-                {isProcessing ? 'Processing...' : 'Place Order'}
-              </button>
-            )}
+            <button 
+              onClick={placeOrder}
+              disabled={isProcessingOrder}
+              className={`w-full px-6 py-3 bg-popmart-red text-white rounded hover:bg-red-700 transition-colors ${isProcessingOrder ? 'opacity-70 cursor-not-allowed' : ''}`}
+            >
+              {isProcessingOrder ? 'Processing...' : 'Place Order'}
+            </button>
           </div>
         </div>
       </div>
