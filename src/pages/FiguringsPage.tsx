@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { fetchProducts, Product } from '../lib/supabase';
+import { fetchProducts, Product, supabase } from '../lib/supabase';
 import ProductCard from '../components/Product/ProductCard';
 
 const FiguringsPage: React.FC = () => {
@@ -10,10 +10,37 @@ const FiguringsPage: React.FC = () => {
     const loadFigurines = async () => {
       setIsLoading(true);
       try {
-        // Fetch products with category "Figurings"
-        const figurineProducts = await fetchProducts({ 
-          category: 'Figurings' 
+        // First approach: Try to fetch by category name
+        let figurineProducts = await fetchProducts({ 
+          category: 'Figurines' 
         });
+        
+        // If no products found, try second approach with direct query using category_id
+        if (figurineProducts.length === 0) {
+          console.log('No products found by category name, trying by category_id');
+          
+          // First get the category ID for "Figurines"
+          const { data: categoryData } = await supabase
+            .from('categories')
+            .select('id')
+            .eq('name', 'Figurines')
+            .single();
+          
+          if (categoryData?.id) {
+            console.log('Found category ID:', categoryData.id);
+            
+            // Then fetch products with that category_id
+            const { data: productsData, error } = await supabase
+              .from('products')
+              .select('*')
+              .eq('category_id', categoryData.id);
+            
+            if (!error && productsData) {
+              figurineProducts = productsData;
+              console.log('Found products by category_id:', figurineProducts.length);
+            }
+          }
+        }
         
         setProducts(figurineProducts);
       } catch (error) {
@@ -52,6 +79,10 @@ const FiguringsPage: React.FC = () => {
           ) : (
             <div className="text-center py-12">
               <p className="text-lg text-gray-500">No figurines found. Check back soon for our latest collection!</p>
+              <p className="text-sm text-gray-400 mt-2">
+                Make sure you have products with either the category name set to "Figurines" 
+                or the category_id linked to the Figurines category.
+              </p>
             </div>
           )}
         </>
