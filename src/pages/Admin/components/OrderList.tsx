@@ -151,7 +151,7 @@ const OrderList: React.FC<OrderListProps> = ({ orders, updateOrderStatus }) => {
                             <div className="flex items-center">
                               {item.product_image && (
                                 <div className="flex-shrink-0 h-10 w-10 mr-4">
-                                  <Link to={`/product/${item.product_id}`}>
+                                  <Link to={item.tshirt_options ? `/tshirt/${item.product_id}` : `/product/${item.product_id}`}>
                                     <img 
                                       className="h-10 w-10 rounded-full object-cover cursor-pointer" 
                                       src={item.product_image} 
@@ -161,7 +161,10 @@ const OrderList: React.FC<OrderListProps> = ({ orders, updateOrderStatus }) => {
                                 </div>
                               )}
                               <div>
-                                <Link to={`/product/${item.product_id}`} className="text-sm font-medium text-gray-900 hover:text-blue-600">
+                                <Link 
+                                  to={item.tshirt_options ? `/tshirt/${item.product_id}` : `/product/${item.product_id}`} 
+                                  className="text-sm font-medium text-gray-900 hover:text-blue-600"
+                                >
                                   {item.product_name}
                                 </Link>
                                 <div className="text-sm text-gray-500">
