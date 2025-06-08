@@ -436,6 +436,7 @@ const TShirtDetailPage: React.FC = () => {
                         selectedSize,
                         selectedColor,
                         selectedStyle,
+                        selectedAge,
                         quantity
                       };
                       
@@ -484,6 +485,7 @@ const TShirtDetailPage: React.FC = () => {
                         selectedSize,
                         selectedColor,
                         selectedStyle,
+                        selectedAge,
                         quantity
                       };
                       
