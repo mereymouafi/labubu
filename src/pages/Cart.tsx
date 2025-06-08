@@ -165,7 +165,21 @@ const Cart: React.FC = () => {
                         <Link to={`/product/${item.product.id}`} className="hover:text-labubumaroc-red transition-colors">
                           <h3 className="font-medium mb-1">{item.product.name}</h3>
                         </Link>
-                        <p className="text-sm text-gray-500">Single box</p>
+                        {item.product.category === 'Blind Box' && (
+                          <div className="text-sm text-gray-600 mt-1">
+                            {item.blindBoxInfo ? (
+                              <>
+                                <p><span className="font-medium">Level:</span> {item.blindBoxInfo.level}</p>
+                                <p><span className="font-medium">Color:</span> {item.blindBoxInfo.color}</p>
+                                <p><span className="font-medium">Quantity:</span> {item.blindBoxInfo.quantity}</p>
+                              </>
+                            ) : (
+                              <p className="text-sm text-gray-500">Blind Box</p>
+                            )}
+                          </div>
+                        ) || (
+                          <p className="text-sm text-gray-500">Single box</p>
+                        )}
                       </div>
                       
                       <div className="flex justify-between items-end">

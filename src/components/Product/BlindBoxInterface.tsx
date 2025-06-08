@@ -3,6 +3,16 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag, Sparkles, Gift } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useShop } from '../../context/ShopContext';
+import { Product as BaseProduct } from '../../lib/supabase';
+
+// Extend the Product type to include blind box specific information
+interface Product extends BaseProduct {
+  blindBoxInfo?: {
+    level: string;
+    color: string;
+    quantity: number;
+  };
+}
 
 interface BlindBoxItem {
   id: number;
@@ -208,30 +218,36 @@ const BlindBoxInterface: React.FC = () => {
   
   // Handle Buy Now button click
   const handleBuyNow = (boxId: number) => {
-    if (boxId !== null) {
-      const selectedBoxItem = blindBoxes[boxId - 1];
-      
-      // Create a product object that matches the Product type expected by ShopContext
-      const boxProduct = {
-        id: selectedBoxItem.productId, // Use productId as the unique identifier
-        name: selectedBoxItem.name,
-        price: parseFloat(productPrice.replace(' MAD', '')), // Convert price string to number
-        images: [
-          selectedLevel === 'level1'
-            ? (selectedBoxItem.id % 2 === 0 ? "/images/black.jpg" : "/images/pink.jpg")
-            : (selectedBoxItem.id % 2 === 0 ? "/images/white.jpg" : "/images/pink.jpg")
-        ],
-        category: 'Blind Box',
-        stock_status: 'in_stock',
-        character: selectedBoxItem.character || undefined
-      };
-      
-      // Add the product to cart using the context
-      addToCart(boxProduct, 1);
-      
-      // Redirect to cart page
-      navigate('/cart');
-    }
+    if (selectedBox === null) return;
+    
+    const selectedBoxData = blindBoxes[boxId - 1];
+    
+    // Create a product object from the blind box data
+    const blindBoxProduct: Product = {
+      id: selectedBoxData.productId,
+      name: `${productName} - Box #${boxId}`,
+      price: parseFloat(productPrice.replace(' MAD', '')),
+      images: [
+        selectedLevel === 'level1'
+          ? (boxId % 2 === 0 ? "/images/black.jpg" : "/images/pink.jpg")
+          : (boxId % 2 === 0 ? "/images/white.jpg" : "/images/pink.jpg")
+      ],
+      category: 'Blind Box',
+      stock_status: 'in_stock',
+      description: `Mystery Blind Box - ${selectedBoxData.rarity} rarity`,
+      // Add blind box specific metadata
+      blindBoxInfo: {
+        level: selectedLevel,
+        color: selectedBoxData.rarity || 'unknown',
+        quantity: 1
+      }
+    };
+    
+    // Add to cart
+    addToCart(blindBoxProduct, 1);
+    
+    // Navigate to cart
+    navigate('/cart');
   };
   
   // Handle Multiple Boxes button click
@@ -241,23 +257,38 @@ const BlindBoxInterface: React.FC = () => {
   
   // Handle adding multiple boxes to cart
   const handleAddMultipleBoxesToCart = () => {
-    // Create a generic product for the current level
-    const boxProduct = {
-      id: `${selectedLevel}-multibox-${Date.now()}`, // Generate a unique ID
-      name: productName,
-      price: parseFloat(productPrice.replace(' MAD', '')), // Convert price string to number
+    if (multipleBoxesQuantity <= 0) {
+      alert('Please select a valid quantity');
+      return;
+    }
+    
+    // Get product info based on selected level
+    const { name, price } = getProductInfo(selectedLevel);
+    
+    // Create a product object
+    const blindBoxProduct: Product = {
+      id: `blind-box-multi-${selectedLevel}-${Date.now()}`,
+      name: `${name} (×${multipleBoxesQuantity})`,
+      price: parseFloat(price.replace(' MAD', '')),
       images: [
         selectedLevel === 'level1' ? "/images/black.jpg" : "/images/white.jpg"
       ],
       category: 'Blind Box',
-      stock_status: 'in_stock'
+      stock_status: 'in_stock',
+      description: `Mystery Blind Box Set - ${selectedLevel}`,
+      // Add blind box specific metadata
+      blindBoxInfo: {
+        level: selectedLevel,
+        color: 'mixed', // Multiple boxes might have different rarities/colors
+        quantity: multipleBoxesQuantity
+      }
     };
     
-    // Add the product to cart with the selected quantity
-    addToCart(boxProduct, multipleBoxesQuantity);
-    
-    // Close the modal and redirect to cart
+    // Add to cart with the specified quantity
+    addToCart(blindBoxProduct, multipleBoxesQuantity);
     setShowQuantityModal(false);
+    
+    // Navigate to cart
     navigate('/cart');
   };
 

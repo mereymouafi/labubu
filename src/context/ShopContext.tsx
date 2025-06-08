@@ -1,10 +1,24 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Product } from '../lib/supabase';
+import { Product as BaseProduct } from '../lib/supabase';
+
+// Extend the Product type to include blind box information
+interface Product extends BaseProduct {
+  blindBoxInfo?: {
+    level: string;
+    color: string;
+    quantity: number;
+  };
+}
 
 // Define the shape of our cart item
 type CartItem = {
   product: Product;
   quantity: number;
+  blindBoxInfo?: {
+    level: string;
+    color: string;
+    quantity: number;
+  };
 };
 
 // Define the shape of our context
@@ -120,15 +134,21 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         is_trending: product.is_trending,
         description: product.description,
         category_id: product.category_id,
-
-        character_id: product.character_id
+        character_id: product.character_id,
+        // Include blind box info if it exists
+        blindBoxInfo: product.blindBoxInfo ? {
+          level: product.blindBoxInfo.level,
+          color: product.blindBoxInfo.color,
+          quantity: product.blindBoxInfo.quantity
+        } : undefined
       };
 
       setCartItems(prevItems => {
         // Create a clean copy of previous items
         const prevItemsCopy = prevItems.map(item => ({
           product: { ...item.product },
-          quantity: item.quantity
+          quantity: item.quantity,
+          blindBoxInfo: item.blindBoxInfo ? { ...item.blindBoxInfo } : undefined
         }));
         
         // Check if item already exists in cart
@@ -141,7 +161,15 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           updatedItems[existingItemIndex].quantity += quantity;
         } else {
           // Add new item
-          updatedItems = [...prevItemsCopy, { product: cleanProduct, quantity }];
+          updatedItems = [...prevItemsCopy, { 
+            product: cleanProduct, 
+            quantity,
+            blindBoxInfo: cleanProduct.blindBoxInfo ? {
+              level: cleanProduct.blindBoxInfo.level,
+              color: cleanProduct.blindBoxInfo.color,
+              quantity: cleanProduct.blindBoxInfo.quantity
+            } : undefined
+          }];
         }
         
         // Save to localStorage immediately to ensure data is persisted

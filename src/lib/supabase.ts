@@ -74,13 +74,6 @@ export type OrderItem = {
     style?: string;
     age?: string;
   };
-  // Add blind box options
-  blind_box_options?: {
-    level: string;
-    color: string;
-    quantity: number;
-    rarity?: string;
-  };
 };
 
 export type ShippingInfo = {
@@ -389,113 +382,6 @@ export const updateTShirtDetailCategory = async (tshirtDetailId: string, categor
   } catch (err) {
     console.error('Exception updating T-shirt detail category:', err);
     return { success: false, error: err };
-  }
-};
-
-export type BlindBox = {
-  id: string;
-  name: string;
-  product_id: string;
-  level: string;
-  color: string;
-  price: number;
-  multiplier: number;
-  character?: string;
-  rarity: string;
-  quantity: number;
-  image_url?: string;
-  description?: string;
-  created_at?: string;
-  updated_at?: string;
-};
-
-// Fetch blind boxes with optional filters
-export const fetchBlindBoxes = async (options?: { 
-  level?: string;
-  color?: string;
-  rarity?: string;
-  limit?: number;
-}): Promise<BlindBox[]> => {
-  let query = supabase.from('blind_boxes').select('*');
-  
-  if (options?.level) {
-    query = query.eq('level', options.level);
-  }
-  
-  if (options?.color) {
-    query = query.eq('color', options.color);
-  }
-  
-  if (options?.rarity) {
-    query = query.eq('rarity', options.rarity);
-  }
-  
-  if (options?.limit) {
-    query = query.limit(options.limit);
-  }
-  
-  const { data, error } = await query;
-  
-  if (error) {
-    console.error('Error fetching blind boxes:', error);
-    return [];
-  }
-  
-  return data || [];
-};
-
-// Order a blind box with specific level, color and quantity
-export const orderBlindBox = async (level: string, color: string, quantity: number, shippingInfo: ShippingInfo): Promise<{ success: boolean; orderId?: string; error?: any }> => {
-  try {
-    // Fetch blind box data based on level and color
-    const { data: blindBoxData, error: fetchError } = await supabase
-      .from('blind_boxes')
-      .select('*')
-      .eq('level', level)
-      .eq('color', color)
-      .single();
-    
-    if (fetchError || !blindBoxData) {
-      console.error('Error fetching blind box:', fetchError);
-      return { success: false, error: fetchError?.message || 'Blind box not found' };
-    }
-    
-    // Create order item for the blind box
-    const orderItem: OrderItem = {
-      product_id: blindBoxData.product_id,
-      product_name: blindBoxData.name,
-      product_image: blindBoxData.image_url || '',
-      price: blindBoxData.price,
-      quantity: quantity,
-      category_name: 'Blind Box',
-      blind_box_options: {
-        level,
-        color,
-        quantity,
-        rarity: blindBoxData.rarity
-      }
-    };
-    
-    // Calculate total amount
-    const totalAmount = blindBoxData.price * quantity;
-    
-    // Create order object
-    const order: Order = {
-      shipping_info: shippingInfo,
-      order_items: [orderItem],
-      total_amount: totalAmount,
-      payment_method: 'cash-on-delivery',
-      status: 'pending'
-    };
-    
-    // Create the order using the existing createOrder function
-    return await createOrder(order);
-  } catch (error: any) {
-    console.error('Error ordering blind box:', error);
-    return { 
-      success: false, 
-      error: error?.message || 'Unknown error occurred when ordering blind box'
-    };
   }
 };
 
