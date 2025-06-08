@@ -25,7 +25,7 @@ const BlindBoxPage: React.FC = () => {
                   <div className="bg-gray-50 p-8 rounded-lg shadow-md flex flex-col items-center text-center">
                     <div className="w-64 h-64 mb-6 flex items-center justify-center">
                       <img 
-                        src="/images/single-box-rules.png" 
+                        src="/images/white.jpg" 
                         alt="Single Box" 
                         className="w-full h-full object-contain"
                         onError={(e) => {
@@ -47,7 +47,7 @@ const BlindBoxPage: React.FC = () => {
                   <div className="bg-gray-50 p-8 rounded-lg shadow-md flex flex-col items-center text-center">
                     <div className="w-64 h-64 mb-6 flex items-center justify-center">
                       <img 
-                        src="/images/box-set-rules.png" 
+                        src="/images/6boxs.png" 
                         alt="Box Sets" 
                         className="w-full h-full object-contain"
                         onError={(e) => {
