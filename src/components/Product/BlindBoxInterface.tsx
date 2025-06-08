@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingBag, ChevronRight, Sparkles, Gift } from 'lucide-react';
+import { ShoppingBag, Sparkles, Gift } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useShop } from '../../context/ShopContext';
 
 interface BlindBoxItem {
   id: number;
@@ -11,6 +13,8 @@ interface BlindBoxItem {
 }
 
 const BlindBoxInterface: React.FC = () => {
+  const navigate = useNavigate();
+  const { addToCart } = useShop(); // Use the shop context
   const [selectedBox, setSelectedBox] = useState<number | null>(null);
   const [animatingBox, setAnimatingBox] = useState<number | null>(null);
   const [revealedBox, setRevealedBox] = useState<number | null>(null);
@@ -164,10 +168,9 @@ const BlindBoxInterface: React.FC = () => {
       setRevealedBox(null);
       playShakeSound(); // Play the shaking sound
       
-      // After shake animation completes, reveal the surprise
+      // After shake animation completes, don't reveal the surprise, just stop the animation
       setTimeout(() => {
         setAnimatingBox(null);
-        setRevealedBox(selectedBox);
       }, 1000); // Animation duration
     }
   };
@@ -196,10 +199,37 @@ const BlindBoxInterface: React.FC = () => {
   // Handle level selection
   const handleLevelSelect = (level: string) => {
     setSelectedLevel(level);
-    // Reset selections when changing levels
     setSelectedBox(null);
     setRevealedBox(null);
     setAnimatingBox(null);
+  };
+  
+  // Handle Buy Now button click
+  const handleBuyNow = (boxId: number) => {
+    if (boxId !== null) {
+      const selectedBoxItem = blindBoxes[boxId - 1];
+      
+      // Create a product object that matches the Product type expected by ShopContext
+      const boxProduct = {
+        id: selectedBoxItem.productId, // Use productId as the unique identifier
+        name: selectedBoxItem.name,
+        price: parseFloat(productPrice.replace(' MAD', '')), // Convert price string to number
+        images: [
+          selectedLevel === 'level1'
+            ? (selectedBoxItem.id % 2 === 0 ? "/images/black.jpg" : "/images/pink.jpg")
+            : (selectedBoxItem.id % 2 === 0 ? "/images/white.jpg" : "/images/pink.jpg")
+        ],
+        category: 'Blind Box',
+        stock_status: 'in_stock',
+        character: selectedBoxItem.character || undefined
+      };
+      
+      // Add the product to cart using the context
+      addToCart(boxProduct, 1);
+      
+      // Redirect to cart page
+      navigate('/cart');
+    }
   };
 
   return (
@@ -416,6 +446,20 @@ const BlindBoxInterface: React.FC = () => {
                   'Pick One to Shake'
                 )}
               </motion.button>
+              
+              {selectedBox !== null && (
+                <motion.button 
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="w-full py-3 px-4 bg-red-600 text-white rounded-full font-medium flex items-center justify-center gap-2 hover:bg-red-700"
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handleBuyNow(selectedBox)}
+                >
+                  <ShoppingBag size={18} />
+                  Buy It Now
+                </motion.button>
+              )}
               
               <button className="w-full py-3 px-4 bg-white border-2 border-primary-500 text-primary-500 rounded-full font-medium flex items-center justify-center gap-2 hover:bg-primary-50">
                 <ShoppingBag size={18} />
