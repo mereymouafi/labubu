@@ -25,6 +25,7 @@ type CartItem = {
 type ShopContextType = {
   cartItems: CartItem[];
   wishlistItems: Product[];
+  selectedCartItems: CartItem[];
   addToCart: (product: Product, quantity?: number) => void;
   removeFromCart: (productId: string) => void;
   clearCart: () => void;
@@ -33,6 +34,8 @@ type ShopContextType = {
   isInWishlist: (productId: string) => boolean;
   cartCount: number;
   wishlistCount: number;
+  setSelectedCartItems: (items: CartItem[]) => void;
+  clearSelectedCartItems: () => void;
 };
 
 // Create the context
@@ -42,6 +45,7 @@ export const ShopContext = createContext<ShopContextType | undefined>(undefined)
 export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [wishlistItems, setWishlistItems] = useState<Product[]>([]);
+  const [selectedCartItems, setSelectedCartItems] = useState<CartItem[]>([]);
   const [cartCount, setCartCount] = useState(0);
   const [wishlistCount, setWishlistCount] = useState(0);
 
@@ -201,8 +205,14 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   // Clear the cart
   const clearCart = () => {
     setCartItems([]);
+    setSelectedCartItems([]);
     // Clear cart in localStorage
     localStorage.setItem('cart', JSON.stringify([]));
+  };
+
+  // Clear selected cart items
+  const clearSelectedCartItems = () => {
+    setSelectedCartItems([]);
   };
 
   // Add a product to the wishlist
@@ -229,6 +239,7 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const contextValue: ShopContextType = {
     cartItems,
     wishlistItems,
+    selectedCartItems,
     addToCart,
     removeFromCart,
     clearCart,
@@ -236,7 +247,9 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     removeFromWishlist,
     isInWishlist,
     cartCount,
-    wishlistCount
+    wishlistCount,
+    setSelectedCartItems,
+    clearSelectedCartItems
   };
 
   return (

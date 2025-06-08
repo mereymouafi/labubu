@@ -14,7 +14,7 @@ type ShippingInfo = {
 type PaymentMethod = 'cash-on-delivery';
 
 const Checkout: React.FC = () => {
-  const { cartItems, clearCart, addToCart } = useShop();
+  const { cartItems, selectedCartItems, clearCart, addToCart, clearSelectedCartItems, removeFromCart } = useShop();
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -68,8 +68,9 @@ const Checkout: React.FC = () => {
   
   const paymentMethod: PaymentMethod = 'cash-on-delivery';
   
-  // Calculate totals
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+  // Calculate totals based on selected items (if any) or all cart items
+  const itemsToCheckout = selectedCartItems.length > 0 ? selectedCartItems : cartItems;
+  const subtotal = itemsToCheckout.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
   const shippingCost: number = 0; // Free shipping for all orders
   const total = subtotal + shippingCost;
 
@@ -93,8 +94,8 @@ const Checkout: React.FC = () => {
       return;
     }
 
-    // Check if cart is empty
-    if (cartItems.length === 0) {
+    // Check if items to checkout is empty
+    if (itemsToCheckout.length === 0) {
       alert('Your cart is empty. Please add some products before checking out.');
       return;
     }
@@ -102,10 +103,10 @@ const Checkout: React.FC = () => {
     setIsProcessingOrder(true);
     
     try {
-      console.log('Cart items before processing:', cartItems);
+      console.log('Items to checkout before processing:', itemsToCheckout);
 
       // Prepare order items for database - with comprehensive error checking
-      const orderItems: OrderItem[] = cartItems.map(item => {
+      const orderItems: OrderItem[] = itemsToCheckout.map(item => {
         if (!item || !item.product) {
           console.error('Invalid item in cart:', item);
           throw new Error('Invalid item in cart');
@@ -163,8 +164,18 @@ const Checkout: React.FC = () => {
       if (result.success) {
         console.log('Order placed successfully with ID:', result.orderId);
         
-        // Clear cart and redirect to success page
-        clearCart();
+        // If we're only checking out selected items, just clear those items from the cart
+        if (selectedCartItems.length > 0) {
+          // Remove the selected items from the cart
+          for (const item of selectedCartItems) {
+            removeFromCart(item.product.id);
+          }
+          // Clear the selected items
+          clearSelectedCartItems();
+        } else {
+          // Clear the entire cart if all items were checked out
+          clearCart();
+        }
         
         // Show success alert and redirect to home
         alert(`Order #${result.orderId} placed successfully! Thank you for shopping with Labubu Maroc.`);
@@ -192,7 +203,7 @@ const Checkout: React.FC = () => {
   };
   
   // If cart is empty, redirect to cart page
-  if (cartItems.length === 0) {
+  if (itemsToCheckout.length === 0) {
     return (
       <motion.div
         initial="initial"
@@ -292,7 +303,7 @@ const Checkout: React.FC = () => {
             
             <div className="mb-4">
               <div className="flex justify-between mb-2">
-                <span>Subtotal ({cartItems.reduce((sum, item) => sum + item.quantity, 0)} items)</span>
+                <span>Subtotal ({itemsToCheckout.reduce((sum, item) => sum + item.quantity, 0)} items)</span>
                 <span>{subtotal.toFixed(2)} MAD</span>
               </div>
               

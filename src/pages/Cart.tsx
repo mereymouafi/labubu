@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useShop } from '../context/ShopContext';
 
 const Cart: React.FC = () => {
-  const { cartItems, removeFromCart, addToCart } = useShop();
+  const { cartItems, removeFromCart, addToCart, setSelectedCartItems } = useShop();
   const [activeTab, setActiveTab] = useState<'delivery' | 'now'>('delivery');
   const [selectAll, setSelectAll] = useState(false);
   const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>({});
@@ -78,7 +78,14 @@ const Cart: React.FC = () => {
       e.preventDefault();
       setShowAlert(true);
       setTimeout(() => setShowAlert(false), 3000);
+      return;
     }
+    
+    // Create an array of selected cart items
+    const selectedCartItems = cartItems.filter(item => selectedItems[item.product.id]);
+    
+    // Set the selected items in the context
+    setSelectedCartItems(selectedCartItems);
   };
 
   return (
