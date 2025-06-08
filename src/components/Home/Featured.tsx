@@ -4,28 +4,27 @@ import { ArrowRight } from 'lucide-react';
 import { Product, fetchProducts } from '../../lib/supabase';
 import ProductCard from '../Product/ProductCard';
 
-const NewAndFeatured: React.FC = () => {
+const Featured: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'new' | 'featured'>('new');
 
   useEffect(() => {
-    console.log('NewAndFeatured component mounted, activeTab:', activeTab);
+    console.log('Featured component mounted');
     loadProducts();
-  }, [activeTab]);
+  }, []);
 
   const loadProducts = async () => {
-    console.log('Loading products for tab:', activeTab);
+    console.log('Loading featured products');
     setLoading(true);
     try {
-      // Fetch products based on active tab
-      const filter = activeTab === 'new' ? { new: true } : { featured: true };
+      // Fetch featured products
+      const filter = { featured: true };
       console.log('Filter applied:', filter);
       const data = await fetchProducts({ ...filter, limit: 8 });
       console.log('Products fetched:', data);
       setProducts(data);
     } catch (error) {
-      console.error(`Error loading ${activeTab} products:`, error);
+      console.error('Error loading featured products:', error);
       // Fallback products
       setProducts([]);
     } finally {
@@ -33,37 +32,12 @@ const NewAndFeatured: React.FC = () => {
     }
   };
 
-  console.log('Rendering NewAndFeatured, products:', products, 'loading:', loading);
+  console.log('Rendering Featured, products:', products, 'loading:', loading);
   return (
     <section className="py-12">
       <div className="text-center mb-10">
-        <h2 className="text-3xl font-bold uppercase tracking-wide mb-2">NEW & FEATURED</h2>
-        <p className="text-gray-600">Discover our latest arrivals and featured collections for this season.</p>
-      </div>
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex space-x-4">
-          <button
-            onClick={() => setActiveTab('new')}
-            className={`text-sm font-medium ${
-              activeTab === 'new' 
-                ? 'text-red-600 border-b-2 border-red-600' 
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            NEW ARRIVALS
-          </button>
-          <button
-            onClick={() => setActiveTab('featured')}
-            className={`text-sm font-medium ${
-              activeTab === 'featured' 
-                ? 'text-red-600 border-b-2 border-red-600' 
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            FEATURED
-          </button>
-          
-        </div>
+        <h2 className="text-3xl font-bold uppercase tracking-wide mb-2">FEATURED</h2>
+        <p className="text-gray-600">Discover our featured collections for this season.</p>
       </div>
 
       {loading ? (
@@ -86,10 +60,10 @@ const NewAndFeatured: React.FC = () => {
           
           <div className="text-center mt-8">
             <Link 
-              to={activeTab === 'new' ? "/new-arrivals" : "/shop"} 
+              to="/shop" 
               className="inline-flex items-center justify-center bg-black text-white py-2 px-6 hover:bg-red-600 transition-colors duration-300 text-sm"
             >
-              View All {activeTab === 'new' ? 'New Arrivals' : 'Featured Products'} <ArrowRight size={16} className="ml-2" />
+              View All Featured Products <ArrowRight size={16} className="ml-2" />
             </Link>
           </div>
         </>
@@ -98,4 +72,4 @@ const NewAndFeatured: React.FC = () => {
   );
 };
 
-export default NewAndFeatured;
+export default Featured;
