@@ -1,7 +1,7 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Heart, ShoppingBag } from 'lucide-react';
+import { Heart, ShoppingBag, ShoppingCart } from 'lucide-react';
 import { Product } from '../../lib/supabase';
 import { useShop } from '../../context/ShopContext';
 
@@ -12,6 +12,7 @@ interface ProductCardProps {
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   // Use shop context
   const { addToCart, addToWishlist, isInWishlist } = useShop();
+  const navigate = useNavigate();
   
   const {
     id,
@@ -85,7 +86,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             </button>
 
             {/* Add to Cart Button - Only visible on hover */}
-            <div className="absolute -bottom-10 left-0 right-0 group-hover:bottom-0 transition-all duration-300">
+            <div className="absolute -bottom-20 left-0 right-0 group-hover:bottom-0 transition-all duration-300 flex flex-col">
               <button
                 disabled={stock_status === 'out-of-stock'}
                 onClick={(e) => {
@@ -104,21 +105,26 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 <ShoppingBag size={16} />
                 <span className="text-sm">ADD TO CART</span>
               </button>
-              <Link 
-                to={`/checkout?product=${id}`} 
-                className={`w-full py-2 mt-1 flex items-center justify-center gap-2 transition-colors duration-300 ${
-                  stock_status === 'out-of-stock'
-                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    : 'bg-labubumaroc-red text-white hover:bg-red-700'
-                }`}
+              
+              <button
+                disabled={stock_status === 'out-of-stock'}
                 onClick={(e) => {
-                  if (stock_status === 'out-of-stock') {
-                    e.preventDefault();
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (stock_status !== 'out-of-stock') {
+                    addToCart(product, 1);
+                    navigate('/cart');
                   }
                 }}
+                className={`w-full py-2 flex items-center justify-center gap-2 transition-colors duration-300 mt-1 ${
+                  stock_status === 'out-of-stock'
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    : 'bg-labubumaroc-red text-white hover:bg-black'
+                }`}
               >
+                <ShoppingCart size={16} />
                 <span className="text-sm">SHOP NOW</span>
-              </Link>
+              </button>
             </div>
           </Link>
         </div>
