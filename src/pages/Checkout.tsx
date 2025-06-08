@@ -72,6 +72,15 @@ const Checkout: React.FC = () => {
           throw new Error('Invalid item in cart');
         }
         
+        // Check if this is a t-shirt product with customization options
+        const tshirtOptions = {
+          size: (item.product as any).selectedSize,
+          color: (item.product as any).selectedColor,
+          style: (item.product as any).selectedStyle,
+          age: (item.product as any).selectedAge
+        };
+        
+        // Create the order item with t-shirt customization details if available
         return {
           product_id: String(item.product.id || ''),
           product_name: item.product.name || 'Unknown Product',
@@ -79,7 +88,9 @@ const Checkout: React.FC = () => {
             ? item.product.images[0] 
             : '',
           price: item.product.price || 0,
-          quantity: item.quantity || 1
+          quantity: item.quantity || 1,
+          // Include t-shirt customization details if available
+          tshirt_options: tshirtOptions.size || tshirtOptions.color || tshirtOptions.style ? tshirtOptions : undefined
         };
       });
       

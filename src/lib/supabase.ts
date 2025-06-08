@@ -73,6 +73,13 @@ export type OrderItem = {
   product_image: string;
   price: number;
   quantity: number;
+  // Add t-shirt customization options
+  tshirt_options?: {
+    size?: string;
+    color?: string;
+    style?: string;
+    age?: string;
+  };
 };
 
 export type ShippingInfo = {
