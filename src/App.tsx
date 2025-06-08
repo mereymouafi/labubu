@@ -27,9 +27,12 @@ const FiguringsPage = lazy(() => import('./pages/FiguringsPage'));
 const PortClePage = lazy(() => import('./pages/PortClePage'));
 // Mugs page
 const MugsPage = lazy(() => import('./pages/MugsPage'));
+// Pochettes page
+const PochettesPage = lazy(() => import('./pages/PochettesPage'));
 // T-shirts pages
 const TShirtsPage = lazy(() => import('./pages/TShirtsPage'));
 const TShirtDetail = lazy(() => import('./pages/TShirtDetail'));
+const AccessoriesPage = lazy(() => import('./pages/AccessoriesPage'));
 
 // Admin pages
 const AdminLogin = lazy(() => import('./pages/Admin/Login'));
@@ -63,8 +66,10 @@ function App() {
               <Route path="new-featured" element={<NewAndFeaturedPage />} />
               <Route path="blind-box" element={<BlindBoxPage />} />
               <Route path="figurings" element={<FiguringsPage />} />
+              <Route path="accessories" element={<AccessoriesPage />} />
               <Route path="port-cles" element={<PortClePage />} />
               <Route path="mugs" element={<MugsPage />} />
+              <Route path="accessories/pochettes" element={<PochettesPage />} />
               <Route path="t-shirts" element={<TShirtsPage />} />
               <Route path="tshirt/:id" element={<TShirtDetail />} />
               <Route path="cart" element={<Cart />} />
