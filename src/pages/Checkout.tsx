@@ -31,7 +31,7 @@ const Checkout: React.FC = () => {
   
   // Calculate totals
   const subtotal = cartItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
-  const shippingCost = subtotal > 500 ? 0 : 50; // Free shipping above 500
+  const shippingCost = 0; // Free shipping for all orders
   const total = subtotal + shippingCost;
 
   // Handle shipping form input changes
@@ -48,25 +48,48 @@ const Checkout: React.FC = () => {
   
   // Submit order
   const placeOrder = async () => {
+    // Validate shipping info first
+    if (!shippingInfo.fullName || !shippingInfo.address || !shippingInfo.phone) {
+      alert('Please fill in all required fields: Full Name, Address, and Phone Number');
+      return;
+    }
+
+    // Check if cart is empty
+    if (cartItems.length === 0) {
+      alert('Your cart is empty. Please add some products before checking out.');
+      return;
+    }
+    
     setIsProcessingOrder(true);
     
     try {
-      // Prepare order items for database
-      const orderItems: OrderItem[] = cartItems.map(item => ({
-        product_id: item.product.id,
-        product_name: item.product.name,
-        product_image: item.product.images[0],
-        price: item.product.price,
-        quantity: item.quantity
-      }));
+      console.log('Cart items before processing:', cartItems);
+
+      // Prepare order items for database - with comprehensive error checking
+      const orderItems: OrderItem[] = cartItems.map(item => {
+        if (!item || !item.product) {
+          console.error('Invalid item in cart:', item);
+          throw new Error('Invalid item in cart');
+        }
+        
+        return {
+          product_id: String(item.product.id || ''),
+          product_name: item.product.name || 'Unknown Product',
+          product_image: item.product.images && Array.isArray(item.product.images) && item.product.images.length > 0 
+            ? item.product.images[0] 
+            : '',
+          price: item.product.price || 0,
+          quantity: item.quantity || 1
+        };
+      });
       
       // Convert shipping info to match Supabase type
       const formattedShippingInfo: SupabaseShippingInfo = {
         firstName: shippingInfo.fullName.split(' ')[0] || '',
         lastName: shippingInfo.fullName.split(' ').slice(1).join(' ') || '',
         email: '',
-        phone: shippingInfo.phone,
-        address: shippingInfo.address,
+        phone: shippingInfo.phone || '',
+        address: shippingInfo.address || '',
         city: '',
         state: '',
         zip: ''
