@@ -40,7 +40,7 @@ const Header: React.FC = () => {
       name: 'ACCESSORIES',
       path: '/accessories',
       dropdownItems: [
-        { name: 'MUGS', path: '/accessories/mugs' },
+        { name: 'MUGS', path: '/mugs' },
         { name: 'PORT CLÉS', path: '/port-cles' },
         { name: 'POCHETTES', path: '/accessories/pochettes' }
       ]
