@@ -100,13 +100,13 @@ const Cart: React.FC = () => {
       {/* Tab navigation */}
       <div className="flex border-b border-gray-200 mb-6">
         <button
-          className={`px-8 py-3 font-medium text-sm ${activeTab === 'delivery' ? 'text-popmart-red border-b-2 border-popmart-red' : 'text-gray-600'}`}
+          className={`px-8 py-3 font-medium text-sm ${activeTab === 'delivery' ? 'text-labubumaroc-red border-b-2 border-labubumaroc-red' : 'text-gray-600'}`}
           onClick={() => setActiveTab('delivery')}
         >
           Pop Upon Delivery({cartItems.length})
         </button>
         <button
-          className={`px-8 py-3 font-medium text-sm ${activeTab === 'now' ? 'text-popmart-red border-b-2 border-popmart-red' : 'text-gray-600'}`}
+          className={`px-8 py-3 font-medium text-sm ${activeTab === 'now' ? 'text-labubumaroc-red border-b-2 border-labubumaroc-red' : 'text-gray-600'}`}
           onClick={() => setActiveTab('now')}
         >
           POP NOW(0)
@@ -116,7 +116,7 @@ const Cart: React.FC = () => {
       {cartItems.length === 0 ? (
         <div className="text-center py-16">
           <p className="text-gray-500 mb-6">Your cart is empty</p>
-          <Link to="/shop" className="px-6 py-2 bg-popmart-red text-white rounded hover:bg-red-700 transition-colors">
+          <Link to="/shop" className="px-6 py-2 bg-labubumaroc-red text-white rounded hover:bg-red-700 transition-colors">
             Continue Shopping
           </Link>
         </div>
@@ -128,7 +128,7 @@ const Cart: React.FC = () => {
               <label className="inline-flex items-center">
                 <input 
                   type="checkbox" 
-                  className="form-checkbox h-5 w-5 text-popmart-red"
+                  className="form-checkbox h-5 w-5 text-labubumaroc-red"
                   checked={selectAll}
                   onChange={() => setSelectAll(!selectAll)}
                 />
@@ -142,7 +142,7 @@ const Cart: React.FC = () => {
                 <div className="flex-shrink-0 mr-4">
                   <input 
                     type="checkbox" 
-                    className="form-checkbox h-5 w-5 text-popmart-red mt-16"
+                    className="form-checkbox h-5 w-5 text-labubumaroc-red mt-16"
                     checked={!!selectedItems[item.product.id]}
                     onChange={() => toggleItemSelection(item.product.id)}
                   />
@@ -162,7 +162,7 @@ const Cart: React.FC = () => {
                   <div className="flex-grow">
                     <div className="flex flex-col h-full justify-between">
                       <div>
-                        <Link to={`/product/${item.product.id}`} className="hover:text-popmart-red transition-colors">
+                        <Link to={`/product/${item.product.id}`} className="hover:text-labubumaroc-red transition-colors">
                           <h3 className="font-medium mb-1">{item.product.name}</h3>
                         </Link>
                         <p className="text-sm text-gray-500">Single box</p>
@@ -191,7 +191,7 @@ const Cart: React.FC = () => {
                         
                         <button
                           onClick={() => removeFromCart(item.product.id)}
-                          className="text-popmart-red text-sm font-medium hover:underline"
+                          className="text-labubumaroc-red text-sm font-medium hover:underline"
                         >
                           REMOVE
                         </button>
@@ -231,7 +231,7 @@ const Cart: React.FC = () => {
               
               <Link to="/checkout" className="block" onClick={handleCheckoutClick}>
                 <button 
-                  className="w-full py-3 bg-popmart-red text-white font-medium tracking-wide uppercase hover:bg-red-700 transition-colors"
+                  className="w-full py-3 bg-labubumaroc-red text-white font-medium tracking-wide uppercase hover:bg-red-700 transition-colors"
                 >
                   CHECK OUT
                 </button>

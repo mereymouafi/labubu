@@ -82,7 +82,7 @@ const CharacterProducts: React.FC = () => {
           {products.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-xl text-gray-600">No products found for this character.</p>
-              <Link to="/characters" className="mt-4 inline-block text-popmart-red hover:underline">
+              <Link to="/characters" className="mt-4 inline-block text-labubumaroc-red hover:underline">
                 View all characters
               </Link>
             </div>
@@ -106,7 +106,7 @@ const CharacterProducts: React.FC = () => {
                         }}
                       />
                       {product.is_new && (
-                        <div className="absolute top-2 left-2 bg-popmart-red text-white text-xs px-2 py-1 rounded">
+                        <div className="absolute top-2 left-2 bg-labubumaroc-red text-white text-xs px-2 py-1 rounded">
                           NEW
                         </div>
                       )}
@@ -126,7 +126,7 @@ const CharacterProducts: React.FC = () => {
                         <div>
                           {product.is_on_sale && product.original_price ? (
                             <div className="flex items-center">
-                              <span className="text-popmart-red font-semibold">{formatPrice(product.price)}</span>
+                              <span className="text-labubumaroc-red font-semibold">{formatPrice(product.price)}</span>
                               <span className="text-gray-400 line-through text-xs ml-2">{formatPrice(product.original_price)}</span>
                             </div>
                           ) : (

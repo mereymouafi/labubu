@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useShop } from '../context/ShopContext';
-import { createOrder, Order, OrderItem, ShippingInfo as SupabaseShippingInfo } from '../lib/supabase';
+import { createOrder, Order, OrderItem, ShippingInfo as SupabaseShippingInfo, fetchProductById, Product } from '../lib/supabase';
 
 // Checkout form types
 type ShippingInfo = {
@@ -14,8 +14,47 @@ type ShippingInfo = {
 type PaymentMethod = 'cash-on-delivery';
 
 const Checkout: React.FC = () => {
-  const { cartItems, clearCart } = useShop();
+  const { cartItems, clearCart, addToCart } = useShop();
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Check if there's a product in the URL parameters
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const productId = queryParams.get('product');
+    
+    if (productId) {
+      // Fetch the product and add it to cart
+      const fetchProductAndAddToCart = async () => {
+        try {
+          // Check if product is already in cart
+          const existingProduct = cartItems.find(item => item.product.id === productId);
+          
+          if (!existingProduct) {
+            // Fetch the product from Supabase
+            const product = await fetchProductById(productId);
+            
+            if (product) {
+              // Add the product to cart
+              addToCart(product, 1);
+              console.log(`Product ${productId} added to checkout`);
+            } else {
+              console.error(`Product ${productId} not found`);
+            }
+          } else {
+            console.log(`Product ${productId} already in cart`);
+          }
+          
+          // Clear URL parameters after processing
+          navigate('/checkout', { replace: true });
+        } catch (error) {
+          console.error('Error fetching product:', error);
+        }
+      };
+      
+      fetchProductAndAddToCart();
+    }
+  }, [location.search, cartItems, navigate, addToCart]);
   
   // Single step checkout
   const [isProcessingOrder, setIsProcessingOrder] = useState(false);
@@ -165,7 +204,7 @@ const Checkout: React.FC = () => {
         <div className="text-center">
           <h2 className="text-2xl font-medium mb-6">Your cart is empty</h2>
           <p className="text-gray-500 mb-6">Add some products to your cart before proceeding to checkout.</p>
-          <Link to="/shop" className="px-6 py-3 bg-popmart-red text-white rounded hover:bg-red-700 transition-colors">
+          <Link to="/shop" className="px-6 py-3 bg-labubumaroc-red text-white rounded hover:bg-red-700 transition-colors">
             Continue Shopping
           </Link>
         </div>
@@ -237,7 +276,7 @@ const Checkout: React.FC = () => {
                   type="button" 
                   onClick={placeOrder}
                   disabled={isProcessingOrder}
-                  className={`w-full px-6 py-3 bg-popmart-red text-white rounded hover:bg-red-700 transition-colors ${isProcessingOrder ? 'opacity-70 cursor-not-allowed' : ''}`}
+                  className={`w-full px-6 py-3 bg-labubumaroc-red text-white rounded hover:bg-red-700 transition-colors ${isProcessingOrder ? 'opacity-70 cursor-not-allowed' : ''}`}
                 >
                   {isProcessingOrder ? 'Processing...' : 'Place Order'}
                 </button>
@@ -280,7 +319,7 @@ const Checkout: React.FC = () => {
             <button 
               onClick={placeOrder}
               disabled={isProcessingOrder}
-              className={`w-full px-6 py-3 bg-popmart-red text-white rounded hover:bg-red-700 transition-colors ${isProcessingOrder ? 'opacity-70 cursor-not-allowed' : ''}`}
+              className={`w-full px-6 py-3 bg-labubumaroc-red text-white rounded hover:bg-red-700 transition-colors ${isProcessingOrder ? 'opacity-70 cursor-not-allowed' : ''}`}
             >
               {isProcessingOrder ? 'Processing...' : 'Place Order'}
             </button>

@@ -31,7 +31,7 @@ const Header: React.FC = () => {
     setIsMobileCategoriesOpen(false);
   }, [location]);
 
-  // Updated to match POPMART's navigation items
+  // Updated to match LABUBU MAROC's navigation items
   const navItems = [
     { name: 'BLIND BOX', path: '/blind-box' },
     { name: 'T-SHIRTS', path: '/t-shirts' },
@@ -96,7 +96,7 @@ const Header: React.FC = () => {
                     <div className="flex items-center cursor-pointer">
                       <Link 
                         to={item.path}
-                        className={`font-medium py-4 px-3 text-black hover:text-popmart-red transition-colors duration-200 uppercase text-base font-bold tracking-wider popmart-nav-font ${location.pathname.startsWith(item.path) ? 'text-popmart-red' : ''}`}
+                        className={`font-medium py-4 px-3 text-black hover:text-labubumaroc-red transition-colors duration-200 uppercase text-base font-bold tracking-wider labubumaroc-nav-font ${location.pathname.startsWith(item.path) ? 'text-labubumaroc-red' : ''}`}
                       >
                         {item.name}
                         <ChevronDown size={16} className="inline ml-1 pb-1" />
@@ -110,7 +110,7 @@ const Header: React.FC = () => {
                               <Link
                                 key={dropdownItem.name}
                                 to={dropdownItem.path}
-                                className="text-sm font-medium hover:text-popmart-red transition-colors duration-200 uppercase"
+                                className="text-sm font-medium hover:text-labubumaroc-red transition-colors duration-200 uppercase"
                               >
                                 {dropdownItem.name}
                               </Link>
@@ -122,7 +122,7 @@ const Header: React.FC = () => {
                   ) : (
                     <Link
                       to={item.path}
-                      className={`font-medium py-4 px-3 text-black hover:text-popmart-red transition-colors duration-200 uppercase text-base font-bold tracking-wider popmart-nav-font ${location.pathname === item.path ? 'text-popmart-red' : ''}`}
+                      className={`font-medium py-4 px-3 text-black hover:text-labubumaroc-red transition-colors duration-200 uppercase text-base font-bold tracking-wider labubumaroc-nav-font ${location.pathname === item.path ? 'text-labubumaroc-red' : ''}`}
                     >
                       {item.name}
                     </Link>
@@ -136,7 +136,7 @@ const Header: React.FC = () => {
               <input 
                 type="text" 
                 placeholder="SEARCH"
-                className="w-full text-xs uppercase tracking-wider outline-none placeholder-gray-400 popmart-nav-font"
+                className="w-full text-xs uppercase tracking-wider outline-none placeholder-gray-400 labubumaroc-nav-font"
               />
               <Search size={16} className="text-gray-400" />
             </div>
@@ -145,26 +145,26 @@ const Header: React.FC = () => {
             <div className="flex items-center space-x-6 mr-6">
               <button 
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className="lg:hidden p-2 text-black hover:text-popmart-red transition-colors duration-200"
+                className="lg:hidden p-2 text-black hover:text-labubumaroc-red transition-colors duration-200"
                 aria-label="Search"
               >
                 <Search size={20} />
               </button>
               <Link 
                 to="/wishlist" 
-                className="p-2 text-black hover:text-popmart-red transition-colors duration-200 hidden md:block relative"
+                className="p-2 text-black hover:text-labubumaroc-red transition-colors duration-200 hidden md:block relative"
                 aria-label="Wishlist"
               >
                 <Heart size={20} />
                 {wishlistCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-popmart-red text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 bg-labubumaroc-red text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                     {wishlistCount > 99 ? '99+' : wishlistCount}
                   </span>
                 )}
               </Link>
               <Link 
                 to="/cart" 
-                className="p-2 text-black hover:text-popmart-red transition-colors duration-200 flex items-center relative"
+                className="p-2 text-black hover:text-labubumaroc-red transition-colors duration-200 flex items-center relative"
                 aria-label="Shopping Cart"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -173,7 +173,7 @@ const Header: React.FC = () => {
                   <path d="M16 10C16 11.0609 15.5786 12.0783 14.8284 12.8284C14.0783 13.5786 13.0609 14 12 14C10.9391 14 9.92172 13.5786 9.17157 12.8284C8.42143 12.0783 8 11.0609 8 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
                 {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-popmart-red text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 bg-labubumaroc-red text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                     {cartCount > 99 ? '99+' : cartCount}
                   </span>
                 )}
@@ -198,13 +198,13 @@ const Header: React.FC = () => {
                 <input
                   type="text"
                   placeholder="SEARCH"
-                  className="w-full py-2 pl-10 pr-4 border-b-2 border-gray-200 focus:border-popmart-red outline-none uppercase text-xs tracking-wider"
+                  className="w-full py-2 pl-10 pr-4 border-b-2 border-gray-200 focus:border-labubumaroc-red outline-none uppercase text-xs tracking-wider"
                   autoFocus
                 />
                 <Search size={20} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <button
                   onClick={() => setIsSearchOpen(false)}
-                  className="absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-popmart-red"
+                  className="absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-labubumaroc-red"
                   aria-label="Close search"
                 >
                   <X size={20} />
@@ -233,7 +233,7 @@ const Header: React.FC = () => {
                       <div>
                         <button
                           onClick={() => setIsMobileCategoriesOpen(!isMobileCategoriesOpen)}
-                          className="flex items-center justify-between w-full py-2 text-black hover:text-popmart-red transition-colors duration-200 uppercase font-bold tracking-wider popmart-nav-font"
+                          className="flex items-center justify-between w-full py-2 text-black hover:text-labubumaroc-red transition-colors duration-200 uppercase font-bold tracking-wider labubumaroc-nav-font"
                         >
                           <span>{item.name}</span>
                           <ChevronDown 
@@ -250,7 +250,7 @@ const Header: React.FC = () => {
                                 <Link
                                   key={dropdownItem.name}
                                   to={dropdownItem.path}
-                                  className="text-sm text-gray-700 hover:text-popmart-red uppercase"
+                                  className="text-sm text-gray-700 hover:text-labubumaroc-red uppercase"
                                 >
                                   {dropdownItem.name}
                                 </Link>
@@ -262,7 +262,7 @@ const Header: React.FC = () => {
                     ) : (
                       <Link
                         to={item.path}
-                        className={`block font-medium py-3 flex justify-between items-center uppercase text-base font-bold tracking-wider popmart-nav-font ${location.pathname === item.path ? 'text-popmart-red' : 'text-black'}`}
+                        className={`block font-medium py-3 flex justify-between items-center uppercase text-base font-bold tracking-wider labubumaroc-nav-font ${location.pathname === item.path ? 'text-labubumaroc-red' : 'text-black'}`}
                       >
                         {item.name}
                       </Link>
@@ -271,17 +271,17 @@ const Header: React.FC = () => {
                 ))}
               </ul>
               <div className="mt-4 pt-4 border-t border-gray-100 flex flex-col space-y-2">
-                <Link to="/wishlist" className="py-2 text-black hover:text-popmart-red flex items-center uppercase text-xs tracking-wider popmart-nav-font">
+                <Link to="/wishlist" className="py-2 text-black hover:text-labubumaroc-red flex items-center uppercase text-xs tracking-wider labubumaroc-nav-font">
                   <Heart size={18} className="mr-2" /> Wishlist
                 </Link>
-                <Link to="/cart" className="py-2 text-black hover:text-popmart-red flex items-center uppercase text-xs tracking-wider popmart-nav-font">
+                <Link to="/cart" className="py-2 text-black hover:text-labubumaroc-red flex items-center uppercase text-xs tracking-wider labubumaroc-nav-font">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-2">
                     <path d="M6 2L3 6V20C3 20.5304 3.21071 21.0391 3.58579 21.4142C3.96086 21.7893 4.46957 22 5 22H19C19.5304 22 20.0391 21.7893 20.4142 21.4142C20.7893 21.0391 21 20.5304 21 20V6L18 2H6Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     <path d="M3 6H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     <path d="M16 10C16 11.0609 15.5786 12.0783 14.8284 12.8284C14.0783 13.5786 13.0609 14 12 14C10.9391 14 9.92172 13.5786 9.17157 12.8284C8.42143 12.0783 8 11.0609 8 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg> Cart
                 </Link>
-                <Link to="/contact" className="py-2 text-black hover:text-popmart-red flex items-center uppercase text-xs tracking-wider popmart-nav-font">
+                <Link to="/contact" className="py-2 text-black hover:text-labubumaroc-red flex items-center uppercase text-xs tracking-wider labubumaroc-nav-font">
                   Contact Us
                 </Link>
               </div>

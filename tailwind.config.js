@@ -46,7 +46,7 @@ export default {
           900: '#82320f',
           950: '#461604',
         },
-        popmart: {
+        labubumaroc: {
           red: '#d10a1f',
           black: '#000000',
           white: '#ffffff',

@@ -23,7 +23,7 @@ const OnSaleProducts: React.FC = () => {
             name: 'DIMOO Little Monsters Series Blind Box',
             price: 14.99,
             original_price: 19.99,
-            images: ['https://cdn-global-naus.popmart.com/global-web/common/20240531072622/assets/image/ca/home/best-sellers/2b35b3b0e9a6a01bcef6b72a97f1580.webp'],
+            images: ['https://cdn-global-naus.labubumaroc.com/global-web/common/20240531072622/assets/image/ca/home/best-sellers/2b35b3b0e9a6a01bcef6b72a97f1580.webp'],
             category: 'Blind Box',
             collection: 'DIMOO',
             stock_status: 'in-stock',
@@ -35,7 +35,7 @@ const OnSaleProducts: React.FC = () => {
             name: 'LABUBU Plush Toy',
             price: 24.99,
             original_price: 29.99,
-            images: ['https://cdn-global-naus.popmart.com/global-web/common/20240531072622/assets/image/ca/home/new-releases/a943e8cb8f3ccb1a2dbe626a5a2bbce.webp'],
+            images: ['https://cdn-global-naus.labubumaroc.com/global-web/common/20240531072622/assets/image/ca/home/new-releases/a943e8cb8f3ccb1a2dbe626a5a2bbce.webp'],
             category: 'Plush',
             collection: 'LABUBU',
             stock_status: 'in-stock',
@@ -46,7 +46,7 @@ const OnSaleProducts: React.FC = () => {
             name: 'SKULLPANDA Vinyl Figure',
             price: 19.99,
             original_price: 24.99,
-            images: ['https://cdn-global-naus.popmart.com/global-web/common/20240531072622/assets/image/ca/home/new-releases/d8a5cda4db3eec44ad24e1c4a83e1f5.webp'],
+            images: ['https://cdn-global-naus.labubumaroc.com/global-web/common/20240531072622/assets/image/ca/home/new-releases/d8a5cda4db3eec44ad24e1c4a83e1f5.webp'],
             category: 'Figurine',
             collection: 'SKULLPANDA',
             stock_status: 'in-stock',
@@ -57,7 +57,7 @@ const OnSaleProducts: React.FC = () => {
             name: 'DIMOO Collectible Set',
             price: 34.99,
             original_price: 39.99,
-            images: ['https://cdn-global-naus.popmart.com/global-web/common/20240531072622/assets/image/ca/home/new-releases/a3bd6a4d1bd07f493a8d15be69fb97e.webp'],
+            images: ['https://cdn-global-naus.labubumaroc.com/global-web/common/20240531072622/assets/image/ca/home/new-releases/a3bd6a4d1bd07f493a8d15be69fb97e.webp'],
             category: 'Collectible',
             collection: 'DIMOO',
             stock_status: 'in-stock',
@@ -90,7 +90,7 @@ const OnSaleProducts: React.FC = () => {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="bg-popmart-lightgray animate-pulse h-80"></div>
+            <div key={i} className="bg-labubumaroc-lightgray animate-pulse h-80"></div>
           ))}
         </div>
       </div>

@@ -41,7 +41,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <div className="relative overflow-hidden">
           {/* Product Image */}
           <Link to={`/product/${id}`} className="block">
-            <div className="aspect-square bg-popmart-lightgray overflow-hidden p-0">
+            <div className="aspect-square bg-labubumaroc-lightgray overflow-hidden p-0">
               <div className="w-full h-full">
                 <img
                   src={images[0]}
@@ -55,7 +55,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             {/* Product Status Badges */}
             <div className="absolute top-0 left-0">
               {is_new && (
-                <span className="inline-block bg-popmart-red text-white text-xs px-3 py-1">
+                <span className="inline-block bg-labubumaroc-red text-white text-xs px-3 py-1">
                   NEW
                 </span>
               )}
@@ -78,7 +78,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 e.stopPropagation();
                 addToWishlist(product);
               }}
-              className={`absolute top-2 right-2 w-8 h-8 flex items-center justify-center transition-colors duration-300 ${isInWishlist(id) ? 'bg-primary-50 text-primary-600' : 'bg-white/80 text-gray-700 hover:text-popmart-red'}`}
+              className={`absolute top-2 right-2 w-8 h-8 flex items-center justify-center transition-colors duration-300 ${isInWishlist(id) ? 'bg-primary-50 text-primary-600' : 'bg-white/80 text-gray-700 hover:text-labubumaroc-red'}`}
               aria-label="Add to wishlist"
             >
               <Heart size={16} fill={isInWishlist(id) ? 'currentColor' : 'none'} />
@@ -98,12 +98,27 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 className={`w-full py-2 flex items-center justify-center gap-2 transition-colors duration-300 ${
                   stock_status === 'out-of-stock'
                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    : 'bg-black text-white hover:bg-popmart-red'
+                    : 'bg-black text-white hover:bg-labubumaroc-red'
                 }`}
               >
                 <ShoppingBag size={16} />
                 <span className="text-sm">ADD TO CART</span>
               </button>
+              <Link 
+                to={`/checkout?product=${id}`} 
+                className={`w-full py-2 mt-1 flex items-center justify-center gap-2 transition-colors duration-300 ${
+                  stock_status === 'out-of-stock'
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    : 'bg-labubumaroc-red text-white hover:bg-red-700'
+                }`}
+                onClick={(e) => {
+                  if (stock_status === 'out-of-stock') {
+                    e.preventDefault();
+                  }
+                }}
+              >
+                <span className="text-sm">SHOP NOW</span>
+              </Link>
             </div>
           </Link>
         </div>
@@ -111,10 +126,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         {/* Product Info */}
         <div className="pt-4 pb-2 text-center">
           <Link to={`/product/${id}`} className="block">
-            <h3 className="text-sm text-gray-600 hover:text-popmart-red transition-colors duration-300 mb-1">
-              {product.collection || 'POPMART'}
+            <h3 className="text-sm text-gray-600 hover:text-labubumaroc-red transition-colors duration-300 mb-1">
+              {product.collection || 'LABUBU MAROC'}
             </h3>
-            <h4 className="font-medium text-black line-clamp-2 hover:text-popmart-red transition-colors duration-300">
+            <h4 className="font-medium text-black line-clamp-2 hover:text-labubumaroc-red transition-colors duration-300">
               {name}
             </h4>
           </Link>
@@ -124,7 +139,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 {original_price.toFixed(2)} MAD
               </span>
             )}
-            <span className="font-medium text-popmart-red">
+            <span className="font-medium text-labubumaroc-red">
               {price.toFixed(2)} MAD
             </span>
           </div>

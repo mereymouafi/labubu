@@ -53,7 +53,7 @@ const Footer: React.FC = () => {
               </div>
               <div className="text-sm text-gray-400 mb-4">
                 <div>Email</div>
-                <a href="mailto:na.support@popmart.com" className="text-gray-400 hover:text-white">na.support@popmart.com</a>
+                <a href="mailto:support@labubumaroc.com" className="text-gray-400 hover:text-white">support@labubumaroc.com</a>
               </div>
               <div className="text-sm text-gray-400">
                 <a href="/faq" className="text-gray-400 hover:text-white">Visit Help Center (FAQs)</a>

@@ -53,7 +53,7 @@ const Wishlist: React.FC = () => {
                     <div>
                       <Link 
                         to={`/product/${product.id}`}
-                        className="font-medium text-lg hover:text-popmart-red transition-colors duration-300"
+                        className="font-medium text-lg hover:text-labubumaroc-red transition-colors duration-300"
                       >
                         {product.name}
                       </Link>
@@ -82,7 +82,7 @@ const Wishlist: React.FC = () => {
                       className={`py-2 px-3 rounded flex items-center justify-center space-x-2 transition-colors text-sm w-full sm:w-auto ${
                         product.stock_status === 'out-of-stock'
                           ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                          : 'bg-black text-white hover:bg-popmart-red'
+                          : 'bg-black text-white hover:bg-labubumaroc-red'
                       }`}
                     >
                       <ShoppingBag size={16} />
