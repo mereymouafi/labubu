@@ -25,6 +25,8 @@ const BlindBoxPage = lazy(() => import('./pages/BlindBoxPage'));
 const NewAndFeaturedPage = lazy(() => import('./pages/NewAndFeaturedPage'));
 // Figurings page
 const FiguringsPage = lazy(() => import('./pages/FiguringsPage'));
+// Port Clés page
+const PortClePage = lazy(() => import('./pages/PortClePage'));
 // T-shirts pages
 const TShirtsPage = lazy(() => import('./pages/TShirtsPage'));
 const TShirtDetail = lazy(() => import('./pages/TShirtDetail'));
@@ -32,6 +34,7 @@ const TShirtDetail = lazy(() => import('./pages/TShirtDetail'));
 // Admin pages
 const AdminLogin = lazy(() => import('./pages/Admin/Login'));
 const AdminDashboard = lazy(() => import('./pages/Admin/Dashboard'));
+const PortCleManager = lazy(() => import('./pages/Admin/PortCleManager'));
 
 // Loading component
 const PageLoader = () => (
@@ -62,6 +65,7 @@ function App() {
               <Route path="new-featured" element={<NewAndFeaturedPage />} />
               <Route path="blind-box" element={<BlindBoxPage />} />
               <Route path="figurings" element={<FiguringsPage />} />
+              <Route path="port-cles" element={<PortClePage />} />
               <Route path="t-shirts" element={<TShirtsPage />} />
               <Route path="tshirt/:id" element={<TShirtDetail />} />
               <Route path="cart" element={<Cart />} />
@@ -73,6 +77,11 @@ function App() {
               <Route path="admin/dashboard" element={
                 <AdminRoute>
                   <AdminDashboard />
+                </AdminRoute>
+              } />
+              <Route path="admin/port-cles" element={
+                <AdminRoute>
+                  <PortCleManager />
                 </AdminRoute>
               } />
               
