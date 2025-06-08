@@ -112,6 +112,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                   e.preventDefault();
                   e.stopPropagation();
                   if (stock_status !== 'out-of-stock') {
+                    // Add to cart and immediately redirect to cart page
                     addToCart(product, 1);
                     navigate('/cart');
                   }

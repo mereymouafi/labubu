@@ -415,11 +415,10 @@ const TShirtDetailPage: React.FC = () => {
               
               {/* Features section removed as requested */}
               
-              {/* Buttons container */}
-              <div className="grid grid-cols-2 gap-2 mb-3">
-                {/* Add to cart */}
+              {/* Add to cart button */}
+              <div className="mb-3">
                 <button 
-                  className={`py-2 ${isAddedToCart ? 'bg-green-500 hover:bg-green-600' : 'bg-red-600 hover:bg-red-700'} text-white font-medium text-sm rounded-md transition-colors flex items-center justify-center gap-1`}
+                  className={`w-full py-2 ${isAddedToCart ? 'bg-green-500 hover:bg-green-600' : 'bg-red-600 hover:bg-red-700'} text-white font-medium text-sm rounded-md transition-colors flex items-center justify-center gap-1`}
                   disabled={!selectedSize || !selectedColor || !selectedStyle}
                   title={!selectedSize || !selectedColor || !selectedStyle ? "Please select size, color, and style" : ""}
                   onClick={() => {
@@ -466,36 +465,6 @@ const TShirtDetailPage: React.FC = () => {
                       Add to Cart
                     </>
                   )}
-                </button>
-                
-                {/* Shop Now button - direct to checkout */}
-                <button 
-                  className="py-2 bg-black hover:bg-gray-900 text-white font-medium text-sm rounded-md transition-colors flex items-center justify-center gap-1"
-                  disabled={!selectedSize || !selectedColor || !selectedStyle}
-                  title={!selectedSize || !selectedColor || !selectedStyle ? "Please select size, color, and style" : ""}
-                  onClick={() => {
-                    if (tshirt && selectedSize && selectedColor && selectedStyle) {
-                      // Convert TShirt to Product format for cart
-                      const productForCart = {
-                        id: tshirt.id,
-                        name: tshirt.option_name,
-                        price: tshirt.price,
-                        images: tshirtOption?.image_urls || [],
-                        description: tshirtOption?.option_description || '',
-                        selectedSize,
-                        selectedColor,
-                        selectedStyle,
-                        selectedAge,
-                        quantity
-                      };
-                      
-                      // Add to cart and go directly to checkout
-                      addToCart(productForCart as any, quantity);
-                      navigate('/checkout');
-                    }
-                  }}
-                >
-                  Shop Now
                 </button>
               </div>
               
