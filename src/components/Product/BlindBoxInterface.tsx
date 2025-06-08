@@ -19,6 +19,8 @@ const BlindBoxInterface: React.FC = () => {
   const [animatingBox, setAnimatingBox] = useState<number | null>(null);
   const [revealedBox, setRevealedBox] = useState<number | null>(null);
   const [selectedLevel, setSelectedLevel] = useState<string>('level1');
+  const [showQuantityModal, setShowQuantityModal] = useState<boolean>(false);
+  const [multipleBoxesQuantity, setMultipleBoxesQuantity] = useState<number>(1);
   // Using Web Audio API for instant sound playback with zero delay
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
   const audioBufferRef = useRef<AudioBuffer | null>(null);
@@ -231,9 +233,86 @@ const BlindBoxInterface: React.FC = () => {
       navigate('/cart');
     }
   };
+  
+  // Handle Multiple Boxes button click
+  const handleMultipleBoxes = () => {
+    setShowQuantityModal(true);
+  };
+  
+  // Handle adding multiple boxes to cart
+  const handleAddMultipleBoxesToCart = () => {
+    // Create a generic product for the current level
+    const boxProduct = {
+      id: `${selectedLevel}-multibox-${Date.now()}`, // Generate a unique ID
+      name: productName,
+      price: parseFloat(productPrice.replace(' MAD', '')), // Convert price string to number
+      images: [
+        selectedLevel === 'level1' ? "/images/black.jpg" : "/images/white.jpg"
+      ],
+      category: 'Blind Box',
+      stock_status: 'in_stock'
+    };
+    
+    // Add the product to cart with the selected quantity
+    addToCart(boxProduct, multipleBoxesQuantity);
+    
+    // Close the modal and redirect to cart
+    setShowQuantityModal(false);
+    navigate('/cart');
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
+      {/* Quantity Selection Modal */}
+      {showQuantityModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-lg p-6 max-w-md w-full mx-4"
+          >
+            <h3 className="text-xl font-bold mb-4">Select Quantity</h3>
+            <p className="text-gray-600 mb-4">How many boxes would you like to purchase?</p>
+            
+            <div className="flex items-center justify-center mb-6">
+              <button 
+                onClick={() => setMultipleBoxesQuantity(prev => Math.max(1, prev - 1))}
+                className="px-4 py-2 bg-gray-200 rounded-l-md hover:bg-gray-300"
+              >
+                -
+              </button>
+              <input 
+                type="number" 
+                min="1" 
+                value={multipleBoxesQuantity} 
+                onChange={(e) => setMultipleBoxesQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                className="w-16 text-center py-2 border-t border-b border-gray-300"
+              />
+              <button 
+                onClick={() => setMultipleBoxesQuantity(prev => prev + 1)}
+                className="px-4 py-2 bg-gray-200 rounded-r-md hover:bg-gray-300"
+              >
+                +
+              </button>
+            </div>
+            
+            <div className="flex justify-between">
+              <button 
+                onClick={() => setShowQuantityModal(false)}
+                className="px-6 py-2 border border-gray-300 rounded-md hover:bg-gray-100"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleAddMultipleBoxesToCart}
+                className="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+              >
+                Add to Cart
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
       {/* Level selection - Simple horizontal line */}
       <div className="mb-8">
         <h2 className="text-xl font-bold mb-4">Select Level</h2>
@@ -461,7 +540,10 @@ const BlindBoxInterface: React.FC = () => {
                 </motion.button>
               )}
               
-              <button className="w-full py-3 px-4 bg-white border-2 border-primary-500 text-primary-500 rounded-full font-medium flex items-center justify-center gap-2 hover:bg-primary-50">
+              <button 
+                onClick={handleMultipleBoxes}
+                className="w-full py-3 px-4 bg-white border-2 border-primary-500 text-primary-500 rounded-full font-medium flex items-center justify-center gap-2 hover:bg-primary-50"
+              >
                 <ShoppingBag size={18} />
                 Buy Multiple Boxes
               </button>
