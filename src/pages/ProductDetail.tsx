@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Heart, Share2, Star, Truck, Shield, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Product, fetchProductById, fetchProducts, supabase, Pack, fetchProductsByPack } from '../lib/supabase';
@@ -9,6 +9,8 @@ import { useShop } from '../context/ShopContext';
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
+  const packIdFromUrl = searchParams.get('packId');
   const [product, setProduct] = useState<Product | null>(null);
   const [packData, setPackData] = useState<Pack | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
@@ -48,8 +50,16 @@ const ProductDetail: React.FC = () => {
             
           if (packsData && packsData.length > 0) {
             setPacks(packsData);
-            // Set the first pack as selected by default
-            const selectedPackData = packsData[0];
+            
+            // If a packId was provided in the URL, use that pack
+            let selectedPackData;
+            if (packIdFromUrl) {
+              selectedPackData = packsData.find(pack => pack.id === packIdFromUrl) || packsData[0];
+            } else {
+              // Otherwise use the first pack as default
+              selectedPackData = packsData[0];
+            }
+            
             setSelectedPack(selectedPackData);
             setPackId(selectedPackData.id);
             setPackData(selectedPackData); // Store pack data for display

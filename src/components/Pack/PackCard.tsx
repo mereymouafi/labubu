@@ -29,8 +29,8 @@ const PackCard: React.FC<PackCardProps> = ({ pack }) => {
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     if (firstProduct) {
-      // Navigate directly to the product detail page
-      navigate(`/product/${firstProduct.id}`);
+      // Navigate directly to the product detail page with pack ID as a parameter
+      navigate(`/product/${firstProduct.id}?packId=${pack.id}`);
     } else {
       // Fallback to the pack page if no products are found
       navigate(`/figurings/pack/${pack.id}`);
@@ -38,7 +38,7 @@ const PackCard: React.FC<PackCardProps> = ({ pack }) => {
   };
   return (
     <div className="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
-      <Link to={firstProduct ? `/product/${firstProduct.id}` : `/figurings/pack/${pack.id}`} className="block" onClick={handleClick}>
+      <Link to={firstProduct ? `/product/${firstProduct.id}?packId=${pack.id}` : `/figurings/pack/${pack.id}`} className="block" onClick={handleClick}>
         {pack.images && pack.images.length > 0 ? (
           <div className="relative h-64 overflow-hidden">
             <img
