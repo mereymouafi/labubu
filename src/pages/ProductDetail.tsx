@@ -19,6 +19,8 @@ const ProductDetail: React.FC = () => {
   const [activeImage, setActiveImage] = useState(0);
   // Selected color for products that have color options (Port Clés & Pochette)
   const [selectedColor, setSelectedColor] = useState<string>('');
+  // timestamp (ms) until which auto-scroll is paused
+  const [pauseUntil, setPauseUntil] = useState<number>(0);
   const [packId, setPackId] = useState<string | null>(null);
   const [packProducts, setPackProducts] = useState<Product[]>([]);
   const [allPackImages, setAllPackImages] = useState<string[]>([]);
@@ -34,6 +36,8 @@ const ProductDetail: React.FC = () => {
     
     if (product && (product.images.length > 1 || allPackImages.length > 1)) {
       intervalId = setInterval(() => {
+        // If paused, skip
+        if (Date.now() < pauseUntil) return;
         // If we're viewing pack images, use the pack images array
         if (allPackImages.length > 0) {
           setActiveImage(prev => (prev + 1) % allPackImages.length);
@@ -41,14 +45,14 @@ const ProductDetail: React.FC = () => {
           // Otherwise use the product images
           setActiveImage(prev => (prev + 1) % product.images.length);
         }
-      }, 2000); // Change image every 2 seconds
+      }, 3000); // Change image every 2 seconds
     }
     
     // Clean up the interval when component unmounts
     return () => {
       if (intervalId) clearInterval(intervalId);
     };
-  }, [product, allPackImages]);
+  }, [product, allPackImages, pauseUntil]);
 
   useEffect(() => {
     const loadProduct = async () => {
@@ -201,6 +205,12 @@ const ProductDetail: React.FC = () => {
     }
   };
 
+  // Helper when user clicks a thumbnail: change image and pause auto-scroll
+  const handleThumbnailClick = (idx: number) => {
+    setActiveImage(idx);
+    setPauseUntil(Date.now() + 5000); // pause for 5 seconds
+  };
+
   if (loading) {
     return (
       <div className="container-custom py-16">
@@ -275,7 +285,7 @@ const ProductDetail: React.FC = () => {
                       allPackImages.map((img, index) => (
                         <button
                           key={`pack-${index}`}
-                          onClick={() => setActiveImage(index)}
+                          onClick={() => handleThumbnailClick(index)}
                           className={`w-[70px] h-[70px] border rounded-md overflow-hidden flex-shrink-0 transition-all duration-300 ${
                             activeImage === index
                               ? 'border-2 border-red-500 shadow-md'
@@ -293,7 +303,7 @@ const ProductDetail: React.FC = () => {
                       product.images.map((img, index) => (
                         <button
                           key={`product-${index}`}
-                          onClick={() => setActiveImage(index)}
+                          onClick={() => handleThumbnailClick(index)}
                           className={`w-[70px] h-[70px] border rounded-md overflow-hidden flex-shrink-0 transition-all duration-300 ${
                             activeImage === index
                               ? 'border-2 border-red-500 shadow-md'
@@ -374,7 +384,7 @@ const ProductDetail: React.FC = () => {
                       allPackImages.map((img, index) => (
                         <button
                           key={`pack-mobile-${index}`}
-                          onClick={() => setActiveImage(index)}
+                          onClick={() => handleThumbnailClick(index)}
                           className={`w-16 h-16 rounded-md overflow-hidden flex-shrink-0 ${
                             activeImage === index
                               ? 'ring-2 ring-red-500'
@@ -392,7 +402,7 @@ const ProductDetail: React.FC = () => {
                       product.images.map((img, index) => (
                         <button
                           key={`product-mobile-${index}`}
-                          onClick={() => setActiveImage(index)}
+                          onClick={() => handleThumbnailClick(index)}
                           className={`w-16 h-16 rounded-md overflow-hidden flex-shrink-0 ${
                             activeImage === index
                               ? 'ring-2 ring-red-500'
@@ -485,7 +495,7 @@ const ProductDetail: React.FC = () => {
                 if (!colorOptions || colorOptions.length === 0) return null;
                 if (category === 'port clés' || category === 'port cles' || category === 'pochette') {
                   return (
-                    <div className="mt-6">
+                    <div className="mt-6 mb-4">
                       <h3 className="text-lg font-medium mb-2">COLOR</h3>
                       <div className="flex flex-wrap gap-2">
                         {colorOptions.map((col, idx) => (
