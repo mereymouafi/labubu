@@ -99,40 +99,42 @@ const BlindBoxInterface: React.FC = () => {
     }
   };
 
-  // Mock data sets for different levels
-  const createBlindBoxSet = (prefix: string, length: number): BlindBoxItem[] => {
-    return Array.from({ length }, (_, i) => {
-      // Assign random rarity to each box
-      const rarities = ['common', 'common', 'common', 'common', 'rare', 'rare', 'ultra-rare', 'secret'] as const;
-      const randomRarity = rarities[Math.floor(Math.random() * rarities.length)];
-      const characters = ['Coco', 'Luna', 'Zephyr', 'Momo', 'Blitz', 'Nova', 'Pixel', 'Bubbles'];
-      const randomChar = characters[Math.floor(Math.random() * characters.length)];
-      
-      return {
-        id: i + 1,
-        name: `${prefix} Box`,
-        productId: `${prefix}-${(10000 + i).toString()}`,
-        character: randomChar,
-        rarity: randomRarity,
-      };
-    });
+  // Create a single box for each level
+  const createSingleBox = (prefix: string): BlindBoxItem => {
+    // Assign random rarity to the box
+    const rarities = ['common', 'common', 'common', 'common', 'rare', 'rare', 'ultra-rare', 'secret'] as const;
+    const randomRarity = rarities[Math.floor(Math.random() * rarities.length)];
+    const characters = ['Coco', 'Luna', 'Zephyr', 'Momo', 'Blitz', 'Nova', 'Pixel', 'Bubbles'];
+    const randomChar = characters[Math.floor(Math.random() * characters.length)];
+    
+    return {
+      id: 1,
+      name: `${prefix} Box`,
+      productId: `${prefix}-10001`,
+      character: randomChar,
+      rarity: randomRarity,
+    };
   };
   
-  // Create sets for each level
-  const level1Boxes = createBlindBoxSet('L1', 16); // Level 1 boxes
-  const level2Boxes = createBlindBoxSet('L2', 16); // Level 2 boxes
+  // Create single box for each level
+  const level1Box = createSingleBox('L1'); // Level 1 box
+  const level2Box = createSingleBox('L2'); // Level 2 box
+  const level3Box = createSingleBox('L3'); // Level 3 box
   
-  // Get the appropriate boxes based on selected level
-  const getBoxesForLevel = (level: string): BlindBoxItem[] => {
+  // Get the appropriate box based on selected level
+  const getBoxForLevel = (level: string): BlindBoxItem => {
     switch (level) {
-      case 'level1': return level1Boxes;
-      case 'level2': return level2Boxes;
-      default: return level1Boxes;
+      case 'level1': return level1Box;
+      case 'level2': return level2Box;
+      case 'level3': return level3Box;
+      default: return level1Box;
     }
   };
   
-  // Current blind boxes based on selected level
-  const blindBoxes = getBoxesForLevel(selectedLevel);
+  // Current blind box based on selected level
+  const currentBox = getBoxForLevel(selectedLevel);
+  // Create an array with just the current box for compatibility with existing code
+  const blindBoxes = [currentBox];
 
   // Product information based on selected level
   const getProductInfo = (level: string) => {
@@ -146,6 +148,11 @@ const BlindBoxInterface: React.FC = () => {
         return {
           name: 'HACIPUPU Level 2 Premium Series',
           price: '199.90 MAD'
+        };
+      case 'level3':
+        return {
+          name: 'HACIPUPU Level 3 Exclusive Series',
+          price: '249.90 MAD'
         };
       default:
         return {
@@ -366,6 +373,15 @@ const BlindBoxInterface: React.FC = () => {
           >
             Level 2
           </button>
+
+          <button 
+            onClick={() => handleLevelSelect('level3')}
+            className={`px-6 py-2 rounded-md text-lg ${selectedLevel === 'level3' 
+              ? 'bg-primary-500 text-white font-bold' 
+              : 'bg-gray-100 hover:bg-gray-200'}`}
+          >
+            Level 3
+          </button>
         </div>
       </div>
 
@@ -452,64 +468,64 @@ const BlindBoxInterface: React.FC = () => {
       </AnimatePresence>
 
       <div className="flex flex-col lg:flex-row gap-8">
-        {/* Left side: Grid of blind boxes */}
+        {/* Left side: Single large blind box */}
         <div className="w-full lg:w-2/3">
-          <div className="grid grid-cols-4 gap-2 perspective-800 max-w-lg mx-auto">
-            {blindBoxes.map((box) => (
-              <motion.div
-                key={box.id}
-                className={`aspect-square cursor-pointer rounded-lg ${
-                  selectedBox === box.id ? 'border-4 border-blue-500 p-1 bg-blue-50' : ''
-                }`}
-                onClick={() => handleBoxClick(box.id)}
-                initial="initial"
-                animate={
-                  animatingBox === box.id
-                    ? 'shake'
-                    : selectedBox === box.id
-                    ? 'selected'
-                    : 'initial'
-                }
-                whileHover="hover"
-                variants={boxVariants}
-              >
-                <div className="w-full h-full overflow-hidden rounded-md shadow-sm">
-                  <div className="w-full h-full flex items-center justify-center">
-                    {revealedBox === box.id ? (
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="flex items-center justify-center"
-                      >
-                        <Gift className="w-6 h-6 text-white" />
-                      </motion.div>
-                    ) : (
-                      <img 
-                        src={
-                          selectedLevel === 'level1'
-                            ? (box.id % 2 === 0 ? "/images/black.jpg" : "/images/pink.jpg")
-                            : (box.id % 2 === 0 ? "/images/white.jpg" : "/images/pink.jpg")
-                        }
-                        alt="Blind Box" 
-                        className="w-full h-full object-cover"
-                      />
-                    )}
-                  </div>
-                  <div className="flex items-center text-[10px] font-medium text-white mt-0.5">
-                    <span>#{box.id}</span>
-                    {(revealedBox === box.id || box.rarity === 'secret') && (
-                      <motion.div 
-                        initial={{ opacity: 0, scale: 0 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="ml-1"
-                      >
-                        <Sparkles className="w-2 h-2" />
-                      </motion.div>
-                    )}
-                  </div>
+          <div className="flex justify-center items-center perspective-800 max-w-lg mx-auto">
+            <motion.div
+              key={currentBox.id}
+              className={`w-96 h-96 cursor-pointer rounded-lg ${
+                selectedBox === currentBox.id ? 'border-4 border-blue-500 p-1 bg-blue-50' : ''
+              }`}
+              onClick={() => handleBoxClick(currentBox.id)}
+              initial="initial"
+              animate={
+                animatingBox === currentBox.id
+                  ? 'shake'
+                  : selectedBox === currentBox.id
+                  ? 'selected'
+                  : 'initial'
+              }
+              whileHover="hover"
+              variants={boxVariants}
+            >
+              <div className="w-full h-full overflow-hidden rounded-md shadow-lg">
+                <div className="w-full h-full flex items-center justify-center">
+                  {revealedBox === currentBox.id ? (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="flex items-center justify-center"
+                    >
+                      <Gift className="w-16 h-16 text-white" />
+                    </motion.div>
+                  ) : (
+                    <img 
+                      src={
+                        selectedLevel === 'level1'
+                          ? "/images/white.jpg"
+                          : selectedLevel === 'level2'
+                            ? "/images/pink.jpg"
+                            : "/images/black.jpg"
+                      }
+                      alt="Blind Box" 
+                      className="w-full h-full object-cover"
+                    />
+                  )}
                 </div>
-              </motion.div>
-            ))}
+                <div className="absolute bottom-2 left-2 bg-black/50 px-2 py-1 rounded text-sm font-medium text-white">
+                  <span>BLIND BOX</span>
+                  {(revealedBox === currentBox.id || currentBox.rarity === 'secret') && (
+                    <motion.div 
+                      initial={{ opacity: 0, scale: 0 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="ml-1"
+                    >
+                      <Sparkles className="w-2 h-2" />
+                    </motion.div>
+                  )}
+                </div>
+              </div>
+            </motion.div>
           </div>
         </div>
 
