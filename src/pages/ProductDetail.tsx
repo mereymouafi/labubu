@@ -330,7 +330,12 @@ const ProductDetail: React.FC = () => {
                         initial={{ x: 300, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
                         exit={{ x: -300, opacity: 0 }}
-                        transition={{ duration: 0.5 }}
+                        transition={{ 
+                          type: "spring", 
+                          stiffness: 50, 
+                          damping: 14,
+                          mass: 1
+                        }}
                         src={allPackImages.length > 0 ? allPackImages[activeImage] : product.images[activeImage]}
                         alt={product.name}
                         className="w-full h-full object-cover"
