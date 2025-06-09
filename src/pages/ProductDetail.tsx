@@ -194,7 +194,7 @@ const ProductDetail: React.FC = () => {
             <div className="p-6 md:p-8 relative">
               <div className="flex">
                 {/* Left Side - Vertical Thumbnails */}
-                <div className="hidden md:flex flex-col mr-4 space-y-3 h-[400px] overflow-y-auto pr-2 sticky top-0" style={{ width: '80px' }}>
+                <div className="hidden md:flex flex-col mr-4 space-y-4 h-[450px] overflow-y-auto pr-2 sticky top-0" style={{ width: '140px' }}>
                   {/* Show pack images if a pack is selected and has images, otherwise show product images */}
                   {allPackImages.length > 0 ? (
                     allPackImages.map((img, index) => (
@@ -269,7 +269,7 @@ const ProductDetail: React.FC = () => {
                   </div>
                   
                   {/* Mobile Thumbnails (Horizontal) */}
-                  <div className="flex md:hidden space-x-2 mt-4 overflow-x-auto pb-2">
+                  <div className="flex md:hidden space-x-3 mt-4 overflow-x-auto pb-2">
                     {allPackImages.length > 0 ? (
                       allPackImages.map((img, index) => (
                         <button
