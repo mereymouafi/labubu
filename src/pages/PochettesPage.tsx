@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Product, supabase } from '../lib/supabase';
 import ProductCard from '../components/Product/ProductCard';
 import { Spinner } from '../components/UI/Spinner';
+import '../styles/pochette.css';
 
 const PochettesPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);

@@ -1,0 +1,30 @@
+/* Pochette-specific styles */
+.pochette-card {
+  margin-bottom: 2rem; /* Add additional spacing at the bottom */
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.pochette-card > div {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Override the aspect-ratio only for pochette cards */
+.pochette-card .aspect-square {
+  aspect-ratio: 3/4 !important;
+  min-height: 280px; /* Ensure minimum height for the product image */
+}
+
+/* Change image display for pochettes only */
+.pochette-card img {
+  object-fit: contain !important;
+  padding: 0.5rem;
+}
+
+/* Make sure product info doesn't get squished */
+.pochette-card .pt-4 {
+  margin-top: auto;
+}
