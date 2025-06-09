@@ -98,6 +98,20 @@ export type Order = {
   created_at?: string;
 };
 
+export type Pack = {
+  id: string;
+  number: number;
+  title: string;
+  description: string;
+  images: string[];
+  created_at?: string;
+};
+
+export type ProductPack = {
+  product_id: string;
+  pack_id: string;
+};
+
 export const fetchBanners = async (): Promise<Banner[]> => {
   const { data, error } = await supabase.from('banners').select('*');
   
@@ -382,6 +396,93 @@ export const updateTShirtDetailCategory = async (tshirtDetailId: string, categor
   } catch (err) {
     console.error('Exception updating T-shirt detail category:', err);
     return { success: false, error: err };
+  }
+};
+
+export const fetchPacks = async (): Promise<Pack[]> => {
+  const { data, error } = await supabase.from('pack').select('*');
+  
+  if (error) {
+    console.error('Error fetching packs:', error);
+    return [];
+  }
+  
+  return data || [];
+};
+
+export const fetchProductsByPack = async (packId: string): Promise<Product[]> => {
+  console.log('Fetching products for pack ID:', packId);
+  
+  try {
+    // Use a join query to get products directly through the relationship
+    const { data: joinedData, error: joinError } = await supabase
+      .from('product_packs')
+      .select(`
+        product_id,
+        products:product_id(*)
+      `)
+      .eq('pack_id', packId);
+    
+    console.log('Joined query result:', { joinedData, joinError });
+    
+    if (joinError) {
+      console.error('Error fetching joined product data:', joinError);
+      return [];
+    }
+    
+    if (!joinedData || joinedData.length === 0) {
+      console.log('No product associations found for this pack');
+      return [];
+    }
+    
+    // Extract the products from the joined data
+    const products = joinedData
+      .map(item => item.products)
+      .filter(product => product !== null) as unknown as Product[];
+    
+    console.log('Extracted products:', products);
+    
+    // If the join approach didn't work, try the original approach as fallback
+    if (products.length === 0) {
+      console.log('Join approach returned no products, trying direct query approach');
+      
+      // First get the product_ids from the product_packs table
+      const { data: productPacksData, error: productPacksError } = await supabase
+        .from('product_packs')
+        .select('product_id')
+        .eq('pack_id', packId);
+      
+      console.log('Product packs direct query result:', { productPacksData, productPacksError });
+      
+      if (productPacksError || !productPacksData || productPacksData.length === 0) {
+        console.error('Error or no data in direct query:', productPacksError);
+        return [];
+      }
+      
+      // Extract the product_ids
+      const productIds = productPacksData.map(pp => pp.product_id);
+      console.log('Found product IDs:', productIds);
+      
+      // Fetch the products with those ids
+      const { data: productsData, error: productsError } = await supabase
+        .from('products')
+        .select('*')
+        .in('id', productIds);
+      
+      console.log('Products direct query result:', { productsData, productsError });
+      
+      if (productsError) {
+        console.error('Error fetching products for pack:', productsError);
+        return [];
+      }
+      
+      return productsData || [];
+    }
+    
+    return products;
+  } catch (error) {
+    console.error('Unexpected error in fetchProductsByPack:', error);
+    return [];
   }
 };
 

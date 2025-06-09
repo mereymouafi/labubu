@@ -67,7 +67,7 @@ function App() {
               <Route path="new-arrivals" element={<NewArrivalsPage />} />
               <Route path="new-featured" element={<NewAndFeaturedPage />} />
               <Route path="blind-box" element={<BlindBoxPage />} />
-              <Route path="figurings" element={<FiguringsPage />} />
+              <Route path="figurings/*" element={<FiguringsPage />} />
               <Route path="accessories" element={<AccessoriesPage />} />
               <Route path="port-cles" element={<PortClePage />} />
               <Route path="mugs" element={<MugsPage />} />
