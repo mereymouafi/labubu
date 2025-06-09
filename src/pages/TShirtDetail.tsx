@@ -84,11 +84,11 @@ const TShirtDetailPage: React.FC = () => {
         const detail = await fetchTShirtDetail(id);
         if (detail) {
           setTshirt(detail);
-          // Set default selections if available
-          if (detail.size && detail.size.length > 0) setSelectedSize(detail.size[0]);
-          if (detail.color && detail.color.length > 0) setSelectedColor(detail.color[0]);
-          if (detail.style && detail.style.length > 0) setSelectedStyle(detail.style[0]);
-          if (detail.age && detail.age.length > 0) setSelectedAge(detail.age[0]);
+          // No default selections - user must choose explicitly
+          setSelectedSize('');
+          setSelectedColor('');
+          setSelectedStyle('');
+          setSelectedAge('');
           
           // Check if item is already in wishlist
           setInWishlist(isInWishlist(detail.id));

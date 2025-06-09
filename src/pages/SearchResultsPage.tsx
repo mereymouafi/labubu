@@ -3,7 +3,7 @@ import { useLocation, Link } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import ProductCard from '../components/Product/ProductCard';
 import { Product } from '../types';
-import { fetchTShirtOptions, TShirtOption } from '../lib/supabase';
+import { fetchTShirtOptions, TShirtOption, fetchProducts } from '../lib/supabase';
 
 const SearchResultsPage: React.FC = () => {
   const location = useLocation();
@@ -11,6 +11,7 @@ const SearchResultsPage: React.FC = () => {
   const { products } = useShop();
   const [searchResults, setSearchResults] = useState<Product[]>([]);
   const [tshirtResults, setTshirtResults] = useState<TShirtOption[]>([]);
+  const [blindBoxResults, setBlindBoxResults] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -21,6 +22,7 @@ const SearchResultsPage: React.FC = () => {
       if (!query.trim()) {
         setSearchResults([]);
         setTshirtResults([]);
+        setBlindBoxResults([]);
         setLoading(false);
         return;
       }
@@ -61,6 +63,27 @@ const SearchResultsPage: React.FC = () => {
         console.error('Error fetching T-shirt options:', error);
       }
       
+      // Fetch and filter blind box products
+      try {
+        // Fetch all products with category 'blind box' or similar
+        const allBlindBoxes = await fetchProducts({ category: 'blind box' });
+        const blindBoxMatches = allBlindBoxes.filter(product => {
+          const productName = product.name.toLowerCase();
+          const productDescription = product.description?.toLowerCase() || '';
+          
+          return searchTerms.some(term => 
+            productName.includes(term) || 
+            productDescription.includes(term) ||
+            // Check if the term is 'blind box' or 'blindbox'
+            (term === 'blind' || term === 'box' || term === 'blind box' || term === 'blindbox')
+          );
+        });
+        
+        setBlindBoxResults(blindBoxMatches);
+      } catch (error) {
+        console.error('Error fetching blind box products:', error);
+      }
+      
       setSearchResults(productResults);
       setLoading(false);
     };
@@ -77,15 +100,50 @@ const SearchResultsPage: React.FC = () => {
     <div className="container mx-auto px-4 py-8 mt-24">
       <h1 className="text-3xl font-bold mb-2">Search Results</h1>
       <p className="text-gray-600 mb-8">
-        {searchResults.length + tshirtResults.length} results for "{query}"
+        {searchResults.length + tshirtResults.length + blindBoxResults.length} results for "{query}"
       </p>
 
       {loading ? (
         <div className="flex justify-center items-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-popmart-red"></div>
         </div>
-      ) : searchResults.length > 0 || tshirtResults.length > 0 ? (
+      ) : searchResults.length > 0 || tshirtResults.length > 0 || blindBoxResults.length > 0 ? (
         <>
+          {/* Blind Box results section */}
+          {blindBoxResults.length > 0 && (
+            <div className="mb-10">
+              <h2 className="text-2xl font-bold mb-4">Blind Boxes</h2>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                {blindBoxResults.map((product) => (
+                  <Link 
+                    to={`/blind-box`} 
+                    key={product.id}
+                    className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300"
+                  >
+                    <div className="relative h-64 overflow-hidden">
+                      {product.images && product.images.length > 0 ? (
+                        <img 
+                          src={product.images[0]} 
+                          alt={product.name} 
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="h-full w-full flex items-center justify-center bg-gray-200">
+                          <span className="text-gray-500">No image available</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-4">
+                      <h3 className="text-lg font-bold mb-2">{product.name}</h3>
+                      <p className="text-gray-600 text-sm line-clamp-2">{product.description}</p>
+                      <p className="text-primary-600 font-semibold mt-2">${product.price.toFixed(2)}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+          
           {/* T-shirt results section */}
           {tshirtResults.length > 0 && (
             <div className="mb-10">
@@ -123,7 +181,9 @@ const SearchResultsPage: React.FC = () => {
           {/* Regular product results section */}
           {searchResults.length > 0 && (
             <div>
-              {tshirtResults.length > 0 && <h2 className="text-2xl font-bold mb-4">Other Products</h2>}
+              {(tshirtResults.length > 0 || blindBoxResults.length > 0) && 
+                <h2 className="text-2xl font-bold mb-4">Other Products</h2>
+              }
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
                 {searchResults.map((product) => (
                   <ProductCard key={product.id} product={product} />
