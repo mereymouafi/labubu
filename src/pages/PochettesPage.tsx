@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Product, supabase } from '../lib/supabase';
 import ProductCard from '../components/Product/ProductCard';
+import { Spinner } from '../components/UI/Spinner';
 
 const PochettesPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -12,11 +13,11 @@ const PochettesPage: React.FC = () => {
       try {
         console.log('Fetching pochette products by category_id');
         
-        // Get the category ID for "Pochettes"
+        // Get the category ID for "Pochette" (singular)
         const { data: categoryData } = await supabase
           .from('categories')
           .select('id')
-          .eq('name', 'Pochettes')
+          .eq('name', 'Pochette')
           .single();
         
         if (categoryData?.id) {
@@ -30,12 +31,18 @@ const PochettesPage: React.FC = () => {
           
           if (!error && productsData) {
             console.log('Found products:', productsData.length);
-            setProducts(productsData);
+            // Transform the data to match the Product type
+            const formattedProducts: Product[] = productsData.map(product => ({
+              ...product,
+              category: 'Pochette', // Set the category name
+              stock_status: product.stock_status || 'in_stock' // Provide default stock status if missing
+            }));
+            setProducts(formattedProducts);
           } else if (error) {
             console.error('Error fetching products:', error);
           }
         } else {
-          console.error('Pochettes category not found');
+          console.error('Pochette category not found');
         }
       } catch (error) {
         console.error('Error loading pochette products:', error);
@@ -51,7 +58,8 @@ const PochettesPage: React.FC = () => {
     <div className="container mx-auto px-4 py-8 mt-24">
       {isLoading ? (
         <div className="flex justify-center items-center h-64">
-          <p className="text-lg text-gray-500">Loading pochettes...</p>
+          <Spinner />
+          <p className="text-lg text-gray-500 ml-3">Loading pochettes...</p>
         </div>
       ) : (
         <>
@@ -74,7 +82,7 @@ const PochettesPage: React.FC = () => {
             <div className="text-center py-12">
               <p className="text-lg text-gray-500">No pochettes found. Check back soon for our latest collection!</p>
               <p className="text-sm text-gray-400 mt-2">
-                Make sure you have products with the category_id linked to the Pochettes category.
+                Make sure you have products with the category_id linked to the Pochette category.
               </p>
             </div>
           )}
