@@ -350,9 +350,14 @@ const TShirtDetailPage: React.FC = () => {
                       <button 
                         key={idx}
                         onClick={() => {
-                          setSelectedSize(size);
-                          // Clear age selection when size is selected
-                          setSelectedAge('');
+                          // Toggle selection - if already selected, deselect it
+                          if (selectedSize === size) {
+                            setSelectedSize('');
+                          } else {
+                            setSelectedSize(size);
+                            // Clear age selection when size is selected
+                            setSelectedAge('');
+                          }
                         }}
                         className={`py-1 px-3 border rounded-md transition-colors text-xs ${selectedSize === size 
                           ? 'border-primary-500 bg-primary-500 text-white font-medium' 
@@ -374,9 +379,14 @@ const TShirtDetailPage: React.FC = () => {
                       <button 
                         key={idx}
                         onClick={() => {
-                          setSelectedAge(age);
-                          // Clear size selection when age is selected
-                          setSelectedSize('');
+                          // Toggle selection - if already selected, deselect it
+                          if (selectedAge === age) {
+                            setSelectedAge('');
+                          } else {
+                            setSelectedAge(age);
+                            // Clear size selection when age is selected
+                            setSelectedSize('');
+                          }
                         }}
                         className={`py-1 px-3 border rounded-md transition-colors text-xs ${selectedAge === age 
                           ? 'border-primary-500 bg-primary-500 text-white font-medium' 
@@ -396,7 +406,14 @@ const TShirtDetailPage: React.FC = () => {
                   {tshirt.color.map((color, idx) => (
                     <button 
                       key={idx}
-                      onClick={() => setSelectedColor(color)}
+                      onClick={() => {
+                        // Toggle selection - if already selected, deselect it
+                        if (selectedColor === color) {
+                          setSelectedColor('');
+                        } else {
+                          setSelectedColor(color);
+                        }
+                      }}
                       className={`py-1 px-3 border rounded-md transition-colors text-xs ${selectedColor === color 
                         ? 'border-primary-500 bg-primary-500 text-white font-medium' 
                         : 'border-gray-300 hover:border-primary-500 hover:bg-primary-50'}`}
@@ -414,7 +431,14 @@ const TShirtDetailPage: React.FC = () => {
                   {tshirt.style.map((style, idx) => (
                     <button 
                       key={idx}
-                      onClick={() => setSelectedStyle(style)}
+                      onClick={() => {
+                        // Toggle selection - if already selected, deselect it
+                        if (selectedStyle === style) {
+                          setSelectedStyle('');
+                        } else {
+                          setSelectedStyle(style);
+                        }
+                      }}
                       className={`py-1 px-3 border rounded-md transition-colors text-xs ${selectedStyle === style 
                         ? 'border-primary-500 bg-primary-500 text-white font-medium' 
                         : 'border-gray-300 hover:border-primary-500 hover:bg-primary-50'}`}
@@ -435,7 +459,7 @@ const TShirtDetailPage: React.FC = () => {
                   disabled={(!selectedSize && !selectedAge) || !selectedColor || !selectedStyle}
                   title={(!selectedSize && !selectedAge) || !selectedColor || !selectedStyle ? "Please select either size or age, plus color and style" : ""}
                   onClick={() => {
-                    if (tshirt && selectedSize && selectedColor && selectedStyle) {
+                    if (tshirt && (selectedSize || selectedAge) && selectedColor && selectedStyle) {
                       // Convert TShirt to Product format for cart
                       const productForCart = {
                         id: tshirt.id,
@@ -484,7 +508,7 @@ const TShirtDetailPage: React.FC = () => {
                   disabled={(!selectedSize && !selectedAge) || !selectedColor || !selectedStyle}
                   title={(!selectedSize && !selectedAge) || !selectedColor || !selectedStyle ? "Please select either size or age, plus color and style" : ""}
                   onClick={() => {
-                    if (tshirt && selectedSize && selectedColor && selectedStyle) {
+                    if (tshirt && (selectedSize || selectedAge) && selectedColor && selectedStyle) {
                       // Convert TShirt to Product format for cart
                       const productForCart = {
                         id: tshirt.id,
