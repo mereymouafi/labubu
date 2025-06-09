@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Heart, Share2, Star, Truck, Shield, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Product, fetchProductById, fetchProducts } from '../lib/supabase';
+import { Product, fetchProductById, fetchProducts, supabase, Pack, fetchProductsByPack } from '../lib/supabase';
 import ProductCard from '../components/Product/ProductCard';
 import CustomBagIcon from '../components/UI/CustomBagIcon';
 import { useShop } from '../context/ShopContext';
@@ -14,6 +14,11 @@ const ProductDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [activeImage, setActiveImage] = useState(0);
+  const [packId, setPackId] = useState<string | null>(null);
+  const [packProducts, setPackProducts] = useState<Product[]>([]);
+  const [allPackImages, setAllPackImages] = useState<string[]>([]);
+  const [selectedPack, setSelectedPack] = useState<Pack | null>(null);
+  const [packs, setPacks] = useState<Pack[]>([]);
   
   // Use our shop context
   const { addToCart, addToWishlist, isInWishlist } = useShop();
@@ -36,6 +41,38 @@ const ProductDetail: React.FC = () => {
           
           // Filter out the current product
           setRelatedProducts(related.filter(p => p.id !== id));
+          
+          // Check if this product is part of any pack
+          const { data: productPacksData } = await supabase
+            .from('product_packs')
+            .select('pack_id')
+            .eq('product_id', id);
+            
+          if (productPacksData && productPacksData.length > 0) {
+            // Get all packs this product belongs to
+            const packIds = productPacksData.map(pp => pp.pack_id);
+            
+            // Fetch pack details
+            const { data: packsData } = await supabase
+              .from('pack')
+              .select('*')
+              .in('id', packIds);
+              
+            if (packsData && packsData.length > 0) {
+              setPacks(packsData);
+              // Set the first pack as selected by default
+              setSelectedPack(packsData[0]);
+              setPackId(packsData[0].id);
+              
+              // Fetch all products in this pack
+              const packProductsData = await fetchProductsByPack(packsData[0].id);
+              setPackProducts(packProductsData);
+              
+              // Collect all images from all products in the pack
+              const allImages = packProductsData.flatMap(p => p.images || []);
+              setAllPackImages(allImages);
+            }
+          }
         }
       } catch (error) {
         console.error('Error loading product:', error);
@@ -49,6 +86,10 @@ const ProductDetail: React.FC = () => {
     // Reset state when id changes
     setActiveImage(0);
     setQuantity(1);
+    setPackId(null);
+    setPackProducts([]);
+    setAllPackImages([]);
+    setSelectedPack(null);
   }, [id]);
 
   const incrementQuantity = () => {
@@ -61,12 +102,45 @@ const ProductDetail: React.FC = () => {
 
   const nextImage = () => {
     if (!product) return;
-    setActiveImage(prev => (prev + 1) % product.images.length);
+    
+    // If we're viewing pack images, use the pack images array
+    if (allPackImages.length > 0) {
+      setActiveImage(prev => (prev + 1) % allPackImages.length);
+    } else {
+      // Otherwise use the product images
+      setActiveImage(prev => (prev + 1) % product.images.length);
+    }
   };
 
   const prevImage = () => {
     if (!product) return;
-    setActiveImage(prev => (prev - 1 + product.images.length) % product.images.length);
+    
+    // If we're viewing pack images, use the pack images array
+    if (allPackImages.length > 0) {
+      setActiveImage(prev => (prev - 1 + allPackImages.length) % allPackImages.length);
+    } else {
+      // Otherwise use the product images
+      setActiveImage(prev => (prev - 1 + product.images.length) % product.images.length);
+    }
+  };
+  
+  // Handle pack selection
+  const handlePackSelect = async (pack: Pack) => {
+    setSelectedPack(pack);
+    setPackId(pack.id);
+    setActiveImage(0); // Reset to first image
+    
+    try {
+      // Fetch all products in this pack
+      const packProductsData = await fetchProductsByPack(pack.id);
+      setPackProducts(packProductsData);
+      
+      // Collect all images from all products in the pack
+      const allImages = packProductsData.flatMap(p => p.images || []);
+      setAllPackImages(allImages);
+    } catch (error) {
+      console.error('Error loading pack products:', error);
+    }
   };
 
   if (loading) {
@@ -116,61 +190,126 @@ const ProductDetail: React.FC = () => {
         {/* Product Details */}
         <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-16">
           <div className="grid grid-cols-1 md:grid-cols-2">
-            {/* Product Images */}
-            <div className="p-6 md:p-8">
-              <div className="relative mb-4 aspect-square overflow-hidden rounded-lg">
-                <motion.img
-                  key={activeImage}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.3 }}
-                  src={product.images[activeImage]}
-                  alt={product.name}
-                  className="w-full h-full object-cover"
-                />
-                
-                {product.images.length > 1 && (
-                  <>
-                    <button
-                      onClick={prevImage}
-                      className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 p-2 rounded-full shadow-md transition-colors duration-300"
-                      aria-label="Previous image"
-                    >
-                      <ChevronLeft size={20} />
-                    </button>
-                    <button
-                      onClick={nextImage}
-                      className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 p-2 rounded-full shadow-md transition-colors duration-300"
-                      aria-label="Next image"
-                    >
-                      <ChevronRight size={20} />
-                    </button>
-                  </>
-                )}
-              </div>
-
-              {/* Thumbnail Images */}
-              {product.images.length > 1 && (
-                <div className="flex space-x-2 mt-4">
-                  {product.images.map((img, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setActiveImage(index)}
-                      className={`w-16 h-16 rounded-md overflow-hidden ${
-                        activeImage === index
-                          ? 'ring-2 ring-primary-500'
-                          : 'opacity-70 hover:opacity-100'
-                      }`}
-                    >
-                      <img
-                        src={img}
-                        alt={`${product.name} thumbnail ${index + 1}`}
-                        className="w-full h-full object-cover"
-                      />
-                    </button>
-                  ))}
+            {/* Product Images with Vertical Thumbnails */}
+            <div className="p-6 md:p-8 relative">
+              <div className="flex">
+                {/* Left Side - Vertical Thumbnails */}
+                <div className="hidden md:flex flex-col mr-4 space-y-3 h-[400px] overflow-y-auto pr-2 sticky top-0" style={{ width: '80px' }}>
+                  {/* Show pack images if a pack is selected and has images, otherwise show product images */}
+                  {allPackImages.length > 0 ? (
+                    allPackImages.map((img, index) => (
+                      <button
+                        key={`pack-${index}`}
+                        onClick={() => setActiveImage(index)}
+                        className={`w-[70px] h-[70px] border rounded-md overflow-hidden flex-shrink-0 transition-all duration-300 ${
+                          activeImage === index
+                            ? 'border-2 border-red-500 shadow-md'
+                            : 'border-gray-200 opacity-70 hover:opacity-100'
+                        }`}
+                      >
+                        <img
+                          src={img}
+                          alt={`Pack image ${index + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </button>
+                    ))
+                  ) : (
+                    product.images.map((img, index) => (
+                      <button
+                        key={`product-${index}`}
+                        onClick={() => setActiveImage(index)}
+                        className={`w-[70px] h-[70px] border rounded-md overflow-hidden flex-shrink-0 transition-all duration-300 ${
+                          activeImage === index
+                            ? 'border-2 border-red-500 shadow-md'
+                            : 'border-gray-200 opacity-70 hover:opacity-100'
+                        }`}
+                      >
+                        <img
+                          src={img}
+                          alt={`${product.name} thumbnail ${index + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </button>
+                    ))
+                  )}
                 </div>
-              )}
+
+                {/* Main Image Container */}
+                <div className="flex-1">
+                  <div className="relative aspect-square overflow-hidden rounded-lg border border-gray-100 shadow-sm">
+                    <motion.img
+                      key={activeImage}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.3 }}
+                      src={allPackImages.length > 0 ? allPackImages[activeImage] : product.images[activeImage]}
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                    />
+                    
+                    {product.images.length > 1 && (
+                      <>
+                        <button
+                          onClick={prevImage}
+                          className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 p-2 rounded-full shadow-md transition-colors duration-300"
+                          aria-label="Previous image"
+                        >
+                          <ChevronLeft size={20} />
+                        </button>
+                        <button
+                          onClick={nextImage}
+                          className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 p-2 rounded-full shadow-md transition-colors duration-300"
+                          aria-label="Next image"
+                        >
+                          <ChevronRight size={20} />
+                        </button>
+                      </>
+                    )}
+                  </div>
+                  
+                  {/* Mobile Thumbnails (Horizontal) */}
+                  <div className="flex md:hidden space-x-2 mt-4 overflow-x-auto pb-2">
+                    {allPackImages.length > 0 ? (
+                      allPackImages.map((img, index) => (
+                        <button
+                          key={`pack-mobile-${index}`}
+                          onClick={() => setActiveImage(index)}
+                          className={`w-16 h-16 rounded-md overflow-hidden flex-shrink-0 ${
+                            activeImage === index
+                              ? 'ring-2 ring-red-500'
+                              : 'opacity-70 hover:opacity-100'
+                          }`}
+                        >
+                          <img
+                            src={img}
+                            alt={`Pack image ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </button>
+                      ))
+                    ) : (
+                      product.images.map((img, index) => (
+                        <button
+                          key={`product-mobile-${index}`}
+                          onClick={() => setActiveImage(index)}
+                          className={`w-16 h-16 rounded-md overflow-hidden flex-shrink-0 ${
+                            activeImage === index
+                              ? 'ring-2 ring-red-500'
+                              : 'opacity-70 hover:opacity-100'
+                          }`}
+                        >
+                          <img
+                            src={img}
+                            alt={`${product.name} thumbnail ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </button>
+                      ))
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Product Info */}
@@ -237,6 +376,26 @@ const ProductDetail: React.FC = () => {
                 </div>
               </div>
               
+              {/* Pack Selection */}
+              {packs.length > 0 && (
+                <div className="mt-8">
+                  <h3 className="text-lg font-medium mb-4">AVAILABLE PACKS</h3>
+                  <div className="flex flex-wrap gap-3">
+                    {packs.map((pack) => (
+                      <button
+                        key={pack.id}
+                        onClick={() => handlePackSelect(pack)}
+                        className={`px-4 py-2 rounded-md border transition-all ${selectedPack?.id === pack.id
+                          ? 'border-red-500 bg-red-50 text-red-600 font-medium'
+                          : 'border-gray-300 hover:border-red-300 hover:bg-red-50'
+                          }`}
+                      >
+                        Pack {pack.number}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
 
               {/* Quantity & Add to Cart */}

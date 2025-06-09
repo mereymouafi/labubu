@@ -464,8 +464,8 @@ export const fetchProductsByPack = async (packId: string): Promise<Product[]> =>
       .filter(product => product !== null)
       .map((product: any) => ({
         ...product,
-        price: packPrice, // Override the product price with the pack price
-        original_price: product.price // Store the original price as original_price
+        price: packPrice // Override the product price with the pack price
+        // Keep the original_price as is from the products table
       })) as unknown as Product[];
     
     console.log('Extracted products with pack price:', products);
@@ -507,8 +507,8 @@ export const fetchProductsByPack = async (packId: string): Promise<Product[]> =>
       // Apply the pack price to all products
       return (productsData || []).map((product: any) => ({
         ...product,
-        price: packPrice, // Override the product price with the pack price
-        original_price: product.price // Store the original price as original_price
+        price: packPrice // Override the product price with the pack price
+        // Keep the original_price as is from the products table
       }));
     }
     

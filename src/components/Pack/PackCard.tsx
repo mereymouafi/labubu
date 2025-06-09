@@ -1,15 +1,44 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Pack } from '../../lib/supabase';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Pack, Product, fetchProductsByPack } from '../../lib/supabase';
 
 interface PackCardProps {
   pack: Pack;
 }
 
 const PackCard: React.FC<PackCardProps> = ({ pack }) => {
+  const [firstProduct, setFirstProduct] = useState<Product | null>(null);
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    // Fetch the first product in the pack to link directly to it
+    const loadFirstProduct = async () => {
+      try {
+        const products = await fetchProductsByPack(pack.id);
+        if (products && products.length > 0) {
+          setFirstProduct(products[0]);
+        }
+      } catch (error) {
+        console.error('Error loading first product:', error);
+      }
+    };
+    
+    loadFirstProduct();
+  }, [pack.id]);
+  
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (firstProduct) {
+      // Navigate directly to the product detail page
+      navigate(`/product/${firstProduct.id}`);
+    } else {
+      // Fallback to the pack page if no products are found
+      navigate(`/figurings/pack/${pack.id}`);
+    }
+  };
   return (
     <div className="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
-      <Link to={`/figurings/pack/${pack.id}`} className="block">
+      <Link to={firstProduct ? `/product/${firstProduct.id}` : `/figurings/pack/${pack.id}`} className="block" onClick={handleClick}>
         {pack.images && pack.images.length > 0 ? (
           <div className="relative h-64 overflow-hidden">
             <img
@@ -31,7 +60,7 @@ const PackCard: React.FC<PackCardProps> = ({ pack }) => {
           <p className="text-gray-600 text-sm line-clamp-2">{pack.description}</p>
           <div className="mt-3">
             <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
-              View Collection
+              View Product
             </span>
           </div>
         </div>
