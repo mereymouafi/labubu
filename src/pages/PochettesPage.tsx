@@ -73,9 +73,11 @@ const PochettesPage: React.FC = () => {
           </div>
 
           {products.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-8">
               {products.map(product => (
-                <ProductCard key={product.id} product={product} />
+                <div className="pochette-card" key={product.id}>
+                  <ProductCard key={product.id} product={product} />
+                </div>
               ))}
             </div>
           ) : (
