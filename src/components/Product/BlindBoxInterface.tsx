@@ -251,7 +251,7 @@ const BlindBoxInterface: React.FC = () => {
       // Add blind box specific metadata
       blindBoxInfo: {
         level: selectedLevel,
-        color: selectedBoxData.rarity || 'unknown',
+        color: selectedLevel === 'level1' ? 'white' : selectedLevel === 'level2' ? 'pink' : 'black',
         quantity: 1
       }
     };
