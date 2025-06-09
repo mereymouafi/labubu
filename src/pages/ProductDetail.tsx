@@ -26,6 +26,28 @@ const ProductDetail: React.FC = () => {
   // Use our shop context
   const { addToCart, addToWishlist, isInWishlist } = useShop();
 
+  // Auto-scroll images every second
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+    
+    if (product && (product.images.length > 1 || allPackImages.length > 1)) {
+      intervalId = setInterval(() => {
+        // If we're viewing pack images, use the pack images array
+        if (allPackImages.length > 0) {
+          setActiveImage(prev => (prev + 1) % allPackImages.length);
+        } else {
+          // Otherwise use the product images
+          setActiveImage(prev => (prev + 1) % product.images.length);
+        }
+      }, 1000); // Change image every 1 second
+    }
+    
+    // Clean up the interval when component unmounts
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [product, allPackImages]);
+
   useEffect(() => {
     const loadProduct = async () => {
       if (!id) return;
