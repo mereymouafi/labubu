@@ -17,6 +17,8 @@ const ProductDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [activeImage, setActiveImage] = useState(0);
+  // Selected color for products that have color options (Port Clés & Pochette)
+  const [selectedColor, setSelectedColor] = useState<string>('');
   const [packId, setPackId] = useState<string | null>(null);
   const [packProducts, setPackProducts] = useState<Product[]>([]);
   const [allPackImages, setAllPackImages] = useState<string[]>([]);
@@ -476,8 +478,35 @@ const ProductDetail: React.FC = () => {
                 </div>
               </div>
               
-              {/* Pack Selection removed */}
-
+              {/* Color Options (only for Port Clés & Pochette) */}
+              {(() => {
+                const category = product?.category?.toLowerCase();
+                const colorOptions = (product as any)?.color as string[] | undefined;
+                if (!colorOptions || colorOptions.length === 0) return null;
+                if (category === 'port clés' || category === 'port cles' || category === 'pochette') {
+                  return (
+                    <div className="mt-6">
+                      <h3 className="text-lg font-medium mb-2">COLOR</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {colorOptions.map((col, idx) => (
+                          <button
+                            key={idx}
+                            onClick={() => setSelectedColor(col)}
+                            className={`py-1 px-3 text-xs border rounded-md transition-colors ${
+                              selectedColor === col
+                                ? 'border-primary-500 bg-primary-500 text-white font-medium'
+                                : 'border-gray-300 hover:border-primary-500 hover:bg-primary-50'
+                            }`}
+                          >
+                            {col}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                }
+                return null;
+              })()}
 
               {/* Quantity & Add to Cart */}
               <div className="mb-8">
