@@ -422,9 +422,13 @@ const ProductDetail: React.FC = () => {
                 <span>Category: {product?.category || 'Not specified'}</span>
               </div>
 
-              {/* Price - Use pack price if available */}
+              {/* Price - Use pack price and original_price if available */}
               <div className="flex items-center mb-6">
-                {product?.original_price && (
+                {packData?.original_price ? (
+                  <span className="text-gray-400 line-through text-lg mr-2">
+                    {packData.original_price} MAD
+                  </span>
+                ) : product?.original_price && (
                   <span className="text-gray-400 line-through text-lg mr-2">
                     {product.original_price} MAD
                   </span>

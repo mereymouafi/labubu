@@ -106,6 +106,7 @@ export type Pack = {
   images: string[];
   created_at?: string;
   price: number;
+  original_price?: number;
 };
 
 export type ProductPack = {
@@ -434,8 +435,9 @@ export const fetchProductsByPack = async (packId: string): Promise<Product[]> =>
       return [];
     }
     
-    // Get the pack price to apply to all products
+    // Get the pack price and original_price to apply to all products
     const packPrice = packData.price || 0; // Default to 0 if price is not available
+    const packOriginalPrice = packData.original_price || 0; // Default to 0 if original_price is not available
     
     // Use a join query to get products directly through the relationship
     const { data: joinedData, error: joinError } = await supabase
@@ -464,8 +466,8 @@ export const fetchProductsByPack = async (packId: string): Promise<Product[]> =>
       .filter(product => product !== null)
       .map((product: any) => ({
         ...product,
-        price: packPrice // Override the product price with the pack price
-        // Keep the original_price as is from the products table
+        price: packPrice, // Override the product price with the pack price
+        original_price: packOriginalPrice // Override the product original_price with the pack original_price
       })) as unknown as Product[];
     
     console.log('Extracted products with pack price:', products);
@@ -507,8 +509,8 @@ export const fetchProductsByPack = async (packId: string): Promise<Product[]> =>
       // Apply the pack price to all products
       return (productsData || []).map((product: any) => ({
         ...product,
-        price: packPrice // Override the product price with the pack price
-        // Keep the original_price as is from the products table
+        price: packPrice, // Override the product price with the pack price
+        original_price: packOriginalPrice // Override the product original_price with the pack original_price
       }));
     }
     
