@@ -410,26 +410,7 @@ const ProductDetail: React.FC = () => {
                 </div>
               </div>
               
-              {/* Pack Selection */}
-              {packs.length > 0 && (
-                <div className="mt-8">
-                  <h3 className="text-lg font-medium mb-4">AVAILABLE PACKS</h3>
-                  <div className="flex flex-wrap gap-3">
-                    {packs.map((pack) => (
-                      <button
-                        key={pack.id}
-                        onClick={() => handlePackSelect(pack)}
-                        className={`px-4 py-2 rounded-md border transition-all ${selectedPack?.id === pack.id
-                          ? 'border-red-500 bg-red-50 text-red-600 font-medium'
-                          : 'border-gray-300 hover:border-red-300 hover:bg-red-50'
-                          }`}
-                      >
-                        Pack {pack.number}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
+              {/* Pack Selection removed */}
 
 
               {/* Quantity & Add to Cart */}
