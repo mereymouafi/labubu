@@ -105,6 +105,7 @@ export type Pack = {
   description: string;
   images: string[];
   created_at?: string;
+  price: number;
 };
 
 export type ProductPack = {
@@ -414,6 +415,28 @@ export const fetchProductsByPack = async (packId: string): Promise<Product[]> =>
   console.log('Fetching products for pack ID:', packId);
   
   try {
+    // First, fetch the pack to get its price
+    const { data: packData, error: packError } = await supabase
+      .from('pack')
+      .select('*')
+      .eq('id', packId)
+      .single() as { data: Pack | null, error: any };
+    
+    console.log('Pack data:', packData);
+    
+    if (packError) {
+      console.error('Error fetching pack:', packError);
+      return [];
+    }
+    
+    if (!packData) {
+      console.error('Pack not found with ID:', packId);
+      return [];
+    }
+    
+    // Get the pack price to apply to all products
+    const packPrice = packData.price || 0; // Default to 0 if price is not available
+    
     // Use a join query to get products directly through the relationship
     const { data: joinedData, error: joinError } = await supabase
       .from('product_packs')
@@ -435,12 +458,17 @@ export const fetchProductsByPack = async (packId: string): Promise<Product[]> =>
       return [];
     }
     
-    // Extract the products from the joined data
+    // Extract the products from the joined data and apply the pack price
     const products = joinedData
       .map(item => item.products)
-      .filter(product => product !== null) as unknown as Product[];
+      .filter(product => product !== null)
+      .map((product: any) => ({
+        ...product,
+        price: packPrice, // Override the product price with the pack price
+        original_price: product.price // Store the original price as original_price
+      })) as unknown as Product[];
     
-    console.log('Extracted products:', products);
+    console.log('Extracted products with pack price:', products);
     
     // If the join approach didn't work, try the original approach as fallback
     if (products.length === 0) {
@@ -476,7 +504,12 @@ export const fetchProductsByPack = async (packId: string): Promise<Product[]> =>
         return [];
       }
       
-      return productsData || [];
+      // Apply the pack price to all products
+      return (productsData || []).map((product: any) => ({
+        ...product,
+        price: packPrice, // Override the product price with the pack price
+        original_price: product.price // Store the original price as original_price
+      }));
     }
     
     return products;
