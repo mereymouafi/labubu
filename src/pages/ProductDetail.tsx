@@ -193,51 +193,81 @@ const ProductDetail: React.FC = () => {
             {/* Product Images with Vertical Thumbnails */}
             <div className="p-6 md:p-8 relative">
               <div className="flex">
-                {/* Left Side - Vertical Thumbnails */}
-                <div className="hidden md:flex flex-col mr-4 space-y-4 h-[450px] overflow-y-auto pr-2 sticky top-0" style={{ width: '140px' }}>
-                  {/* Show pack images if a pack is selected and has images, otherwise show product images */}
-                  {allPackImages.length > 0 ? (
-                    allPackImages.map((img, index) => (
-                      <button
-                        key={`pack-${index}`}
-                        onClick={() => setActiveImage(index)}
-                        className={`w-[70px] h-[70px] border rounded-md overflow-hidden flex-shrink-0 transition-all duration-300 ${
-                          activeImage === index
-                            ? 'border-2 border-red-500 shadow-md'
-                            : 'border-gray-200 opacity-70 hover:opacity-100'
-                        }`}
-                      >
-                        <img
-                          src={img}
-                          alt={`Pack image ${index + 1}`}
-                          className="w-full h-full object-cover"
-                        />
-                      </button>
-                    ))
-                  ) : (
-                    product.images.map((img, index) => (
-                      <button
-                        key={`product-${index}`}
-                        onClick={() => setActiveImage(index)}
-                        className={`w-[70px] h-[70px] border rounded-md overflow-hidden flex-shrink-0 transition-all duration-300 ${
-                          activeImage === index
-                            ? 'border-2 border-red-500 shadow-md'
-                            : 'border-gray-200 opacity-70 hover:opacity-100'
-                        }`}
-                      >
-                        <img
-                          src={img}
-                          alt={`${product.name} thumbnail ${index + 1}`}
-                          className="w-full h-full object-cover"
-                        />
-                      </button>
-                    ))
-                  )}
+                {/* Left Side - Vertical Thumbnails with scroll buttons */}
+                <div className="hidden md:flex flex-col mr-4 relative" style={{ width: '140px' }}>
+                  {/* Scroll up button */}
+                  <button 
+                    className="absolute top-0 left-0 right-0 z-10 bg-white/80 hover:bg-white text-gray-800 p-1 rounded-md shadow-sm transition-colors duration-300 flex justify-center items-center"
+                    onClick={() => {
+                      const container = document.getElementById('thumbnails-container');
+                      if (container) container.scrollTop -= 100;
+                    }}
+                    aria-label="Scroll up"
+                  >
+                    <ChevronLeft className="rotate-90" size={16} />
+                  </button>
+                  
+                  {/* Thumbnails container with scroll */}
+                  <div 
+                    id="thumbnails-container"
+                    className="flex flex-col space-y-4 h-[450px] overflow-y-auto pr-2 pt-8 pb-8 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
+                  >
+                    {/* Show pack images if a pack is selected and has images, otherwise show product images */}
+                    {allPackImages.length > 0 ? (
+                      allPackImages.map((img, index) => (
+                        <button
+                          key={`pack-${index}`}
+                          onClick={() => setActiveImage(index)}
+                          className={`w-[70px] h-[70px] border rounded-md overflow-hidden flex-shrink-0 transition-all duration-300 ${
+                            activeImage === index
+                              ? 'border-2 border-red-500 shadow-md'
+                              : 'border-gray-200 opacity-70 hover:opacity-100'
+                          }`}
+                        >
+                          <img
+                            src={img}
+                            alt={`Pack image ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </button>
+                      ))
+                    ) : (
+                      product.images.map((img, index) => (
+                        <button
+                          key={`product-${index}`}
+                          onClick={() => setActiveImage(index)}
+                          className={`w-[70px] h-[70px] border rounded-md overflow-hidden flex-shrink-0 transition-all duration-300 ${
+                            activeImage === index
+                              ? 'border-2 border-red-500 shadow-md'
+                              : 'border-gray-200 opacity-70 hover:opacity-100'
+                          }`}
+                        >
+                          <img
+                            src={img}
+                            alt={`${product.name} thumbnail ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </button>
+                      ))
+                    )}
+                  </div>
+                  
+                  {/* Scroll down button */}
+                  <button 
+                    className="absolute bottom-0 left-0 right-0 z-10 bg-white/80 hover:bg-white text-gray-800 p-1 rounded-md shadow-sm transition-colors duration-300 flex justify-center items-center"
+                    onClick={() => {
+                      const container = document.getElementById('thumbnails-container');
+                      if (container) container.scrollTop += 100;
+                    }}
+                    aria-label="Scroll down"
+                  >
+                    <ChevronLeft className="-rotate-90" size={16} />
+                  </button>
                 </div>
 
-                {/* Main Image Container */}
+                {/* Main Image Container - Enlarged by 1cm */}
                 <div className="flex-1">
-                  <div className="relative aspect-square overflow-hidden rounded-lg border border-gray-100 shadow-sm">
+                  <div className="relative overflow-hidden rounded-lg border border-gray-100 shadow-sm" style={{ height: 'calc(450px + 1cm)', width: 'calc(100% + 1cm)' }}>
                     <motion.img
                       key={activeImage}
                       initial={{ opacity: 0 }}
@@ -268,8 +298,12 @@ const ProductDetail: React.FC = () => {
                     )}
                   </div>
                   
-                  {/* Mobile Thumbnails (Horizontal) */}
-                  <div className="flex md:hidden space-x-3 mt-4 overflow-x-auto pb-2">
+                  {/* Mobile Thumbnails (Horizontal) with scroll indicators */}
+                  <div className="flex md:hidden space-x-3 mt-4 overflow-x-auto pb-2 relative">
+                    {/* Left scroll indicator */}
+                    <div className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white/80 rounded-full shadow-sm z-10 p-1">
+                      <ChevronLeft size={16} />
+                    </div>
                     {allPackImages.length > 0 ? (
                       allPackImages.map((img, index) => (
                         <button
