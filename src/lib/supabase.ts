@@ -47,6 +47,7 @@ export type Product = {
   images: string[];
   category: string;
   character?: string;
+  collection?: string;
   is_new?: boolean;
   is_featured?: boolean;
   is_on_sale?: boolean;
