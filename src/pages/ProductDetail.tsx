@@ -10,6 +10,7 @@ import { useShop } from '../context/ShopContext';
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<Product | null>(null);
+  const [packData, setPackData] = useState<Pack | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
@@ -29,49 +30,72 @@ const ProductDetail: React.FC = () => {
 
       setLoading(true);
       try {
-        const productData = await fetchProductById(id);
-        setProduct(productData);
-
-        if (productData) {
-          // Fetch related products from the same category
-          const related = await fetchProducts({
-            category: productData.category,
-            limit: 4
-          });
+        // First, check if this product is part of any pack
+        const { data: productPacksData } = await supabase
+          .from('product_packs')
+          .select('pack_id')
+          .eq('product_id', id);
           
-          // Filter out the current product
-          setRelatedProducts(related.filter(p => p.id !== id));
+        if (productPacksData && productPacksData.length > 0) {
+          // Get all packs this product belongs to
+          const packIds = productPacksData.map(pp => pp.pack_id);
           
-          // Check if this product is part of any pack
-          const { data: productPacksData } = await supabase
-            .from('product_packs')
-            .select('pack_id')
-            .eq('product_id', id);
+          // Fetch pack details
+          const { data: packsData } = await supabase
+            .from('pack')
+            .select('*')
+            .in('id', packIds);
             
-          if (productPacksData && productPacksData.length > 0) {
-            // Get all packs this product belongs to
-            const packIds = productPacksData.map(pp => pp.pack_id);
+          if (packsData && packsData.length > 0) {
+            setPacks(packsData);
+            // Set the first pack as selected by default
+            const selectedPackData = packsData[0];
+            setSelectedPack(selectedPackData);
+            setPackId(selectedPackData.id);
+            setPackData(selectedPackData); // Store pack data for display
             
-            // Fetch pack details
-            const { data: packsData } = await supabase
-              .from('pack')
-              .select('*')
-              .in('id', packIds);
-              
-            if (packsData && packsData.length > 0) {
-              setPacks(packsData);
-              // Set the first pack as selected by default
-              setSelectedPack(packsData[0]);
-              setPackId(packsData[0].id);
-              
-              // Fetch all products in this pack
-              const packProductsData = await fetchProductsByPack(packsData[0].id);
-              setPackProducts(packProductsData);
-              
+            // Fetch all products in this pack
+            const packProductsData = await fetchProductsByPack(selectedPackData.id);
+            setPackProducts(packProductsData);
+            
+            // Fetch the product data for basic information
+            const productData = await fetchProductById(id);
+            setProduct(productData);
+            
+            // Use pack images if available, otherwise use product images
+            if (selectedPackData.images && selectedPackData.images.length > 0) {
+              setAllPackImages(selectedPackData.images);
+            } else {
               // Collect all images from all products in the pack
               const allImages = packProductsData.flatMap(p => p.images || []);
               setAllPackImages(allImages);
             }
+            
+            // Fetch related products from the same category
+            if (productData) {
+              const related = await fetchProducts({
+                category: productData.category,
+                limit: 4
+              });
+              
+              // Filter out the current product
+              setRelatedProducts(related.filter(p => p.id !== id));
+            }
+          }
+        } else {
+          // If not part of a pack, just load the product normally
+          const productData = await fetchProductById(id);
+          setProduct(productData);
+          
+          if (productData) {
+            // Fetch related products from the same category
+            const related = await fetchProducts({
+              category: productData.category,
+              limit: 4
+            });
+            
+            // Filter out the current product
+            setRelatedProducts(related.filter(p => p.id !== id));
           }
         }
       } catch (error) {
@@ -378,35 +402,33 @@ const ProductDetail: React.FC = () => {
                 )}
               </div>
 
-              {/* Product Name */}
+              {/* Product Name - Use pack title if available */}
               <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                {product.name}
+                {packData ? packData.title : product?.name}
               </h1>
-
-
 
               {/* Category */}
               <div className="text-gray-600 mb-4">
-                <span>Category: {product.category || 'Not specified'}</span>
+                <span>Category: {product?.category || 'Not specified'}</span>
               </div>
 
-              {/* Price */}
+              {/* Price - Use pack price if available */}
               <div className="flex items-center mb-6">
-                {product.original_price && (
+                {product?.original_price && (
                   <span className="text-gray-400 line-through text-lg mr-2">
                     {product.original_price} MAD
                   </span>
                 )}
                 <span className="text-2xl font-bold text-gray-900">
-                  {product.price} MAD
+                  {packData ? packData.price : product?.price} MAD
                 </span>
               </div>
 
-              {/* Description */}
+              {/* Description - Use pack description if available */}
               <div className="mt-8">
                 <h3 className="text-lg font-medium mb-4">DESCRIPTION</h3>
                 <div className="text-gray-600 space-y-3">
-                  <p>{product.description || 'No description available.'}</p>
+                  <p>{packData ? packData.description : (product?.description || 'No description available.')}</p>
                 </div>
               </div>
               
@@ -437,7 +459,17 @@ const ProductDetail: React.FC = () => {
                   </div>
                   <button
                     disabled={product.stock_status === 'out-of-stock'}
-                    onClick={() => product && addToCart(product, quantity)}
+                    onClick={() => {
+                      if (product) {
+                        // If we have pack data, use its price instead of product price
+                        const productWithPackPrice = packData ? {
+                          ...product,
+                          price: packData.price,
+                          name: packData.title // Use pack title as product name
+                        } : product;
+                        addToCart(productWithPackPrice, quantity);
+                      }
+                    }}
                     className={`flex-1 flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-3 rounded-lg transition-colors duration-300 ${
                       product.stock_status === 'out-of-stock'
                         ? 'opacity-60 cursor-not-allowed'
