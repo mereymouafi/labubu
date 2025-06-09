@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useSearchParams } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Share2, Star, Truck, Shield, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Product, fetchProductById, fetchProducts, supabase, Pack, fetchProductsByPack } from '../lib/supabase';
 import ProductCard from '../components/Product/ProductCard';
@@ -39,7 +39,7 @@ const ProductDetail: React.FC = () => {
           // Otherwise use the product images
           setActiveImage(prev => (prev + 1) % product.images.length);
         }
-      }, 1000); // Change image every 1 second
+      }, 2000); // Change image every 2 seconds
     }
     
     // Clean up the interval when component unmounts
@@ -324,15 +324,18 @@ const ProductDetail: React.FC = () => {
                 {/* Main Image Container - Enlarged by 1cm */}
                 <div className="flex-1">
                   <div className="relative overflow-hidden rounded-lg border border-gray-100 shadow-sm" style={{ height: 'calc(450px + 1cm)', width: 'calc(100% + 1cm)' }}>
-                    <motion.img
-                      key={activeImage}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.3 }}
-                      src={allPackImages.length > 0 ? allPackImages[activeImage] : product.images[activeImage]}
-                      alt={product.name}
-                      className="w-full h-full object-cover"
-                    />
+                    <AnimatePresence mode="wait">
+                      <motion.img
+                        key={activeImage}
+                        initial={{ x: 300, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        exit={{ x: -300, opacity: 0 }}
+                        transition={{ duration: 0.5 }}
+                        src={allPackImages.length > 0 ? allPackImages[activeImage] : product.images[activeImage]}
+                        alt={product.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </AnimatePresence>
                     
                     {product.images.length > 1 && (
                       <>
