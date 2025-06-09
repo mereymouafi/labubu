@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingBag, Sparkles, Gift, Loader2, AlertCircle } from 'lucide-react';
+import { ShoppingBag, Sparkles, Gift } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useShop } from '../../context/ShopContext';
-import { Product as BaseProduct, supabase } from '../../lib/supabase';
+import { Product as BaseProduct } from '../../lib/supabase';
 
 // Extend the Product type to include blind box specific information
 interface Product extends BaseProduct {
@@ -20,21 +20,6 @@ interface BlindBoxItem {
   productId: string;
   character?: string;
   rarity?: 'common' | 'rare' | 'ultra-rare' | 'secret';
-  level?: string;
-  price?: number;
-  image?: string;
-  description?: string;
-  category_id?: string;
-  category_name?: string;
-  title?: string;
-  // Additional related data from JSON structure
-  product_data?: any;
-  category_data?: any;
-  product_category_data?: any;
-  character_data?: any;
-  favorites_data?: any;
-  cart_items_data?: any;
-  product_packs_data?: any;
 }
 
 const BlindBoxInterface: React.FC = () => {
@@ -46,9 +31,6 @@ const BlindBoxInterface: React.FC = () => {
   const [selectedLevel, setSelectedLevel] = useState<string>('level1');
   const [showQuantityModal, setShowQuantityModal] = useState<boolean>(false);
   const [multipleBoxesQuantity, setMultipleBoxesQuantity] = useState<number>(1);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [blindBoxesData, setBlindBoxesData] = useState<BlindBoxItem[]>([]);
-  const [error, setError] = useState<string | null>(null);
   // Using Web Audio API for instant sound playback with zero delay
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
   const audioBufferRef = useRef<AudioBuffer | null>(null);
@@ -117,243 +99,45 @@ const BlindBoxInterface: React.FC = () => {
     }
   };
 
-  // Fetch blind box data from Supabase
-  useEffect(() => {
-    const fetchBlindBoxes = async () => {
-      setLoading(true);
-      try {
-        console.log('Starting blind box data fetch with all relations from JSON structure...');
-        
-        // Fetch all data from the blindbox table
-        const { data: blindboxData, error: blindboxError } = await supabase
-          .from('blindbox')
-          .select('*');
-        
-        console.log('Basic blindbox data:', blindboxData);
-        
-        if (blindboxError) {
-          console.error('Error fetching blind box data:', blindboxError);
-          throw new Error('Failed to fetch blind box data');
-        }
-        
-        if (!blindboxData || blindboxData.length === 0) {
-          console.warn('No blind box data found in database');
-          throw new Error('No blind box data available');
-        }
-        
-        // For each blind box, fetch related data
-        const enrichedData = await Promise.all(blindboxData.map(async (box) => {
-          // Fetch category data
-          let categoryData = null;
-          if (box.category_id) {
-            const { data: category } = await supabase
-              .from('categories')
-              .select('*')
-              .eq('id', box.category_id)
-              .single();
-            categoryData = category;
-          }
-          
-          // Fetch product data if there's a product_id field
-          let productData = null;
-          let productCategoryData = null;
-          let characterData = null;
-          let favoritesData = [];
-          let cartItemsData = [];
-          let productPacksData = [];
-          
-          if (box.product_id) {
-            // Get product data
-            const { data: product } = await supabase
-              .from('products')
-              .select('*')
-              .eq('id', box.product_id)
-              .single();
-            productData = product;
-            
-            if (productData) {
-              // Get product category
-              if (productData.category_id) {
-                const { data: productCategory } = await supabase
-                  .from('categories')
-                  .select('*')
-                  .eq('id', productData.category_id)
-                  .single();
-                productCategoryData = productCategory;
-              }
-              
-              // Get character data
-              if (productData.character_id) {
-                const { data: character } = await supabase
-                  .from('characters')
-                  .select('*')
-                  .eq('id', productData.character_id)
-                  .single();
-                characterData = character;
-              }
-              
-              // Get favorites data
-              const { data: favorites } = await supabase
-                .from('favorites')
-                .select('*')
-                .eq('product_id', productData.id);
-              favoritesData = favorites || [];
-              
-              // Get cart items data
-              const { data: cartItems } = await supabase
-                .from('cart_items')
-                .select('*')
-                .eq('product_id', productData.id);
-              cartItemsData = cartItems || [];
-              
-              // Get product packs data
-              const { data: productPacks } = await supabase
-                .from('product_packs')
-                .select('*, pack:pack_id(*)')
-                .eq('product_id', productData.id);
-              productPacksData = productPacks || [];
-            }
-          }
-          
-          return {
-            ...box,
-            category_data: categoryData,
-            product_data: productData,
-            product_category_data: productCategoryData,
-            character_data: characterData,
-            favorites_data: favoritesData,
-            cart_items_data: cartItemsData,
-            product_packs_data: productPacksData
-          };
-        }));
-        
-        console.log('Enriched data with all relations:', enrichedData);
-        
-        // Transform the enriched data to match BlindBoxItem interface
-        const transformedData: BlindBoxItem[] = enrichedData.map((box: any, index: number) => {
-          const categoryInfo = box.category_data || {};
-          const productInfo = box.product_data || {};
-          const productCategoryInfo = box.product_category_data || {};
-          const characterInfo = box.character_data || {};
-          
-          return {
-            id: index + 1,
-            name: box.title || productInfo.name || `Box ${index + 1}`,
-            productId: box.id || (productInfo && productInfo.id) || `box-${index + 1}`,
-            character: (characterInfo && characterInfo.name) || box.character || 'Mystery Character',
-            rarity: box.rarity || (box.level === 'Level 3' ? 'ultra-rare' : box.level === 'Level 2' ? 'rare' : 'common'),
-            level: box.level?.toLowerCase().replace(' ', '') || 'level1',
-            price: parseFloat(box.price) || (productInfo && productInfo.price) || 159.90,
-            image: box.image || (productInfo && productInfo.images && productInfo.images[0]),
-            description: box.description || (productInfo && productInfo.description) || 'Mystery Blind Box',
-            category_id: box.category_id,
-            category_name: (categoryInfo && categoryInfo.name) || (productCategoryInfo && productCategoryInfo.name) || 'Unknown Category',
-            title: box.title || (productInfo && productInfo.name),
-            // Add all related data from the JSON structure
-            product_data: productInfo,
-            category_data: categoryInfo,
-            product_category_data: productCategoryInfo,
-            character_data: characterInfo,
-            favorites_data: box.favorites_data,
-            cart_items_data: box.cart_items_data,
-            product_packs_data: box.product_packs_data
-          };
-        });
-        
-        setBlindBoxesData(transformedData);
-      } catch (err: any) {
-        console.error('Error fetching blind boxes:', err);
-        setError(err.message || 'Failed to fetch blind boxes');
-        // Create fallback data if fetch fails
-        createFallbackBlindBoxes();
-      } finally {
-        setLoading(false);
-      }
+  // Create a single box for each level
+  const createSingleBox = (prefix: string): BlindBoxItem => {
+    // Assign random rarity to the box
+    const rarities = ['common', 'common', 'common', 'common', 'rare', 'rare', 'ultra-rare', 'secret'] as const;
+    const randomRarity = rarities[Math.floor(Math.random() * rarities.length)];
+    const characters = ['Coco', 'Luna', 'Zephyr', 'Momo', 'Blitz', 'Nova', 'Pixel', 'Bubbles'];
+    const randomChar = characters[Math.floor(Math.random() * characters.length)];
+    
+    return {
+      id: 1,
+      name: `${prefix} Box`,
+      productId: `${prefix}-10001`,
+      character: randomChar,
+      rarity: randomRarity,
     };
-    
-    fetchBlindBoxes();
-  }, []);
-  
-  // Create fallback blind boxes if API fails
-  const createFallbackBlindBoxes = () => {
-    const createSingleBox = (prefix: string, level: string): BlindBoxItem => {
-      // Assign random rarity to the box
-      const rarities = ['common', 'common', 'common', 'common', 'rare', 'rare', 'ultra-rare', 'secret'] as const;
-      const randomRarity = rarities[Math.floor(Math.random() * rarities.length)];
-      const characters = ['Coco', 'Luna', 'Zephyr', 'Momo', 'Blitz', 'Nova', 'Pixel', 'Bubbles'];
-      const randomChar = characters[Math.floor(Math.random() * characters.length)];
-      
-      let price = 159.90;
-      let image = '/images/white.jpg';
-      let description = 'Level 1 Mystery Box - Contains a random collectible figure';
-      
-      if (level === 'level2') {
-        price = 199.90;
-        image = '/images/pink.jpg';
-        description = 'Level 2 Premium Mystery Box - Contains a rare collectible figure';
-      } else if (level === 'level3') {
-        price = 249.90;
-        image = '/images/black.jpg';
-        description = 'Level 3 Exclusive Mystery Box - Contains an ultra-rare collectible figure';
-      }
-      
-      return {
-        id: parseInt(prefix.replace('L', '')),
-        name: `HACIPUPU ${prefix} Box`,
-        productId: `${prefix}-10001`,
-        character: randomChar,
-        rarity: randomRarity,
-        level: level,
-        price: price,
-        image: image,
-        description: description,
-        category_id: 'fallback-category',
-        category_name: 'Collectibles'
-      };
-    };
-    
-    // Create fallback boxes
-    const fallbackBoxes = [
-      createSingleBox('L1', 'level1'),
-      createSingleBox('L2', 'level2'),
-      createSingleBox('L3', 'level3')
-    ];
-    
-    setBlindBoxesData(fallbackBoxes);
   };
   
+  // Create single box for each level
+  const level1Box = createSingleBox('L1'); // Level 1 box
+  const level2Box = createSingleBox('L2'); // Level 2 box
+  const level3Box = createSingleBox('L3'); // Level 3 box
+  
   // Get the appropriate box based on selected level
-  const getBoxForLevel = (level: string): BlindBoxItem | undefined => {
-    return blindBoxesData.find(box => box.level === level);
+  const getBoxForLevel = (level: string): BlindBoxItem => {
+    switch (level) {
+      case 'level1': return level1Box;
+      case 'level2': return level2Box;
+      case 'level3': return level3Box;
+      default: return level1Box;
+    }
   };
   
   // Current blind box based on selected level
-  const currentBox = getBoxForLevel(selectedLevel) || {
-    id: 1,
-    name: 'Default Box',
-    productId: 'default-box',
-    level: selectedLevel
-  };
-  
-  // Debug current box info
-  console.log('Current box:', currentBox);
-  
+  const currentBox = getBoxForLevel(selectedLevel);
   // Create an array with just the current box for compatibility with existing code
   const blindBoxes = [currentBox];
 
-  // Product information based on selected level and fetched data
+  // Product information based on selected level
   const getProductInfo = (level: string) => {
-    const box = getBoxForLevel(level);
-    
-    if (box) {
-      return {
-        name: box.title || box.name || `HACIPUPU ${level.replace('level', 'Level ')} Series`,
-        price: `${typeof box.price === 'number' ? box.price.toFixed(2) : box.price} MAD`,
-        description: box.description || 'Mystery blind box with exclusive collectibles'
-      };
-    }
-    
-    // Fallback if no box data is available
     switch (level) {
       case 'level1':
         return {
@@ -375,9 +159,9 @@ const BlindBoxInterface: React.FC = () => {
         };
       default:
         return {
-          name: 'HACIPUPU Mystery Box',
-          price: '159.90 MAD',
-          description: 'Mystery blind box with exclusive collectibles'
+          name: 'Blindbox Level 1',
+          price: '119.00 MAD',
+          description: 'This box includes an "Exciting Macaron" T-shirt and an exclusive Labubu keychain. A cute combo at a great price.'
         };
     }
   };
@@ -456,8 +240,10 @@ const BlindBoxInterface: React.FC = () => {
       price: parseFloat(productPrice.replace(' MAD', '')),
       images: [
         selectedLevel === 'level1'
-          ? (boxId % 2 === 0 ? "/images/black.jpg" : "/images/pink.jpg")
-          : (boxId % 2 === 0 ? "/images/white.jpg" : "/images/pink.jpg")
+          ? "/images/white.jpg"
+          : selectedLevel === 'level2'
+            ? "/images/pink.jpg"
+            : "/images/black.jpg"
       ],
       category: 'Blind Box',
       stock_status: 'in_stock',
@@ -498,7 +284,11 @@ const BlindBoxInterface: React.FC = () => {
       name: `${name} (×${multipleBoxesQuantity})`,
       price: parseFloat(price.replace(' MAD', '')),
       images: [
-        selectedLevel === 'level1' ? "/images/black.jpg" : "/images/white.jpg"
+        selectedLevel === 'level1'
+          ? "/images/white.jpg"
+          : selectedLevel === 'level2'
+            ? "/images/pink.jpg"
+            : "/images/black.jpg"
       ],
       category: 'Blind Box',
       stock_status: 'in_stock',
@@ -506,7 +296,7 @@ const BlindBoxInterface: React.FC = () => {
       // Add blind box specific metadata
       blindBoxInfo: {
         level: selectedLevel,
-        color: 'mixed', // Multiple boxes might have different rarities/colors
+        color: selectedLevel === 'level1' ? 'white' : selectedLevel === 'level2' ? 'pink' : 'black',
         quantity: multipleBoxesQuantity
       }
     };
@@ -720,21 +510,15 @@ const BlindBoxInterface: React.FC = () => {
                     </motion.div>
                   ) : (
                     <img 
-                      src={currentBox.image || (
+                      src={
                         selectedLevel === 'level1'
-                          ? "https://kwpgsqzgmimxodnkjsly.supabase.co/storage/v1/object/public/blindcox//white.jpg"
+                          ? "/images/white.jpg"
                           : selectedLevel === 'level2'
-                            ? "https://kwpgsqzgmimxodnkjsly.supabase.co/storage/v1/object/public/blindcox/biginto%20energy/pink.jpg"
-                            : "https://kwpgsqzgmimxodnkjsly.supabase.co/storage/v1/object/public/blindcox/biginto%20energy/black.jpg"
-                      )}
-                      alt={currentBox.title || currentBox.name || "Blind Box"} 
+                            ? "/images/pink.jpg"
+                            : "/images/black.jpg"
+                      }
+                      alt="Blind Box" 
                       className="w-full h-full object-cover"
-                      onError={(e) => {
-                        // Fallback image if the URL fails to load
-                        const target = e.target as HTMLImageElement;
-                        target.onerror = null; // Prevent infinite loop
-                        target.src = "/images/default-box.jpg";
-                      }}
                     />
                   )}
                 </div>
@@ -762,36 +546,16 @@ const BlindBoxInterface: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            {loading ? (
-              <div className="flex flex-col items-center justify-center py-12">
-                <Loader2 className="w-8 h-8 text-primary-500 animate-spin" />
-                <p className="mt-4 text-gray-600">Loading blind boxes...</p>
-              </div>
-            ) : error ? (
-              <div className="bg-red-50 p-4 rounded-md mb-6">
-                <div className="flex items-center">
-                  <AlertCircle className="w-5 h-5 text-red-600 mr-2" />
-                  <p className="text-red-600 font-medium">{error}</p>
-                </div>
-                <p className="text-sm text-red-500 mt-2">Using fallback data instead.</p>
-              </div>
-            ) : blindBoxesData.length === 0 ? (
-              <div className="bg-amber-50 p-4 rounded-md mb-6">
-                <p className="text-amber-600">No blind boxes found. Using default data.</p>
-              </div>
-            ) : null}
-            
             <h2 className="text-2xl font-bold mb-2">{productName}</h2>
             <div className="text-sm text-gray-500 mb-2">
               Product ID: {selectedBox ? blindBoxes[selectedBox - 1].productId : 'Select a box'}
             </div>
             <div className="text-xl font-semibold text-primary-600 mb-4">{productPrice}</div>
             
-            {productDescription && (
-              <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-700">{productDescription}</p>
-              </div>
-            )}
+            {/* Product Description */}
+            <div className="mb-4 text-gray-700">
+              <p>{productDescription}</p>
+            </div>
 
             <div className="mb-6 p-3 bg-yellow-50 rounded-md text-sm">
               <p className="text-amber-800">
@@ -848,21 +612,12 @@ const BlindBoxInterface: React.FC = () => {
             </div>
 
             <div className="mt-8 pt-4 border-t border-gray-200">
-              {currentBox.description && (
-                <div className="mb-4">
-                  <h3 className="text-sm font-medium text-gray-700 mb-2">Description:</h3>
-                  <p className="text-sm text-gray-600">{currentBox.description}</p>
-                </div>
-              )}
-              
-              {currentBox.category_name && (
-                <div className="mb-4">
-                  <h3 className="text-sm font-medium text-gray-700 mb-2">Category:</h3>
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                    {currentBox.category_name}
-                  </span>
-                </div>
-              )}
+              <a 
+                href="#" 
+                className="inline-flex items-center text-sm text-primary-600 hover:text-primary-800"
+              >
+               
+              </a>
             </div>
           </motion.div>
         </div>
