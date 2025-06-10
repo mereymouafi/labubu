@@ -21,7 +21,7 @@ const AccessoriesPage: React.FC = () => {
       name: 'Pochettes',
       path: '/accessories/pochettes',
       description: 'Stylish pouches and bags featuring Labubu designs',
-      image: '' // Using figurings image as placeholder for pochettes
+      image: 'images/po.jpg' // Using figurings image as placeholder for pochettes
     }
   ];
 
