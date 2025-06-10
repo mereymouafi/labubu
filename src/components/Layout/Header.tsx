@@ -53,36 +53,36 @@ const Header: React.FC = () => {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 w-full bg-white border-b border-gray-200">
       <div className={`transition-all duration-300 ${isScrolled ? 'py-5' : 'py-6'} w-full`}>
-        <div className="w-full mx-0 px-[2cm]">
-          <div className="flex items-center justify-between">
-            {/* Mobile Menu Button */}
+        <div className="w-full mx-0 px-4 md:px-[2cm]">
+          <div className="flex items-center justify-between relative">
+            {/* Mobile Menu Button - Positioned absolutely on mobile */}
             <button
-              className="lg:hidden p-2 ml-2"
+              className="lg:hidden p-2 absolute left-0 z-10"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               aria-label="Toggle menu"
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
 
-            {/* Logo */}
-            <Link to="/" className="flex items-center justify-center">
-              <div 
-                style={{
-                  fontFamily: '"Bebas Neue", sans-serif',
-                  backgroundColor: '#d10a1f',
-                  color: 'white',
-                  display: 'flex',                // Flex container
-                  justifyContent: 'center',      // Horizontal centering
-                  alignItems: 'center',          // Vertical centering
-                  height: '30px',                // Fixed height for equal spacing
-                  width: 'auto',                 // Or 100% if you want full width
-                  padding: '3px 3px 0 3px',             // Left and right padding only
-                }}
-                className="text-3xl uppercase"
-              >
-                LABUBU MAROC
-              </div>
-            </Link>
+            {/* Logo - Centered on mobile */}
+            <div className="flex-1 flex justify-center lg:justify-start">
+              <Link to="/" className="flex items-center justify-center">
+                <div 
+                  className="bg-labubumaroc-red text-white py-1 px-2 text-center"
+                  style={{
+                    fontFamily: '"Bebas Neue", sans-serif',
+                    fontSize: 'clamp(0.875rem, 3.5vw, 1.5rem)',
+                    lineHeight: '1.2',
+                    letterSpacing: '0.5px',
+                    maxWidth: '100%',
+                    whiteSpace: 'nowrap',
+                    display: 'inline-block',
+                  }}
+                >
+                  LABUBU MAROC
+                </div>
+              </Link>
+            </div>
 
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center">
@@ -134,12 +134,56 @@ const Header: React.FC = () => {
               ))}
             </nav>
 
+            {/* Search, Wishlist, and Cart Icons */}
+            <div className="flex items-center space-x-2 lg:space-x-4">
+              {/* Search Icon */}
+              <button
+                className="p-2 text-black hover:text-labubumaroc-red transition-colors duration-200"
+                onClick={() => setIsSearchOpen(!isSearchOpen)}
+                aria-label="Search"
+              >
+                <Search size={20} />
+              </button>
+
+              {/* Wishlist Icon */}
+              <Link 
+                to="/wishlist" 
+                className="p-2 text-black hover:text-labubumaroc-red transition-colors duration-200 relative"
+                aria-label="Wishlist"
+              >
+                <Heart size={20} />
+                {wishlistCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-labubumaroc-red text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                    {wishlistCount}
+                  </span>
+                )}
+              </Link>
+
+              {/* Cart Icon */}
+              <Link 
+                to="/cart" 
+                className="p-2 text-black hover:text-labubumaroc-red transition-colors duration-200 relative"
+                aria-label="Cart"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M6 2L3 6V20C3 20.5304 3.21071 21.0391 3.58579 21.4142C3.96086 21.7893 4.46957 22 5 22H19C19.5304 22 20.0391 21.7893 20.4142 21.4142C20.7893 21.0391 21 20.5304 21 20V6L18 2H6Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M3 6H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M16 10C16 11.0609 15.5786 12.0783 14.8284 12.8284C14.0783 13.5786 13.0609 14 12 14C10.9391 14 9.92172 13.5786 9.17157 12.8284C8.42143 12.0783 8 11.0609 8 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-labubumaroc-red text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                    {cartCount}
+                  </span>
+                )}
+              </Link>
+            </div>
+
             {/* Search Input - Visible on desktop */}
             <div className="hidden lg:flex items-center relative border border-gray-300 rounded-full px-5 py-3 w-32 xl:w-64">
               <input 
                 type="text" 
-                placeholder="SEARCH"
-                className="w-full text-xs uppercase tracking-wider outline-none placeholder-gray-400 labubumaroc-nav-font"
+                placeholder="Search..." 
+                className="w-full outline-none bg-transparent"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => {
@@ -154,49 +198,11 @@ const Header: React.FC = () => {
                     navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
                   }
                 }}
-                className="cursor-pointer"
-              >
-                <Search size={16} className="text-gray-400 hover:text-black" />
-              </button>
-            </div>
-
-            {/* Desktop Icons */}
-            <div className="flex items-center space-x-6 mr-6">
-              <button 
-                onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className="lg:hidden p-2 text-black hover:text-labubumaroc-red transition-colors duration-200"
+                className="absolute right-3 text-gray-500 hover:text-labubumaroc-red transition-colors duration-200"
                 aria-label="Search"
               >
-                <Search size={20} />
+                <Search size={16} />
               </button>
-              <Link 
-                to="/wishlist" 
-                className="p-2 text-black hover:text-labubumaroc-red transition-colors duration-200 hidden md:block relative"
-                aria-label="Wishlist"
-              >
-                <Heart size={20} />
-                {wishlistCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-labubumaroc-red text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                    {wishlistCount > 99 ? '99+' : wishlistCount}
-                  </span>
-                )}
-              </Link>
-              <Link 
-                to="/cart" 
-                className="p-2 text-black hover:text-labubumaroc-red transition-colors duration-200 flex items-center relative"
-                aria-label="Shopping Cart"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M6 2L3 6V20C3 20.5304 3.21071 21.0391 3.58579 21.4142C3.96086 21.7893 4.46957 22 5 22H19C19.5304 22 20.0391 21.7893 20.4142 21.4142C20.7893 21.0391 21 20.5304 21 20V6L18 2H6Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M3 6H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M16 10C16 11.0609 15.5786 12.0783 14.8284 12.8284C14.0783 13.5786 13.0609 14 12 14C10.9391 14 9.92172 13.5786 9.17157 12.8284C8.42143 12.0783 8 11.0609 8 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-labubumaroc-red text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                    {cartCount > 99 ? '99+' : cartCount}
-                  </span>
-                )}
-              </Link>
             </div>
           </div>
         </div>
