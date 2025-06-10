@@ -84,7 +84,11 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({ isOpen, onClose, 
                 
                 <div className="bg-gray-50 p-4 rounded-md mb-4">
                   <p className="text-sm text-gray-700 mb-1">Order ID:</p>
-                  <p className="font-mono font-medium text-gray-900">{orderId}</p>
+                  <p className="font-mono font-medium text-gray-900">
+                    {orderId.length > 8 
+                      ? `${orderId.substring(0, 4)}...${orderId.substring(orderId.length - 4)}` 
+                      : orderId}
+                  </p>
                 </div>
                 
                 <p className="text-sm text-gray-600 mb-6 text-center">
