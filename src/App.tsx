@@ -11,7 +11,6 @@ const Categories = lazy(() => import('./pages/Categories'));
 const CategoryProducts = lazy(() => import('./pages/CategoryProducts'));
 const Characters = lazy(() => import('./pages/Characters'));
 const CharacterProducts = lazy(() => import('./pages/CharacterProducts'));
-const Shop = lazy(() => import('./pages/Shop'));
 const ProductDetail = lazy(() => import('./pages/ProductDetail'));
 const Cart = lazy(() => import('./pages/Cart'));
 const Checkout = lazy(() => import('./pages/Checkout'));
@@ -62,7 +61,6 @@ function App() {
               <Route path="categories/:slug" element={<CategoryProducts />} />
               <Route path="characters" element={<Characters />} />
               <Route path="characters/:slug" element={<CharacterProducts />} />
-              <Route path="shop" element={<Shop />} />
               <Route path="product/:id" element={<ProductDetail />} />
               <Route path="new-arrivals" element={<NewArrivalsPage />} />
               <Route path="new-featured" element={<NewAndFeaturedPage />} />

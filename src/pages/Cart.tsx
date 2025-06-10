@@ -122,8 +122,8 @@ const Cart: React.FC = () => {
 
       {cartItems.length === 0 ? (
         <div className="text-center py-16">
-          <p className="text-gray-500 mb-6">Your cart is empty</p>
-          <Link to="/shop" className="px-6 py-2 bg-labubumaroc-red text-white rounded hover:bg-red-700 transition-colors">
+          <p className="text-gray-500 mb-6">Add some products to your cart before proceeding to checkout.</p>
+          <Link to="/" className="px-6 py-2 bg-labubumaroc-red text-white rounded hover:bg-red-700 transition-colors">
             Continue Shopping
           </Link>
         </div>

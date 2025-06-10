@@ -31,7 +31,7 @@ const Wishlist: React.FC = () => {
       {wishlistItems.length === 0 ? (
         <div className="text-center py-16">
           <p className="text-xl text-gray-500 mb-6">Your wishlist is empty</p>
-          <Link to="/shop" className="btn-primary inline-flex items-center">
+          <Link to="/" className="btn-primary inline-flex items-center">
             <ArrowLeft size={18} className="mr-2" />
             Continue Shopping
           </Link>

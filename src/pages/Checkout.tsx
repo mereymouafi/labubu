@@ -209,7 +209,7 @@ const Checkout: React.FC = () => {
         <div className="text-center">
           <h2 className="text-2xl font-medium mb-6">Your cart is empty</h2>
           <p className="text-gray-500 mb-6">Add some products to your cart before proceeding to checkout.</p>
-          <Link to="/shop" className="px-6 py-3 bg-labubumaroc-red text-white rounded hover:bg-red-700 transition-colors">
+          <Link to="/" className="px-6 py-3 bg-labubumaroc-red text-white rounded hover:bg-red-700 transition-colors">
             Continue Shopping
           </Link>
         </div>

@@ -234,7 +234,7 @@ const ProductDetail: React.FC = () => {
       <div className="container-custom py-32 text-center">
         <h1 className="text-3xl font-bold mb-4">Product Not Found</h1>
         <p className="mb-8">The product you're looking for doesn't exist or has been removed.</p>
-        <Link to="/shop" className="btn-primary">
+        <Link to="/" className="btn-primary">
           Continue Shopping
         </Link>
       </div>
@@ -246,10 +246,12 @@ const ProductDetail: React.FC = () => {
       <div className="container-custom">
         {/* Breadcrumb */}
         <div className="mb-8">
-          <nav className="flex text-sm text-gray-500">
+          <nav className="text-sm text-gray-500 mb-6 flex items-center">
             <Link to="/" className="hover:text-primary-600">Home</Link>
             <span className="mx-2">/</span>
-            <Link to="/shop" className="hover:text-primary-600">Shop</Link>
+            <Link to={`/categories/${product.category?.toLowerCase()}`} className="hover:text-primary-600">
+              {product.category}
+            </Link>
             <span className="mx-2">/</span>
             <span className="text-gray-900">{product.name}</span>
           </nav>

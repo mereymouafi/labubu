@@ -98,17 +98,11 @@ const OrderConfirmation: React.FC<OrderConfirmationProps> = ({ isOpen, onClose, 
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Link 
                     to="/"
-                    className="flex-1 py-2 px-4 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-md text-center font-medium transition-colors"
+                    className="w-full py-2 px-4 bg-labubumaroc-red hover:bg-red-700 text-white rounded-md text-center font-medium transition-colors"
                     onClick={onClose}
                   >
                     Continue Shopping
                   </Link>
-                  <button
-                    onClick={onClose}
-                    className="flex-1 py-2 px-4 bg-labubumaroc-red hover:bg-red-700 text-white rounded-md text-center font-medium transition-colors"
-                  >
-                    OK
-                  </button>
                 </div>
               </div>
             </motion.div>

@@ -28,11 +28,11 @@ const NotFound: React.FC = () => {
               Back to Home
             </Link>
             <Link
-              to="/shop"
+              to="/categories"
               className="btn-secondary flex items-center justify-center gap-2"
             >
               <ShoppingBag size={18} />
-              Go to Shop
+              Browse Categories
             </Link>
           </div>
         </motion.div>
