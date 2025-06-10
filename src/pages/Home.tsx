@@ -6,6 +6,7 @@ import TShirtSection from '../components/Home/TShirtSection';
 import PortClesSection from '../components/Home/PortClesSection';
 import FiguringsPackSection from '../components/Home/FiguringsPackSection';
 import PochettesSection from '../components/Home/PochettesSection';
+import MugsSection from '../components/Home/MugsSection';
 
 const Home: React.FC = () => {
   return (
@@ -17,6 +18,7 @@ const Home: React.FC = () => {
       </div>
       <TShirtSection />
       <PochettesSection />
+      <MugsSection />
       <PortClesSection />
       <div className="container mx-auto px-4 md:px-8 lg:px-16 xl:px-24">
         <TrendingProducts />
