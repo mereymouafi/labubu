@@ -215,32 +215,33 @@ const Header: React.FC = () => {
               {/* Search Input - Visible on desktop */}
               <div 
                 ref={searchContainerRef}
-                className="hidden lg:flex items-center relative border border-gray-300 rounded-full px-5 py-3 w-32 xl:w-64"
+                className="hidden lg:block relative w-32 xl:w-64"
               >
-                <input 
-                  ref={searchInputRef}
-                  type="text" 
-                  placeholder="Search..." 
-                  className="w-full outline-none bg-transparent"
-                  value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    setShowSuggestions(true);
+                <form 
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleSearch();
                   }}
-                  onFocus={() => setShowSuggestions(true)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && searchQuery.trim()) {
-                      handleSearch();
-                    }
-                  }}
-                />
-                <button 
-                  onClick={handleSearch}
-                  className="text-gray-500 hover:text-labubumaroc-red transition-colors duration-200"
-                  aria-label="Search"
+                  className="flex items-center"
                 >
-                  <Search size={16} />
-                </button>
+                  <div className="relative w-full">
+                    <input 
+                      ref={searchInputRef}
+                      type="text" 
+                      placeholder="Search products..." 
+                      className="w-full py-2 pl-10 pr-4 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-labubumaroc-red focus:border-transparent text-sm"
+                      value={searchQuery}
+                      onChange={(e) => {
+                        setSearchQuery(e.target.value);
+                        setShowSuggestions(true);
+                      }}
+                      onFocus={() => setShowSuggestions(true)}
+                    />
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Search size={18} className="text-gray-400" />
+                    </div>
+                  </div>
+                </form>
                 
                 {/* Search Suggestions - Desktop */}
                 {showSuggestions && (
@@ -264,46 +265,50 @@ const Header: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="absolute top-full left-0 right-0 bg-white shadow-md py-4 px-0 z-30 lg:hidden"
+            className="absolute top-full left-0 right-0 bg-white shadow-md py-4 px-4 z-30 lg:hidden"
           >
             <div className="w-full mx-auto">
-              <div className="relative px-4" ref={searchContainerRef}>
-                <input
-                  type="text"
-                  placeholder="SEARCH"
-                  className="w-full py-2 pl-10 pr-4 border-b-2 border-gray-200 focus:border-labubumaroc-red outline-none uppercase text-xs tracking-wider"
-                  autoFocus
-                  value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    setShowSuggestions(true);
+              <div className="relative" ref={searchContainerRef}>
+                <form 
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleSearch();
                   }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && searchQuery.trim()) {
-                      handleSearch();
-                    }
-                  }}
-                />
-                <button 
-                  onClick={handleSearch}
-                  className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-labubumaroc-red"
+                  className="flex items-center"
                 >
-                  <Search size={20} />
-                </button>
-                <button
-                  onClick={() => {
-                    setIsSearchOpen(false);
-                    setSearchQuery('');
-                  }}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-labubumaroc-red"
-                  aria-label="Close search"
-                >
-                  <X size={20} />
-                </button>
+                  <div className="relative flex-grow">
+                    <input
+                      type="text"
+                      placeholder="Search products..."
+                      className="w-full py-2 pl-10 pr-4 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-labubumaroc-red focus:border-transparent text-sm"
+                      autoFocus
+                      value={searchQuery}
+                      onChange={(e) => {
+                        setSearchQuery(e.target.value);
+                        setShowSuggestions(true);
+                      }}
+                    />
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Search size={18} className="text-gray-400" />
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsSearchOpen(false);
+                      setSearchQuery('');
+                      setShowSuggestions(false);
+                    }}
+                    className="ml-2 p-2 text-gray-400 hover:text-labubumaroc-red rounded-full hover:bg-gray-100"
+                    aria-label="Close search"
+                  >
+                    <X size={20} />
+                  </button>
+                </form>
                 
                 {/* Search Suggestions - Mobile */}
                 {showSuggestions && searchQuery.trim() && (
-                  <div className="absolute top-full left-0 right-0 mt-1 z-50">
+                  <div className="absolute left-0 right-0 mt-2 z-50">
                     <SearchSuggestions 
                       suggestions={searchSuggestions}
                       query={searchQuery}
