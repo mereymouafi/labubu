@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, Heart, Search, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useShop } from '../../context/ShopContext';
+import SearchSuggestions from '../SearchSuggestions';
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -11,11 +12,17 @@ const Header: React.FC = () => {
   const [isCategoriesDropdownOpen, setIsCategoriesDropdownOpen] = useState(false);
   const [isMobileCategoriesOpen, setIsMobileCategoriesOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const navigate = useNavigate();
   
-  // Get cart and wishlist counts from shop context
-  const { cartCount, wishlistCount } = useShop();
+  // Get cart and wishlist counts and search function from shop context
+  const { cartCount, wishlistCount, searchProducts } = useShop();
+  
+  // Get search suggestions based on query
+  const searchSuggestions = searchQuery.trim() ? searchProducts(searchQuery) : [];
 
   useEffect(() => {
     const handleScroll = () => {
@@ -32,7 +39,25 @@ const Header: React.FC = () => {
     setIsCategoriesDropdownOpen(false);
     setIsMobileCategoriesOpen(false);
     setSearchQuery('');
+    setShowSuggestions(false);
   }, [location]);
+  
+  // Handle clicks outside of search suggestions
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        searchContainerRef.current && 
+        !searchContainerRef.current.contains(event.target as Node)
+      ) {
+        setShowSuggestions(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   // Updated to match LABUBU MAROC's navigation items
   const navItems = [
@@ -49,6 +74,14 @@ const Header: React.FC = () => {
       ]
     }
   ];
+  
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setShowSuggestions(false);
+      setIsSearchOpen(false);
+    }
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 w-full bg-white border-b border-gray-200">
@@ -99,36 +132,38 @@ const Header: React.FC = () => {
                     <div className="flex items-center cursor-pointer">
                       <Link 
                         to={item.path}
-                        className={`font-medium py-4 px-3 text-black hover:text-labubumaroc-red transition-colors duration-200 uppercase text-base font-bold tracking-wider labubumaroc-nav-font ${location.pathname.startsWith(item.path) ? 'text-labubumaroc-red' : ''}`}
+                        className={`px-5 py-2 mx-1 text-base font-medium uppercase labubumaroc-nav-font hover:text-labubumaroc-red transition-colors duration-200 ${location.pathname === item.path ? 'text-labubumaroc-red' : 'text-black'}`}
                       >
                         {item.name}
-                        <ChevronDown size={16} className="inline ml-1 pb-1" />
                       </Link>
-                      
-                      {/* Accessories Dropdown */}
-                      {isCategoriesDropdownOpen && (
-                        <div className="absolute top-full left-0 bg-white shadow-lg z-50 w-[200px] p-4">
-                          <div className="flex flex-col space-y-3">
-                            {item.dropdownItems.map((dropdownItem) => (
-                              <Link
-                                key={dropdownItem.name}
-                                to={dropdownItem.path}
-                                className="text-sm font-medium hover:text-labubumaroc-red transition-colors duration-200 uppercase"
-                              >
-                                {dropdownItem.name}
-                              </Link>
-                            ))}
-                          </div>
-                        </div>
-                      )}
+                      <ChevronDown size={14} className={`transform transition-transform duration-300 ${isCategoriesDropdownOpen ? 'rotate-180' : ''}`} />
                     </div>
                   ) : (
-                    <Link
+                    <Link 
                       to={item.path}
-                      className={`font-medium py-4 px-3 text-black hover:text-labubumaroc-red transition-colors duration-200 uppercase text-base font-bold tracking-wider labubumaroc-nav-font ${location.pathname === item.path ? 'text-labubumaroc-red' : ''}`}
+                      className={`px-5 py-2 mx-1 text-base font-medium uppercase labubumaroc-nav-font hover:text-labubumaroc-red transition-colors duration-200 ${location.pathname === item.path ? 'text-labubumaroc-red' : 'text-black'}`}
                     >
                       {item.name}
                     </Link>
+                  )}
+
+                  {/* Accessories Dropdown Menu */}
+                  {item.name === 'ACCESSORIES' && isCategoriesDropdownOpen && (
+                    <div 
+                      className="absolute top-full left-0 mt-1 bg-white shadow-md rounded-md overflow-hidden min-w-[200px] z-20"
+                      onMouseEnter={() => setIsCategoriesDropdownOpen(true)}
+                      onMouseLeave={() => setIsCategoriesDropdownOpen(false)}
+                    >
+                      {item.dropdownItems?.map((dropdownItem) => (
+                        <Link 
+                          key={dropdownItem.name}
+                          to={dropdownItem.path}
+                          className="block px-5 py-3 hover:bg-gray-50 hover:text-labubumaroc-red text-sm text-gray-800 uppercase"
+                        >
+                          {dropdownItem.name}
+                        </Link>
+                      ))}
+                    </div>
                   )}
                 </div>
               ))}
@@ -136,9 +171,9 @@ const Header: React.FC = () => {
 
             {/* Search, Wishlist, and Cart Icons */}
             <div className="flex items-center space-x-2 lg:space-x-4">
-              {/* Search Icon */}
+              {/* Mobile Search Icon - Only visible on mobile */}
               <button
-                className="p-2 text-black hover:text-labubumaroc-red transition-colors duration-200"
+                className="lg:hidden p-2 text-black hover:text-labubumaroc-red transition-colors duration-200"
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
                 aria-label="Search"
               >
@@ -176,33 +211,46 @@ const Header: React.FC = () => {
                   </span>
                 )}
               </Link>
-            </div>
 
-            {/* Search Input - Visible on desktop */}
-            <div className="hidden lg:flex items-center relative border border-gray-300 rounded-full px-5 py-3 w-32 xl:w-64">
-              <input 
-                type="text" 
-                placeholder="Search..." 
-                className="w-full outline-none bg-transparent"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && searchQuery.trim()) {
-                    navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-                  }
-                }}
-              />
-              <button 
-                onClick={() => {
-                  if (searchQuery.trim()) {
-                    navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-                  }
-                }}
-                className="absolute right-3 text-gray-500 hover:text-labubumaroc-red transition-colors duration-200"
-                aria-label="Search"
+              {/* Search Input - Visible on desktop */}
+              <div 
+                ref={searchContainerRef}
+                className="hidden lg:flex items-center relative border border-gray-300 rounded-full px-5 py-3 w-32 xl:w-64"
               >
-                <Search size={16} />
-              </button>
+                <input 
+                  ref={searchInputRef}
+                  type="text" 
+                  placeholder="Search..." 
+                  className="w-full outline-none bg-transparent"
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setShowSuggestions(true);
+                  }}
+                  onFocus={() => setShowSuggestions(true)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && searchQuery.trim()) {
+                      handleSearch();
+                    }
+                  }}
+                />
+                <button 
+                  onClick={handleSearch}
+                  className="text-gray-500 hover:text-labubumaroc-red transition-colors duration-200"
+                  aria-label="Search"
+                >
+                  <Search size={16} />
+                </button>
+                
+                {/* Search Suggestions - Desktop */}
+                {showSuggestions && (
+                  <SearchSuggestions 
+                    suggestions={searchSuggestions} 
+                    query={searchQuery}
+                    onSelectSuggestion={() => setShowSuggestions(false)} 
+                  />
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -219,54 +267,68 @@ const Header: React.FC = () => {
             className="absolute top-full left-0 right-0 bg-white shadow-md py-4 px-0 z-30 lg:hidden"
           >
             <div className="w-full mx-auto">
-              <div className="relative px-4">
+              <div className="relative px-4" ref={searchContainerRef}>
                 <input
                   type="text"
                   placeholder="SEARCH"
                   className="w-full py-2 pl-10 pr-4 border-b-2 border-gray-200 focus:border-labubumaroc-red outline-none uppercase text-xs tracking-wider"
                   autoFocus
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setShowSuggestions(true);
+                  }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && searchQuery.trim()) {
-                      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-                      setIsSearchOpen(false);
+                      handleSearch();
                     }
                   }}
                 />
                 <button 
-                  onClick={() => {
-                    if (searchQuery.trim()) {
-                      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-                      setIsSearchOpen(false);
-                    }
-                  }}
+                  onClick={handleSearch}
                   className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-labubumaroc-red"
                 >
                   <Search size={20} />
                 </button>
                 <button
-                  onClick={() => setIsSearchOpen(false)}
-                  className="absolute right-0 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-labubumaroc-red"
+                  onClick={() => {
+                    setIsSearchOpen(false);
+                    setSearchQuery('');
+                  }}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-labubumaroc-red"
                   aria-label="Close search"
                 >
                   <X size={20} />
                 </button>
+                
+                {/* Search Suggestions - Mobile */}
+                {showSuggestions && searchQuery.trim() && (
+                  <div className="absolute top-full left-0 right-0 mt-1 z-50">
+                    <SearchSuggestions 
+                      suggestions={searchSuggestions}
+                      query={searchQuery}
+                      onSelectSuggestion={() => {
+                        setIsSearchOpen(false);
+                        setShowSuggestions(false);
+                      }}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Mobile Navigation Menu */}
+      {/* Mobile Menu */}
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="lg:hidden absolute top-full left-0 right-0 bg-white shadow-md z-50 overflow-hidden"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+            className="lg:hidden bg-white shadow-md overflow-hidden z-40"
           >
             <div className="px-4 pt-2 pb-5">
               <ul className="space-y-3">

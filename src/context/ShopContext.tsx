@@ -31,6 +31,7 @@ type ShopContextType = {
   wishlistCount: number;
   setSelectedCartItems: (items: CartItem[]) => void;
   clearSelectedCartItems: () => void;
+  searchProducts: (query: string) => Product[];
 };
 
 // Create the context
@@ -245,6 +246,19 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return wishlistItems.some(item => item.id === productId);
   };
 
+  // Search products based on query
+  const searchProducts = (query: string): Product[] => {
+    if (!query.trim()) return [];
+    
+    const normalizedQuery = query.toLowerCase().trim();
+    
+    return products.filter(product => 
+      product.name.toLowerCase().includes(normalizedQuery) ||
+      (product.description && product.description.toLowerCase().includes(normalizedQuery)) ||
+      (product.category && product.category.toLowerCase().includes(normalizedQuery))
+    ).slice(0, 5); // Return only the first 5 matching products for suggestions
+  };
+
   // Create value object for context
   const contextValue: ShopContextType = {
     cartItems,
@@ -260,7 +274,8 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     cartCount,
     wishlistCount,
     setSelectedCartItems,
-    clearSelectedCartItems
+    clearSelectedCartItems,
+    searchProducts
   };
 
   return (
