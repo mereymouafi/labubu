@@ -2,15 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useShop } from '../context/ShopContext';
-import { createOrder, Order, OrderItem, ShippingInfo as SupabaseShippingInfo, fetchProductById, Product } from '../lib/supabase';
+import { createOrder, Order, OrderItem, ShippingInfo, fetchProductById } from '../lib/supabase';
+import OrderConfirmation from '../components/OrderConfirmation';
 
 // Checkout form types
-type ShippingInfo = {
-  fullName: string;
-  address: string;
-  phone: string;
-};
-
 type PaymentMethod = 'cash-on-delivery';
 
 const Checkout: React.FC = () => {
@@ -18,6 +13,10 @@ const Checkout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
+  // Order confirmation modal state
+  const [showOrderConfirmation, setShowOrderConfirmation] = useState(false);
+  const [confirmedOrderId, setConfirmedOrderId] = useState('');
+
   // Check if there's a product in the URL parameters
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
@@ -60,7 +59,7 @@ const Checkout: React.FC = () => {
   const [isProcessingOrder, setIsProcessingOrder] = useState(false);
   
   // State for form data
-  const [shippingInfo, setShippingInfo] = useState<ShippingInfo>({
+  const [shippingInfo, setShippingInfo] = useState({
     fullName: '',
     address: '',
     phone: '',
@@ -82,9 +81,6 @@ const Checkout: React.FC = () => {
       [name]: value
     }));
   };
-  
-  
-
   
   // Submit order
   const placeOrder = async () => {
@@ -120,22 +116,18 @@ const Checkout: React.FC = () => {
           age: (item.product as any).selectedAge
         };
         
-        // Create the order item with t-shirt customization details if available
         return {
-          product_id: String(item.product.id || ''),
-          product_name: item.product.name || 'Unknown Product',
-          product_image: item.product.images && Array.isArray(item.product.images) && item.product.images.length > 0 
-            ? item.product.images[0] 
-            : '',
-          price: item.product.price || 0,
-          quantity: item.quantity || 1,
-          // Include t-shirt customization details if available
-          tshirt_options: tshirtOptions.size || tshirtOptions.color || tshirtOptions.style ? tshirtOptions : undefined
+          product_id: item.product.id,
+          product_name: item.product.name,
+          product_image: item.product.images && item.product.images.length > 0 ? item.product.images[0] : '',
+          price: item.product.price,
+          quantity: item.quantity,
+          tshirt_options: item.product.category === 'T-shirts' ? tshirtOptions : undefined
         };
       });
       
       // Convert shipping info to match Supabase type
-      const formattedShippingInfo: SupabaseShippingInfo = {
+      const formattedShippingInfo: ShippingInfo = {
         firstName: shippingInfo.fullName.split(' ')[0] || '',
         lastName: shippingInfo.fullName.split(' ').slice(1).join(' ') || '',
         email: '',
@@ -177,9 +169,11 @@ const Checkout: React.FC = () => {
           clearCart();
         }
         
-        // Show success alert and redirect to home
-        alert(`Order #${result.orderId} placed successfully! Thank you for shopping with Labubu Maroc.`);
-        navigate('/');
+        // Show order confirmation modal
+        setShowOrderConfirmation(true);
+        if (result.orderId) {
+          setConfirmedOrderId(result.orderId);
+        }
       } else {
         // Show specific error message from backend
         const errorMsg = result.error ? String(result.error) : 'Failed to save order';
@@ -337,6 +331,17 @@ const Checkout: React.FC = () => {
           </div>
         </div>
       </div>
+      
+      {showOrderConfirmation && (
+        <OrderConfirmation 
+          isOpen={showOrderConfirmation}
+          orderId={confirmedOrderId} 
+          onClose={() => {
+            setShowOrderConfirmation(false);
+            navigate('/');
+          }} 
+        />
+      )}
     </motion.div>
   );
 };
