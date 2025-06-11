@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Product, supabase } from '../lib/supabase';
 import ProductCard from '../components/Product/ProductCard';
 import { Spinner } from '../components/UI/Spinner';
+import { useSearchParams } from 'react-router-dom';
 import '../styles/pochette.css';
 
 const PochettesPage: React.FC = () => {
@@ -10,6 +11,8 @@ const PochettesPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [phoneModels, setPhoneModels] = useState<string[]>([]);
   const [selectedPhone, setSelectedPhone] = useState<string>('');
+  const [searchParams] = useSearchParams();
+  const fromAccessories = searchParams.get('from') === 'accessories';
 
   useEffect(() => {
     const loadPochettes = async () => {
@@ -99,8 +102,8 @@ const PochettesPage: React.FC = () => {
               Browse our collection of stylish Labubu pouches and bags
             </p>
             
-            {/* Phone model selector - As buttons */}
-            {phoneModels.length > 0 && (
+            {/* Phone model selector - As buttons (hidden when coming from accessories) */}
+            {phoneModels.length > 0 && !fromAccessories && (
               <div className="mt-6 mb-8">
                 <h3 className="text-sm font-medium text-gray-700 mb-3">
                   SELECT YOUR PHONE MODEL
