@@ -126,7 +126,7 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setWishlistCount(wishlistItems.length);
   }, [wishlistItems]);
 
-  // Add a product to the cart as a new item (doesn't merge with existing items)
+  // Add a product to the cart
   const addToCart = (product: Product, quantity: number = 1) => {
     try {
       // First, ensure the product object is properly serializable
@@ -141,9 +141,6 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         // Include optional properties only if they exist
         original_price: product.original_price,
         description: product.description,
-        slug: product.slug,
-        is_popular: product.is_popular,
-        is_trending: product.is_trending,
         // Include blind box info if it exists
         blindBoxInfo: product.blindBoxInfo ? {
           level: product.blindBoxInfo.level,
@@ -156,7 +153,35 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       };
 
       setCartItems(prevItems => {
-        // Create a new cart item with a unique ID to ensure it's treated as a separate item
+        // If quantity > 1, try to find and update existing item
+        if (quantity > 1) {
+          const existingItemIndex = prevItems.findIndex(item => 
+            item.product.id === cleanProduct.id && 
+            item.quantity === 1 && // Only update items with quantity 1
+            (!item.product.selectedColor || item.product.selectedColor === cleanProduct.selectedColor) &&
+            (!item.product.selectedPhone || item.product.selectedPhone === cleanProduct.selectedPhone)
+          );
+
+          if (existingItemIndex >= 0) {
+            // Update quantity of existing item
+            const updatedItems = [...prevItems];
+            updatedItems[existingItemIndex] = {
+              ...updatedItems[existingItemIndex],
+              quantity: updatedItems[existingItemIndex].quantity + quantity - 1
+            };
+            
+            // Save to localStorage
+            try {
+              localStorage.setItem('cart', JSON.stringify(updatedItems));
+            } catch (storageError) {
+              console.error('Error saving cart to localStorage:', storageError);
+            }
+            
+            return updatedItems;
+          }
+        }
+
+        // If no existing item to update or quantity is 1, add as new item
         const newCartItem = {
           product: {
             ...cleanProduct,
@@ -171,10 +196,10 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           } : undefined
         };
 
-        // Always add as a new item
+        // Add as a new item
         const updatedItems = [...prevItems, newCartItem];
         
-        // Save to localStorage immediately to ensure data is persisted
+        // Save to localStorage
         try {
           localStorage.setItem('cart', JSON.stringify(updatedItems));
         } catch (storageError) {
