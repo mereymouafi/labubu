@@ -21,6 +21,10 @@ const ProductDetail: React.FC = () => {
   const [selectedColor, setSelectedColor] = useState<string>('');
   // For Pochette phone compatibility selection
   const [selectedPhone, setSelectedPhone] = useState<string>('');
+  // For custom phone model
+  const [showCustomPhoneInput, setShowCustomPhoneInput] = useState<boolean>(false);
+  const [customPhone, setCustomPhone] = useState<string>('');
+  const [confirmedCustomPhone, setConfirmedCustomPhone] = useState<string>('');
   // timestamp (ms) until which auto-scroll is paused
   const [pauseUntil, setPauseUntil] = useState<number>(0);
   const [allPackImages, setAllPackImages] = useState<string[]>([]);
@@ -476,19 +480,61 @@ const ProductDetail: React.FC = () => {
     phones = product.phone;
   }
   return phones.length > 0 ? (
-    phones.map((phone, idx) => (
+    <>
+      {phones.map((phone, idx) => (
+        <button
+          key={idx}
+          onClick={() => {
+            setSelectedPhone(phone);
+            setShowCustomPhoneInput(false);
+            setConfirmedCustomPhone('');
+          }}
+          className={`py-1 px-3 text-xs border rounded-md transition-colors duration-150 ${
+            selectedPhone === phone && !confirmedCustomPhone
+              ? 'bg-primary-500 text-white border-primary-500 font-medium'
+              : 'border-gray-300 hover:border-primary-500 hover:bg-primary-50'
+          }`}
+        >
+          {phone}
+        </button>
+      ))}
       <button
-        key={idx}
-        onClick={() => setSelectedPhone(phone)}
+        onClick={() => {
+          setShowCustomPhoneInput(true);
+          setSelectedPhone('');
+        }}
         className={`py-1 px-3 text-xs border rounded-md transition-colors duration-150 ${
-          selectedPhone === phone
+          confirmedCustomPhone
             ? 'bg-primary-500 text-white border-primary-500 font-medium'
             : 'border-gray-300 hover:border-primary-500 hover:bg-primary-50'
         }`}
       >
-        {phone}
+        Other
       </button>
-    ))
+      {showCustomPhoneInput && (
+        <div className="flex gap-2 mt-2 w-full">
+          <input
+            type="text"
+            className="py-1 px-2 border rounded-md text-xs flex-1"
+            placeholder="Enter your phone model"
+            value={customPhone}
+            onChange={e => setCustomPhone(e.target.value)}
+          />
+          <button
+            className="py-1 px-3 text-xs border rounded-md bg-primary-500 text-white border-primary-500 font-medium"
+            onClick={() => {
+              if (customPhone.trim()) {
+                setConfirmedCustomPhone(customPhone.trim());
+                setShowCustomPhoneInput(false);
+                setSelectedPhone('');
+              }
+            }}
+          >
+            Confirm
+          </button>
+        </div>
+      )}
+    </>
   ) : (
     <button className="py-1 px-3 text-xs border rounded-md border-gray-300 hover:border-primary-500 hover:bg-primary-50">
       Unknown
@@ -522,7 +568,10 @@ const ProductDetail: React.FC = () => {
                     </button>
                   </div>
                   <button
-                    disabled={product.stock_status === 'out-of-stock'}
+                    disabled={
+                      product.stock_status === 'out-of-stock' ||
+                      (product.category === 'Pochette' && (!selectedColor || (!selectedPhone && !confirmedCustomPhone)))
+                    }
                     onClick={() => {
                       if (product) {
                         // If we have pack data, use its price instead of product price
@@ -531,11 +580,21 @@ const ProductDetail: React.FC = () => {
                           price: packData.price,
                           name: packData.title // Use pack title as product name
                         } : product;
-                        addToCart(productWithPackPrice, quantity);
+                        // Add color and phone model for Pochette
+                        let cartItem = { ...productWithPackPrice, quantity };
+                        if (product.category === 'Pochette') {
+                          cartItem = {
+                            ...cartItem,
+                            selectedColor,
+                            selectedPhone: selectedPhone || confirmedCustomPhone
+                          };
+                        }
+                        addToCart(cartItem, quantity);
                       }
                     }}
                     className={`flex-1 flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-3 rounded-lg transition-colors duration-300 ${
-                      product.stock_status === 'out-of-stock'
+                      product.stock_status === 'out-of-stock' ||
+                      (product.category === 'Pochette' && (!selectedColor || (!selectedPhone && !confirmedCustomPhone)))
                         ? 'opacity-60 cursor-not-allowed'
                         : ''
                     }`}

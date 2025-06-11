@@ -184,7 +184,18 @@ const Cart: React.FC = () => {
                               <p className="text-sm text-gray-500">Blind Box</p>
                             )}
                           </div>
-                        ) || (
+                        )}
+                        {item.product.category === 'Pochette' && (
+                          <div className="text-sm text-gray-600 mt-1">
+                            {item.product.selectedColor && (
+                              <p><span className="font-medium">Color:</span> {item.product.selectedColor}</p>
+                            )}
+                            {item.product.selectedPhone && (
+                              <p><span className="font-medium">Phone Model:</span> {item.product.selectedPhone}</p>
+                            )}
+                          </div>
+                        )}
+                        {item.product.category !== 'Blind Box' && item.product.category !== 'Pochette' && (
                           <p className="text-sm text-gray-500">Single box</p>
                         )}
                       </div>

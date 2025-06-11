@@ -137,7 +137,6 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         price: product.price,
         images: [...product.images], // Make a copy of the images array
         category: product.category,
-
         stock_status: product.stock_status,
         // Include optional properties only if they exist
         original_price: product.original_price,
@@ -155,7 +154,10 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           level: product.blindBoxInfo.level,
           color: product.blindBoxInfo.color,
           quantity: product.blindBoxInfo.quantity
-        } : undefined
+        } : undefined,
+        // Attach pochette-specific fields if present
+        ...(product.selectedColor ? { selectedColor: product.selectedColor } : {}),
+        ...(product.selectedPhone ? { selectedPhone: product.selectedPhone } : {})
       };
 
       setCartItems(prevItems => {
