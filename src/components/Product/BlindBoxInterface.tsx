@@ -561,13 +561,13 @@ const BlindBoxInterface: React.FC = () => {
             <div className="text-xl font-semibold text-primary-600 mb-4">{productPrice}</div>
             
             {/* Product Description */}
-            <div className="mb-4 text-gray-700">
+            <div className="mb-4 text-gray-700 font-bold">
               <p>{productDescription}</p>
             </div>
 
             <div className="mb-6 p-3 bg-yellow-50 rounded-md text-sm">
               <p className="text-amber-800">
-                <strong>Note:</strong> No duplicates if picking from the SAME SET.
+                <strong>Guarantee:</strong> When you buy multiple boxes from the same set, you won't get duplicate items!
               </p>
             </div>
 
