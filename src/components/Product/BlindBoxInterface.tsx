@@ -614,7 +614,7 @@ const BlindBoxInterface: React.FC = () => {
                 disabled={selectedBox === null}
               >
                 <ShoppingBag size={18} />
-                Buy It Now
+                Buy Now
               </motion.button>
               
               <button 
