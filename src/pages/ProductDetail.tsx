@@ -19,6 +19,8 @@ const ProductDetail: React.FC = () => {
   const [activeImage, setActiveImage] = useState(0);
   // Selected color for products that have color options (Port Clés & Pochette)
   const [selectedColor, setSelectedColor] = useState<string>('');
+  // For Pochette phone compatibility selection
+  const [selectedPhone, setSelectedPhone] = useState<string>('');
   // timestamp (ms) until which auto-scroll is paused
   const [pauseUntil, setPauseUntil] = useState<number>(0);
   const [allPackImages, setAllPackImages] = useState<string[]>([]);
@@ -455,24 +457,44 @@ const ProductDetail: React.FC = () => {
                 <div className="mb-6">
                   <h3 className="text-sm font-medium text-gray-900 mb-2">COMPATIBLE WITH:</h3>
                   <div className="flex flex-wrap gap-2">
-                    {typeof product.phone === 'string' ? (
-                      <button className="py-1 px-3 text-xs border rounded-md border-gray-300 hover:border-primary-500 hover:bg-primary-50">
-                        {product.phone}
-                      </button>
-                    ) : Array.isArray(JSON.parse(String(product.phone || '[]'))) ? (
-                      JSON.parse(String(product.phone || '[]')).map((phone: string, idx: number) => (
-                        <button
-                          key={idx}
-                          className="py-1 px-3 text-xs border rounded-md border-gray-300 hover:border-primary-500 hover:bg-primary-50"
-                        >
-                          {phone}
-                        </button>
-                      ))
-                    ) : (
-                      <button className="py-1 px-3 text-xs border rounded-md border-gray-300 hover:border-primary-500 hover:bg-primary-50">
-                        Unknown
-                      </button>
-                    )}
+                    {(() => {
+  let phones: string[] = [];
+  if (typeof product.phone === 'string') {
+    try {
+      // Try to parse as JSON array
+      const parsed = JSON.parse(product.phone);
+      if (Array.isArray(parsed)) {
+        phones = parsed;
+      } else {
+        phones = [product.phone];
+      }
+    } catch {
+      // Not a JSON array, just a plain string
+      phones = [product.phone];
+    }
+  } else if (Array.isArray(product.phone)) {
+    phones = product.phone;
+  }
+  return phones.length > 0 ? (
+    phones.map((phone, idx) => (
+      <button
+        key={idx}
+        onClick={() => setSelectedPhone(phone)}
+        className={`py-1 px-3 text-xs border rounded-md transition-colors duration-150 ${
+          selectedPhone === phone
+            ? 'bg-primary-500 text-white border-primary-500 font-medium'
+            : 'border-gray-300 hover:border-primary-500 hover:bg-primary-50'
+        }`}
+      >
+        {phone}
+      </button>
+    ))
+  ) : (
+    <button className="py-1 px-3 text-xs border rounded-md border-gray-300 hover:border-primary-500 hover:bg-primary-50">
+      Unknown
+    </button>
+  );
+})()}
                   </div>
                 </div>
               )}
