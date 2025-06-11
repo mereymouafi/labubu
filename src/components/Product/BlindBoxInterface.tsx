@@ -483,7 +483,7 @@ const BlindBoxInterface: React.FC = () => {
           <div className="flex justify-center items-center perspective-800 max-w-2xl mx-auto">
             <motion.div
               key={currentBox.id}
-              className={`w-[550px] h-[350px] cursor-pointer rounded-lg ${
+              className={`w-[550px] h-[550px] cursor-pointer rounded-lg ${
                 selectedBox === currentBox.id ? 'border-4 border-blue-500 p-1 bg-blue-50' : ''
               }`}
               onClick={() => handleBoxClick(currentBox.id)}
