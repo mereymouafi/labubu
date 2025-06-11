@@ -59,11 +59,15 @@ const BlindBoxPage: React.FC = () => {
                     <h3 className="text-3xl font-bold mb-2">BLIND BOX SET</h3>
                     <h4 className="text-xl font-semibold mb-4">COLLECTOR'S PACK – MULTIPLE BOXES
                     No duplicates from the same set!</h4>
-                    <p className="text-gray-700">
+                    <p className="text-gray-700 mb-4">
                       Buy multiple boxes at once and increase your chances of finding rare figures!
-                      We guarantee no duplicates when purchasing multiple boxes from the same set.
                       🎁 Special bonus items included with purchases of 6 or more boxes!
                     </p>
+                    <div className="p-4 border-2 border-red-500 bg-red-50 rounded-lg mb-4">
+                      <p className="text-red-800 font-medium">
+                        <span className="font-bold text-red-900">Guarantee:</span> No duplicates when purchasing multiple boxes from the same set.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>

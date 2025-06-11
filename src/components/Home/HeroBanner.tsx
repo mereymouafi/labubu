@@ -141,7 +141,7 @@ const HeroBanner: React.FC = () => {
                     initial={{ y: 30, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.2, duration: 0.8 }}
-                    className="text-4xl md:text-5xl font-bold mb-4 text-white"
+                    className="text-4xl md:text-5xl font-bold mb-4 text-white [text-shadow:_-1px_-1px_0_#EF4444,1px_-1px_0_#EF4444,-1px_1px_0_#EF4444,1px_1px_0_#EF4444] drop-shadow-lg"
                   >
                     {currentBanner.title}
                   </motion.h1>
@@ -150,7 +150,7 @@ const HeroBanner: React.FC = () => {
                       initial={{ y: 30, opacity: 0 }}
                       animate={{ y: 0, opacity: 1 }}
                       transition={{ delay: 0.4, duration: 0.8 }}
-                      className="text-xl mb-8 text-white"
+                      className="text-xl mb-8 text-white [text-shadow:_-1px_-1px_0_#EF4444,1px_-1px_0_#EF4444,-1px_1px_0_#EF4444,1px_1px_0_#EF4444] drop-shadow-lg"
                     >
                       {currentBanner.subtitle}
                     </motion.p>
