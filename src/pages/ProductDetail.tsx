@@ -311,9 +311,9 @@ const ProductDetail: React.FC = () => {
                   </button>
                 </div>
 
-                {/* Main Image Container - Enlarged by 1cm */}
+                {/* Main Image Container - Enlarged and made taller */}
                 <div className="flex-1">
-                  <div className="relative overflow-hidden rounded-lg border border-gray-100 shadow-sm" style={{ height: 'calc(450px + 1cm)', width: 'calc(100% + 1cm)' }}>
+                  <div className="relative overflow-hidden rounded-lg border border-gray-100 shadow-sm" style={{ height: '600px', width: 'calc(100% + 1cm)' }}>
                     <AnimatePresence mode="wait">
                       <motion.img
                         key={activeImage}
