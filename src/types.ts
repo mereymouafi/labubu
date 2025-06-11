@@ -7,6 +7,9 @@ export interface Product extends BaseProduct {
     color: string;
     quantity: number;
   };
+  // For Pochette cart extension
+  selectedColor?: string;
+  selectedPhone?: string;
 }
 
 // Define the shape of our cart item

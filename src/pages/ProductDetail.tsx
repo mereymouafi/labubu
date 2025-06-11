@@ -568,7 +568,10 @@ const ProductDetail: React.FC = () => {
                     </button>
                   </div>
                   <button
-                    disabled={product.stock_status === 'out-of-stock'}
+                    disabled={
+                      product.stock_status === 'out-of-stock' ||
+                      (product.category === 'Pochette' && (!selectedColor || (!selectedPhone && !confirmedCustomPhone)))
+                    }
                     onClick={() => {
                       if (product) {
                         // If we have pack data, use its price instead of product price
@@ -577,11 +580,21 @@ const ProductDetail: React.FC = () => {
                           price: packData.price,
                           name: packData.title // Use pack title as product name
                         } : product;
-                        addToCart(productWithPackPrice, quantity);
+                        // Add color and phone model for Pochette
+                        let cartItem = { ...productWithPackPrice, quantity };
+                        if (product.category === 'Pochette') {
+                          cartItem = {
+                            ...cartItem,
+                            selectedColor,
+                            selectedPhone: selectedPhone || confirmedCustomPhone
+                          };
+                        }
+                        addToCart(cartItem, quantity);
                       }
                     }}
                     className={`flex-1 flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-3 rounded-lg transition-colors duration-300 ${
-                      product.stock_status === 'out-of-stock'
+                      product.stock_status === 'out-of-stock' ||
+                      (product.category === 'Pochette' && (!selectedColor || (!selectedPhone && !confirmedCustomPhone)))
                         ? 'opacity-60 cursor-not-allowed'
                         : ''
                     }`}
