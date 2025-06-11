@@ -126,7 +126,7 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setWishlistCount(wishlistItems.length);
   }, [wishlistItems]);
 
-  // Add a product to the cart
+  // Add a product to the cart as a new item (doesn't merge with existing items)
   const addToCart = (product: Product, quantity: number = 1) => {
     try {
       // First, ensure the product object is properly serializable
@@ -135,20 +135,15 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         id: product.id,
         name: product.name,
         price: product.price,
-        images: [...product.images], // Make a copy of the images array
+        images: [...product.images],
         category: product.category,
         stock_status: product.stock_status,
         // Include optional properties only if they exist
         original_price: product.original_price,
-        character: product.character,
-        is_new: product.is_new,
-        is_featured: product.is_featured,
-        is_on_sale: product.is_on_sale,
+        description: product.description,
+        slug: product.slug,
         is_popular: product.is_popular,
         is_trending: product.is_trending,
-        description: product.description,
-        category_id: product.category_id,
-        character_id: product.character_id,
         // Include blind box info if it exists
         blindBoxInfo: product.blindBoxInfo ? {
           level: product.blindBoxInfo.level,
@@ -161,33 +156,23 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       };
 
       setCartItems(prevItems => {
-        // Create a clean copy of previous items
-        const prevItemsCopy = prevItems.map(item => ({
-          product: { ...item.product },
-          quantity: item.quantity,
-          blindBoxInfo: item.blindBoxInfo ? { ...item.blindBoxInfo } : undefined
-        }));
-        
-        // Check if item already exists in cart
-        const existingItemIndex = prevItemsCopy.findIndex(item => item.product.id === cleanProduct.id);
-        
-        let updatedItems;
-        if (existingItemIndex >= 0) {
-          // Update quantity of existing item
-          updatedItems = [...prevItemsCopy];
-          updatedItems[existingItemIndex].quantity += quantity;
-        } else {
-          // Add new item
-          updatedItems = [...prevItemsCopy, { 
-            product: cleanProduct, 
-            quantity,
-            blindBoxInfo: cleanProduct.blindBoxInfo ? {
-              level: cleanProduct.blindBoxInfo.level,
-              color: cleanProduct.blindBoxInfo.color,
-              quantity: cleanProduct.blindBoxInfo.quantity
-            } : undefined
-          }];
-        }
+        // Create a new cart item with a unique ID to ensure it's treated as a separate item
+        const newCartItem = {
+          product: {
+            ...cleanProduct,
+            // Add a unique ID to make this a separate cart entry
+            cartItemId: `${cleanProduct.id}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+          },
+          quantity: quantity,
+          blindBoxInfo: cleanProduct.blindBoxInfo ? {
+            level: cleanProduct.blindBoxInfo.level,
+            color: cleanProduct.blindBoxInfo.color,
+            quantity: cleanProduct.blindBoxInfo.quantity
+          } : undefined
+        };
+
+        // Always add as a new item
+        const updatedItems = [...prevItems, newCartItem];
         
         // Save to localStorage immediately to ensure data is persisted
         try {
