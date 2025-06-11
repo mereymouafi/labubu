@@ -247,7 +247,11 @@ const Cart: React.FC = () => {
               <div className="border-t border-gray-200 pt-4 mb-4">
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-sm">Shipping</span>
-                  <span className="text-xs text-blue-600">Calculated at next step</span>
+                  {subtotal >= 200 ? (
+                    <span className="text-xs text-green-600">Free shipping</span>
+                  ) : (
+                    <span className="text-xs">40.00 MAD</span>
+                  )}
                 </div>
               </div>
               
@@ -255,7 +259,7 @@ const Cart: React.FC = () => {
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium">Total({Object.values(selectedItems).filter(Boolean).length})</span>
                   <div className="flex items-baseline">
-                    <span className="text-xl font-bold mr-1">{subtotal.toFixed(2)} MAD</span>
+                    <span className="text-xl font-bold mr-1">{(subtotal + (subtotal >= 200 ? 0 : 40)).toFixed(2)} MAD</span>
                     <span className="text-xs text-gray-500">MAD</span>
                   </div>
                 </div>

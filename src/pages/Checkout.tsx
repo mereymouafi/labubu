@@ -70,7 +70,8 @@ const Checkout: React.FC = () => {
   // Calculate totals based on selected items (if any) or all cart items
   const itemsToCheckout = selectedCartItems.length > 0 ? selectedCartItems : cartItems;
   const subtotal = itemsToCheckout.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
-  const shippingCost: number = 0; // Free shipping for all orders
+  // Free shipping for orders over 200 MAD, 40 MAD shipping fee for orders below that threshold
+  const shippingCost: number = subtotal >= 200 ? 0 : 40;
   const total = subtotal + shippingCost;
 
   // Handle shipping form input changes
@@ -311,8 +312,8 @@ const Checkout: React.FC = () => {
               
               <div className="flex justify-between mb-2">
                 <span>Shipping</span>
-                {shippingCost === 0 ? (
-                  <span className="text-green-600">Free</span>
+                {subtotal >= 200 ? (
+                  <span className="text-green-600">Free shipping</span>
                 ) : (
                   <span>{shippingCost.toFixed(2)} MAD</span>
                 )}
