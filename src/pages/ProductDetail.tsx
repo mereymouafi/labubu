@@ -21,11 +21,7 @@ const ProductDetail: React.FC = () => {
   const [selectedColor, setSelectedColor] = useState<string>('');
   // timestamp (ms) until which auto-scroll is paused
   const [pauseUntil, setPauseUntil] = useState<number>(0);
-  const [packId, setPackId] = useState<string | null>(null);
-  const [packProducts, setPackProducts] = useState<Product[]>([]);
   const [allPackImages, setAllPackImages] = useState<string[]>([]);
-  const [selectedPack, setSelectedPack] = useState<Pack | null>(null);
-  const [packs, setPacks] = useState<Pack[]>([]);
   
   // Use our shop context
   const { addToCart, addToWishlist, isInWishlist } = useShop();
@@ -45,7 +41,7 @@ const ProductDetail: React.FC = () => {
           // Otherwise use the product images
           setActiveImage(prev => (prev + 1) % product.images.length);
         }
-      }, 3000); // Change image every 2 seconds
+      }, 3000); // Change image every 3 seconds
     }
     
     // Clean up the interval when component unmounts
@@ -77,8 +73,6 @@ const ProductDetail: React.FC = () => {
             .in('id', packIds);
             
           if (packsData && packsData.length > 0) {
-            setPacks(packsData);
-            
             // If a packId was provided in the URL, use that pack
             let selectedPackData;
             if (packIdFromUrl) {
@@ -88,13 +82,10 @@ const ProductDetail: React.FC = () => {
               selectedPackData = packsData[0];
             }
             
-            setSelectedPack(selectedPackData);
-            setPackId(selectedPackData.id);
             setPackData(selectedPackData); // Store pack data for display
             
             // Fetch all products in this pack
             const packProductsData = await fetchProductsByPack(selectedPackData.id);
-            setPackProducts(packProductsData);
             
             // Fetch the product data for basic information
             const productData = await fetchProductById(id);
@@ -105,7 +96,7 @@ const ProductDetail: React.FC = () => {
               setAllPackImages(selectedPackData.images);
             } else {
               // Collect all images from all products in the pack
-              const allImages = packProductsData.flatMap(p => p.images || []);
+              const allImages = packProductsData.flatMap((p: Product) => p.images || []);
               setAllPackImages(allImages);
             }
             
@@ -148,10 +139,7 @@ const ProductDetail: React.FC = () => {
     // Reset state when id changes
     setActiveImage(0);
     setQuantity(1);
-    setPackId(null);
-    setPackProducts([]);
     setAllPackImages([]);
-    setSelectedPack(null);
   }, [id]);
 
   const incrementQuantity = () => {
@@ -186,34 +174,15 @@ const ProductDetail: React.FC = () => {
     }
   };
   
-  // Handle pack selection
-  const handlePackSelect = async (pack: Pack) => {
-    setSelectedPack(pack);
-    setPackId(pack.id);
-    setActiveImage(0); // Reset to first image
-    
-    try {
-      // Fetch all products in this pack
-      const packProductsData = await fetchProductsByPack(pack.id);
-      setPackProducts(packProductsData);
-      
-      // Collect all images from all products in the pack
-      const allImages = packProductsData.flatMap(p => p.images || []);
-      setAllPackImages(allImages);
-    } catch (error) {
-      console.error('Error loading pack products:', error);
-    }
-  };
-
-  // Helper when user clicks a thumbnail: change image and pause auto-scroll
   const handleThumbnailClick = (idx: number) => {
     setActiveImage(idx);
-    setPauseUntil(Date.now() + 5000); // pause for 5 seconds
+    // Pause auto-scroll for 3 seconds when user manually changes images
+    setPauseUntil(Date.now() + 5000);
   };
 
   if (loading) {
     return (
-      <div className="container-custom py-16">
+      <div className="container mx-auto py-16 flex flex-col items-center justify-center min-h-screen">
         <div className="flex flex-col md:flex-row gap-8">
           <div className="md:w-1/2 bg-gray-200 animate-pulse h-96 rounded-xl"></div>
           <div className="md:w-1/2">
@@ -231,7 +200,7 @@ const ProductDetail: React.FC = () => {
 
   if (!product) {
     return (
-      <div className="container-custom py-32 text-center">
+      <div className="container mx-auto py-32 text-center">
         <h1 className="text-3xl font-bold mb-4">Product Not Found</h1>
         <p className="mb-8">The product you're looking for doesn't exist or has been removed.</p>
         <Link to="/" className="btn-primary">
@@ -243,7 +212,7 @@ const ProductDetail: React.FC = () => {
 
   return (
     <div className="bg-gray-50 py-16">
-      <div className="container-custom">
+      <div className="container mx-auto">
         {/* Breadcrumb */}
         <div className="mb-8">
           <nav className="text-sm text-gray-500 mb-6 flex items-center">
@@ -466,61 +435,49 @@ const ProductDetail: React.FC = () => {
                 <span>Category: {product?.category || 'Not specified'}</span>
               </div>
 
-              {/* Price - Use pack price and original_price if available */}
-              <div className="flex items-center mb-6">
-                {packData?.original_price ? (
-                  <span className="text-gray-400 line-through text-lg mr-2">
-                    {packData.original_price} MAD
-                  </span>
-                ) : product?.original_price && (
-                  <span className="text-gray-400 line-through text-lg mr-2">
-                    {product.original_price} MAD
-                  </span>
+              {/* Price */}
+              <div className="mb-6">
+                {product.original_price && product.original_price > product.price ? (
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-3xl font-bold text-primary-600">{product.price} MAD</span>
+                    <span className="text-xl text-gray-500 line-through">{product.original_price} MAD</span>
+                    <span className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded">
+                      {Math.round((1 - product.price / product.original_price) * 100)}% OFF
+                    </span>
+                  </div>
+                ) : (
+                  <span className="text-3xl font-bold text-primary-600">{product.price} MAD</span>
                 )}
-                <span className="text-2xl font-bold text-gray-900">
-                  {packData ? packData.price : product?.price} MAD
-                </span>
               </div>
 
-              {/* Description - Use pack description if available */}
-              <div className="mt-8">
-                <h3 className="text-lg font-medium mb-4">DESCRIPTION</h3>
-                <div className="text-gray-600 space-y-3">
-                  <p>{packData ? packData.description : (product?.description || 'No description available.')}</p>
+              {/* Phone compatibility - Only show for Pochette products */}
+              {product.category === 'Pochette' && product.phone && (
+                <div className="mb-6">
+                  <h3 className="text-sm font-medium text-gray-900 mb-2">COMPATIBLE WITH:</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {typeof product.phone === 'string' ? (
+                      <button className="py-1 px-3 text-xs border rounded-md border-gray-300 hover:border-primary-500 hover:bg-primary-50">
+                        {product.phone}
+                      </button>
+                    ) : Array.isArray(JSON.parse(String(product.phone || '[]'))) ? (
+                      JSON.parse(String(product.phone || '[]')).map((phone: string, idx: number) => (
+                        <button
+                          key={idx}
+                          className="py-1 px-3 text-xs border rounded-md border-gray-300 hover:border-primary-500 hover:bg-primary-50"
+                        >
+                          {phone}
+                        </button>
+                      ))
+                    ) : (
+                      <button className="py-1 px-3 text-xs border rounded-md border-gray-300 hover:border-primary-500 hover:bg-primary-50">
+                        Unknown
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </div>
-              
-              {/* Color Options (only for Port Clés & Pochette) */}
-              {(() => {
-                const category = product?.category?.toLowerCase();
-                const colorOptions = (product as any)?.color as string[] | undefined;
-                if (!colorOptions || colorOptions.length === 0) return null;
-                if (category === 'port clés' || category === 'port cles' || category === 'pochette') {
-                  return (
-                    <div className="mt-6 mb-4">
-                      <h3 className="text-lg font-medium mb-2">COLOR</h3>
-                      <div className="flex flex-wrap gap-2">
-                        {colorOptions.map((col, idx) => (
-                          <button
-                            key={idx}
-                            onClick={() => setSelectedColor(col)}
-                            className={`py-1 px-3 text-xs border rounded-md transition-colors ${
-                              selectedColor === col
-                                ? 'border-primary-500 bg-primary-500 text-white font-medium'
-                                : 'border-gray-300 hover:border-primary-500 hover:bg-primary-50'
-                            }`}
-                          >
-                            {col}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  );
-                }
-                return null;
-              })()}
+              )}
 
-              {/* Quantity & Add to Cart */}
+              {/* Quantity selector */}
               <div className="mb-8">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                   <div className="flex items-center border border-gray-300 rounded-lg">
@@ -579,6 +536,44 @@ const ProductDetail: React.FC = () => {
                   </button>
                 </div>
               </div>
+
+              {/* Description - Use pack description if available */}
+              <div className="mt-8">
+                <h3 className="text-lg font-medium mb-4">DESCRIPTION</h3>
+                <div className="text-gray-600 space-y-3">
+                  <p>{packData ? packData.description : (product?.description || 'No description available.')}</p>
+                </div>
+              </div>
+              
+              {/* Color Options (only for Port Clés & Pochette) */}
+              {(() => {
+                const category = product?.category?.toLowerCase();
+                const colorOptions = (product as any)?.color as string[] | undefined;
+                if (!colorOptions || colorOptions.length === 0) return null;
+                if (category === 'port clés' || category === 'port cles' || category === 'pochette') {
+                  return (
+                    <div className="mt-6 mb-4">
+                      <h3 className="text-lg font-medium mb-2">COLOR</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {colorOptions.map((col, idx) => (
+                          <button
+                            key={idx}
+                            onClick={() => setSelectedColor(col)}
+                            className={`py-1 px-3 text-xs border rounded-md transition-colors ${
+                              selectedColor === col
+                                ? 'border-primary-500 bg-primary-500 text-white font-medium'
+                                : 'border-gray-300 hover:border-primary-500 hover:bg-primary-50'
+                            }`}
+                          >
+                            {col}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                }
+                return null;
+              })()}
 
               {/* Features */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">

@@ -58,6 +58,7 @@ export type Product = {
   created_at?: string;
   category_id?: string;
   character_id?: string;
+  phone?: string; // Add phone compatibility field
 };
 
 export type OrderItem = {
@@ -135,6 +136,7 @@ export const fetchProducts = async (options?: {
   onSale?: boolean;
   popular?: boolean;
   trending?: boolean;
+  phone?: string;
   limit?: number;
 }): Promise<Product[]> => {
   let query = supabase.from('products').select('*');
@@ -142,8 +144,6 @@ export const fetchProducts = async (options?: {
   if (options?.category) {
     query = query.eq('category', options.category);
   }
-  
-
   
   if (options?.featured) {
     query = query.eq('is_featured', true);
@@ -163,6 +163,10 @@ export const fetchProducts = async (options?: {
   
   if (options?.trending) {
     query = query.eq('is_trending', true);
+  }
+  
+  if (options?.phone) {
+    query = query.eq('phone', options.phone);
   }
   
   if (options?.limit) {

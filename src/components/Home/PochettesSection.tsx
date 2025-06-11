@@ -6,7 +6,10 @@ import ProductCard from '../Product/ProductCard';
 
 const PochettesSection: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [phoneModels, setPhoneModels] = useState<string[]>([]);
+  const [selectedPhone, setSelectedPhone] = useState<string>('');
 
   useEffect(() => {
     const loadPochettes = async () => {
@@ -21,6 +24,8 @@ const PochettesSection: React.FC = () => {
 
         if (!error && pochetteProducts && pochetteProducts.length > 0) {
           setProducts(pochetteProducts);
+          setFilteredProducts(pochetteProducts);
+          extractPhoneModels(pochetteProducts);
           return;
         }
 
@@ -41,6 +46,8 @@ const PochettesSection: React.FC = () => {
             .limit(4);
           if (subProducts && subProducts.length > 0) {
             setProducts(subProducts);
+            setFilteredProducts(subProducts);
+            extractPhoneModels(subProducts);
             return;
           }
         }
@@ -53,6 +60,8 @@ const PochettesSection: React.FC = () => {
           .limit(4);
         if (nameSearch && nameSearch.length > 0) {
           setProducts(nameSearch);
+          setFilteredProducts(nameSearch);
+          extractPhoneModels(nameSearch);
           return;
         }
 
@@ -66,7 +75,8 @@ const PochettesSection: React.FC = () => {
             images: ['https://via.placeholder.com/300x400?text=POCHETTE+1'],
             category: 'POCHETTES',
             stock_status: 'in_stock',
-            description: 'Pochette Labubu 1'
+            description: 'Pochette Labubu 1',
+            phone: 'iPhone 14 Pro'
           },
           {
             id: 'sample-pochette-2',
@@ -76,7 +86,8 @@ const PochettesSection: React.FC = () => {
             images: ['https://via.placeholder.com/300x400?text=POCHETTE+2'],
             category: 'POCHETTES',
             stock_status: 'in_stock',
-            description: 'Pochette Labubu 2'
+            description: 'Pochette Labubu 2',
+            phone: 'iPhone 13'
           },
           {
             id: 'sample-pochette-3',
@@ -86,7 +97,8 @@ const PochettesSection: React.FC = () => {
             images: ['https://via.placeholder.com/300x400?text=POCHETTE+3'],
             category: 'POCHETTES',
             stock_status: 'in_stock',
-            description: 'Pochette Labubu 3'
+            description: 'Pochette Labubu 3',
+            phone: 'Samsung Galaxy S22'
           },
           {
             id: 'sample-pochette-4',
@@ -96,18 +108,47 @@ const PochettesSection: React.FC = () => {
             images: ['https://via.placeholder.com/300x400?text=POCHETTE+4'],
             category: 'POCHETTES',
             stock_status: 'in_stock',
-            description: 'Pochette Labubu 4'
+            description: 'Pochette Labubu 4',
+            phone: 'Samsung Galaxy S23'
           }
         ];
         setProducts(sample);
+        setFilteredProducts(sample);
+        extractPhoneModels(sample);
       } catch (e) {
         console.error('Error loading pochettes:', e);
       } finally {
         setIsLoading(false);
       }
     };
+    
     loadPochettes();
   }, []);
+  
+  // Extract unique phone models from products
+  const extractPhoneModels = (products: Product[]) => {
+    const phones = products
+      .map(product => product.phone)
+      .filter((phone, index, self) => 
+        phone && self.indexOf(phone) === index
+      ) as string[];
+    
+    setPhoneModels(phones);
+  };
+  
+  // Filter products when phone selection changes
+  useEffect(() => {
+    if (selectedPhone) {
+      setFilteredProducts(products.filter(product => product.phone === selectedPhone));
+    } else {
+      setFilteredProducts(products);
+    }
+  }, [selectedPhone, products]);
+
+  // Handle phone selection change
+  const handlePhoneChange = (phone: string) => {
+    setSelectedPhone(phone === selectedPhone ? '' : phone);
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -133,6 +174,38 @@ const PochettesSection: React.FC = () => {
             More <span className="ml-2 transform transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
           </Link>
         </div>
+        
+        {/* Phone model selector */}
+        {phoneModels.length > 0 && (
+          <div className="mb-8">
+            <h3 className="text-sm font-medium text-gray-700 mb-3">
+              SELECT YOUR PHONE MODEL
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              {phoneModels.map(phone => (
+                <button
+                  key={phone}
+                  onClick={() => handlePhoneChange(phone)}
+                  className={`py-1 px-3 text-xs border rounded-md transition-colors ${
+                    selectedPhone === phone
+                      ? 'border-primary-500 bg-primary-500 text-white font-medium'
+                      : 'border-gray-300 hover:border-primary-500 hover:bg-primary-50'
+                  }`}
+                >
+                  {phone}
+                </button>
+              ))}
+              {selectedPhone && (
+                <button
+                  onClick={() => setSelectedPhone('')}
+                  className="py-1 px-3 text-xs border rounded-md border-gray-300 hover:border-primary-500 hover:bg-primary-50"
+                >
+                  Show All
+                </button>
+              )}
+            </div>
+          </div>
+        )}
 
         {isLoading ? (
           <div className="flex justify-center items-center h-64">
@@ -146,10 +219,14 @@ const PochettesSection: React.FC = () => {
             whileInView="visible"
             viewport={{ once: true, margin: '-100px' }}
           >
-            {products.length === 0 ? (
-              <p className="col-span-full text-center text-gray-500">No pochettes found.</p>
+            {filteredProducts.length === 0 ? (
+              <p className="col-span-full text-center text-gray-500">
+                {selectedPhone 
+                  ? `No pochettes found for ${selectedPhone}. Please select a different phone model.` 
+                  : 'No pochettes found.'}
+              </p>
             ) : (
-              products.map(product => (
+              filteredProducts.map(product => (
                 <motion.div key={product.id} variants={itemVariants} className="transform transition-all duration-300 hover:-translate-y-2">
                   <div className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
                     <ProductCard product={product} />
