@@ -222,9 +222,17 @@ const BlindBoxInterface: React.FC = () => {
   // Handle level selection
   const handleLevelSelect = (level: string) => {
     setSelectedLevel(level);
-    setSelectedBox(null);
+    setSelectedBox(1); // Set to the current box ID
     setRevealedBox(null);
-    setAnimatingBox(null);
+    
+    // Trigger the shake animation
+    setAnimatingBox(1);
+    playShakeSound();
+    
+    // Reset the animation after it completes
+    setTimeout(() => {
+      setAnimatingBox(null);
+    }, 800); // Match this with the animation duration
   };
   
   // Handle Buy Now button click
