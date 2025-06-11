@@ -170,19 +170,19 @@ const BlindBoxInterface: React.FC = () => {
   const { name: productName, price: productPrice, description: productDescription } = getProductInfo(selectedLevel);
 
   const handleBoxClick = (id: number) => {
-    // First play the sound - this is now top priority
+    // First play the sound
     playShakeSound();
     
-    // Very small delay to ensure audio starts before animation
-    // This helps with the perceived synchronization
+    // Select the box
+    setSelectedBox(id);
+    
+    // Trigger the shake animation
+    setAnimatingBox(id);
+    
+    // Reset the animation after it completes
     setTimeout(() => {
-      setSelectedBox(id);
-      setAnimatingBox(id);
-      
-      setTimeout(() => {
-        setAnimatingBox(null);
-      }, 800);
-    }, 10); // Tiny delay to prioritize audio startup
+      setAnimatingBox(null);
+    }, 800);
   };
 
   const handleShakeBox = () => {
@@ -596,19 +596,21 @@ const BlindBoxInterface: React.FC = () => {
                 )}
               </motion.button>
               
-              {selectedBox !== null && (
-                <motion.button 
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="w-full py-3 px-4 bg-red-600 text-white rounded-full font-medium flex items-center justify-center gap-2 hover:bg-red-700"
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => handleBuyNow(selectedBox)}
-                >
-                  <ShoppingBag size={18} />
-                  Buy It Now
-                </motion.button>
-              )}
+              <motion.button 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                className={`w-full py-3 px-4 rounded-full font-medium flex items-center justify-center gap-2 ${
+                  selectedBox === null
+                    ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                    : 'bg-red-600 text-white hover:bg-red-700'
+                }`}
+                whileTap={{ scale: selectedBox !== null ? 0.95 : 1 }}
+                onClick={() => selectedBox !== null && handleBuyNow(selectedBox)}
+                disabled={selectedBox === null}
+              >
+                <ShoppingBag size={18} />
+                Buy It Now
+              </motion.button>
               
               <button 
                 onClick={handleMultipleBoxes}
