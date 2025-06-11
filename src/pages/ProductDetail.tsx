@@ -442,20 +442,22 @@ const ProductDetail: React.FC = () => {
                 <span>Category: {product?.category || 'Not specified'}</span>
               </div>
 
-              {/* Price */}
-              <div className="mb-6">
-                {product.original_price && product.original_price > product.price ? (
-                  <div className="flex items-baseline gap-2">
+              {/* Price - Hidden for Figurines category */}
+              {product.category !== 'Figurines' && (
+                <div className="mb-6">
+                  {product.original_price && product.original_price > product.price ? (
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-3xl font-bold text-primary-600">{product.price} MAD</span>
+                      <span className="text-xl text-gray-500 line-through">{product.original_price} MAD</span>
+                      <span className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded">
+                        {Math.round((1 - product.price / product.original_price) * 100)}% OFF
+                      </span>
+                    </div>
+                  ) : (
                     <span className="text-3xl font-bold text-primary-600">{product.price} MAD</span>
-                    <span className="text-xl text-gray-500 line-through">{product.original_price} MAD</span>
-                    <span className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded">
-                      {Math.round((1 - product.price / product.original_price) * 100)}% OFF
-                    </span>
-                  </div>
-                ) : (
-                  <span className="text-3xl font-bold text-primary-600">{product.price} MAD</span>
-                )}
-              </div>
+                  )}
+                </div>
+              )}
 
               {/* Phone compatibility - Only show for Pochette products */}
               {product.category === 'Pochette' && product.phone && (
