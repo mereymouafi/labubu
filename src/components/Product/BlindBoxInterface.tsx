@@ -25,10 +25,10 @@ interface BlindBoxItem {
 const BlindBoxInterface: React.FC = () => {
   const navigate = useNavigate();
   const { addToCart } = useShop(); // Use the shop context
-  const [selectedBox, setSelectedBox] = useState<number | null>(null);
+  const [selectedLevel, setSelectedLevel] = useState<string>('level1');
+  const [selectedBox, setSelectedBox] = useState<number | null>(1); // Default to first box
   const [animatingBox, setAnimatingBox] = useState<number | null>(null);
   const [revealedBox, setRevealedBox] = useState<number | null>(null);
-  const [selectedLevel, setSelectedLevel] = useState<string>('level1');
   const [showQuantityModal, setShowQuantityModal] = useState<boolean>(false);
   const [multipleBoxesQuantity, setMultipleBoxesQuantity] = useState<number>(1);
   // Using Web Audio API for instant sound playback with zero delay
@@ -219,10 +219,15 @@ const BlindBoxInterface: React.FC = () => {
     }
   };
 
+  // Set initial box selection when component mounts
+  useEffect(() => {
+    // Auto-select the first box when the component mounts or level changes
+    setSelectedBox(1);
+  }, [selectedLevel]);
+
   // Handle level selection
   const handleLevelSelect = (level: string) => {
     setSelectedLevel(level);
-    setSelectedBox(1); // Set to the current box ID
     setRevealedBox(null);
     
     // Trigger the shake animation
