@@ -77,6 +77,11 @@ export type OrderItem = {
     style?: string;
     age?: string;
   };
+  // Add Pochette customization options
+  pochette_options?: {
+    color?: string;
+    phone_model?: string;
+  };
 };
 
 export type ShippingInfo = {

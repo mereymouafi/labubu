@@ -1,5 +1,5 @@
 import React from 'react';
-import { Order } from '../../../lib/supabase';
+import { Order, OrderItem } from '../../../lib/supabase';
 
 interface OrderDetailsProps {
   order: Order;
@@ -111,11 +111,18 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({ order, updateOrderStatus })
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                     {item.tshirt_options ? (
-                      <div>
+                      <div className="bg-blue-50 p-2 rounded">
+                        <div className="font-medium text-blue-800 mb-1">T-Shirt Options:</div>
                         {item.tshirt_options.size && <div>Size: {item.tshirt_options.size}</div>}
                         {item.tshirt_options.color && <div>Color: {item.tshirt_options.color}</div>}
                         {item.tshirt_options.style && <div>Style: {item.tshirt_options.style}</div>}
                         {item.tshirt_options.age && <div>Age: {item.tshirt_options.age}</div>}
+                      </div>
+                    ) : item.pochette_options ? (
+                      <div className="bg-purple-50 p-2 rounded">
+                        <div className="font-medium text-purple-800 mb-1">Pochette Options:</div>
+                        {item.pochette_options.color && <div>Color: {item.pochette_options.color}</div>}
+                        {item.pochette_options.phone_model && <div>Phone Model: {item.pochette_options.phone_model}</div>}
                       </div>
                     ) : (
                       'N/A'

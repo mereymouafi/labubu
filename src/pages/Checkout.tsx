@@ -116,13 +116,21 @@ const Checkout: React.FC = () => {
           age: (item.product as any).selectedAge
         };
         
+        // Check if this is a Pochette product with customization options
+        const pochetteOptions = {
+          color: (item.product as any).selectedColor,
+          phone_model: (item.product as any).selectedPhone
+        };
+        
         return {
           product_id: item.product.id,
           product_name: item.product.name,
           product_image: item.product.images && item.product.images.length > 0 ? item.product.images[0] : '',
           price: item.product.price,
           quantity: item.quantity,
-          tshirt_options: item.product.category === 'T-shirts' ? tshirtOptions : undefined
+          category_name: item.product.category,
+          tshirt_options: item.product.category === 'T-shirts' ? tshirtOptions : undefined,
+          pochette_options: item.product.category === 'Pochette' ? pochetteOptions : undefined
         };
       });
       
