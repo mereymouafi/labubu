@@ -666,6 +666,7 @@ const ProductDetail: React.FC = () => {
                   <div>
                     <h4 className="font-medium text-gray-900">Fast Shipping</h4>
                     <p className="text-sm text-gray-500">2-3 business days</p>
+                    <p className="text-sm text-green-600 font-medium">Free delivery on orders over 200 MAD</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
