@@ -58,6 +58,7 @@ export type Product = {
   created_at?: string;
   category_id?: string;
   character_id?: string;
+  color?: string[]; // Array of available colors
   phone?: string; // Add phone compatibility field
 };
 

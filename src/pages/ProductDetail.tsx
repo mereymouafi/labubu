@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Share2, Star, Truck, Shield, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Product, fetchProductById, fetchProducts, supabase, Pack, fetchProductsByPack } from '../lib/supabase';
+import { fetchProductById, fetchProducts, supabase, Pack, fetchProductsByPack } from '../lib/supabase';
+import { Product } from '../types'; // Import extended Product type
 import ProductCard from '../components/Product/ProductCard';
 import CustomBagIcon from '../components/UI/CustomBagIcon';
 import { useShop } from '../context/ShopContext';
@@ -581,13 +582,13 @@ const ProductDetail: React.FC = () => {
                           name: packData.title // Use pack title as product name
                         } : product;
                         // Add color and phone model for Pochette
-                        let cartItem = { ...productWithPackPrice, quantity };
+                        let cartItem = { ...productWithPackPrice, quantity } as Product;
                         if (product.category === 'Pochette') {
                           cartItem = {
                             ...cartItem,
                             selectedColor,
                             selectedPhone: selectedPhone || confirmedCustomPhone
-                          };
+                          } as Product;
                         }
                         addToCart(cartItem, quantity);
                       }
