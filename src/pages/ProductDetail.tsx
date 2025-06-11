@@ -545,6 +545,36 @@ const ProductDetail: React.FC = () => {
                   </div>
                 </div>
               )}
+              
+              {/* Color Options (only for Port Clés & Pochette) */}
+              {(() => {
+                const category = product?.category?.toLowerCase();
+                const colorOptions = (product as any)?.color as string[] | undefined;
+                if (!colorOptions || colorOptions.length === 0) return null;
+                if (category === 'port clés' || category === 'port cles' || category === 'pochette') {
+                  return (
+                    <div className="mb-6">
+                      <h3 className="text-sm font-medium text-gray-900 mb-2">COLOR</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {colorOptions.map((col, idx) => (
+                          <button
+                            key={idx}
+                            onClick={() => setSelectedColor(col)}
+                            className={`py-1 px-3 text-xs border rounded-md transition-colors ${
+                              selectedColor === col
+                                ? 'border-primary-500 bg-primary-500 text-white font-medium'
+                                : 'border-gray-300 hover:border-primary-500 hover:bg-primary-50'
+                            }`}
+                          >
+                            {col}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                }
+                return null;
+              })()}
 
               {/* Quantity selector */}
               <div className="mb-8">
@@ -626,36 +656,6 @@ const ProductDetail: React.FC = () => {
                   <p>{packData ? packData.description : (product?.description || 'No description available.')}</p>
                 </div>
               </div>
-              
-              {/* Color Options (only for Port Clés & Pochette) */}
-              {(() => {
-                const category = product?.category?.toLowerCase();
-                const colorOptions = (product as any)?.color as string[] | undefined;
-                if (!colorOptions || colorOptions.length === 0) return null;
-                if (category === 'port clés' || category === 'port cles' || category === 'pochette') {
-                  return (
-                    <div className="mt-6 mb-4">
-                      <h3 className="text-lg font-medium mb-2">COLOR</h3>
-                      <div className="flex flex-wrap gap-2">
-                        {colorOptions.map((col, idx) => (
-                          <button
-                            key={idx}
-                            onClick={() => setSelectedColor(col)}
-                            className={`py-1 px-3 text-xs border rounded-md transition-colors ${
-                              selectedColor === col
-                                ? 'border-primary-500 bg-primary-500 text-white font-medium'
-                                : 'border-gray-300 hover:border-primary-500 hover:bg-primary-50'
-                            }`}
-                          >
-                            {col}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  );
-                }
-                return null;
-              })()}
 
               {/* Features */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
