@@ -1,8 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import BlindBoxInterface from '../components/Product/BlindBoxInterface';
 
 const BlindBoxPage: React.FC = () => {
+  const [selectedLevel, setSelectedLevel] = useState('level1');
+
+  const getBoxImage = () => {
+    switch (selectedLevel) {
+      case 'level1': return '/images/white.jpg';
+      case 'level2': return '/images/pink.jpg';
+      case 'level3': return '/images/black.jpg';
+      default: return '/images/white.jpg';
+    }
+  };
   return (
     <motion.div 
       initial={{ opacity: 0 }}
@@ -12,7 +22,7 @@ const BlindBoxPage: React.FC = () => {
     >
       <div className="container mx-auto px-4">
         <h1 className="text-3xl md:text-4xl font-bold mb-8 text-center">Blind Box Collection</h1>
-        <BlindBoxInterface />
+        <BlindBoxInterface onLevelChange={setSelectedLevel} />
         
         {/* Game Rules Section */}
         <div className="w-full mt-16 mb-16">
@@ -25,8 +35,8 @@ const BlindBoxPage: React.FC = () => {
                   <div className="bg-gray-50 p-8 rounded-lg shadow-md flex flex-col items-center text-center">
                     <div className="w-64 h-64 mb-6 flex items-center justify-center">
                       <img 
-                        src="/images/white.jpg" 
-                        alt="Single Box" 
+                        src={getBoxImage()}
+                        alt={`${selectedLevel.replace('level', 'Level ')} Box`}
                         className="w-full h-full object-contain"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;

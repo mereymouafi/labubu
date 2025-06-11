@@ -14,6 +14,10 @@ interface Product extends BaseProduct {
   };
 }
 
+interface BlindBoxInterfaceProps {
+  onLevelChange?: (level: string) => void;
+}
+
 interface BlindBoxItem {
   id: number;
   name: string;
@@ -22,7 +26,7 @@ interface BlindBoxItem {
   rarity?: 'common' | 'rare' | 'ultra-rare' | 'secret';
 }
 
-const BlindBoxInterface: React.FC = () => {
+const BlindBoxInterface: React.FC<BlindBoxInterfaceProps> = ({ onLevelChange }) => {
   const navigate = useNavigate();
   const { addToCart } = useShop(); // Use the shop context
   const [selectedLevel, setSelectedLevel] = useState<string>('level1');
@@ -229,6 +233,7 @@ const BlindBoxInterface: React.FC = () => {
   const handleLevelSelect = (level: string) => {
     setSelectedLevel(level);
     setRevealedBox(null);
+    onLevelChange?.(level);
     
     // Trigger the shake animation
     setAnimatingBox(1);
@@ -530,7 +535,13 @@ const BlindBoxInterface: React.FC = () => {
                             ? "/images/pink.jpg"
                             : "/images/black.jpg"
                       }
-                      alt="Blind Box" 
+                      alt={
+                        selectedLevel === 'level1'
+                          ? "White Blind Box"
+                          : selectedLevel === 'level2'
+                            ? "Pink Blind Box"
+                            : "Black Blind Box"
+                      }
                       className="w-full h-full object-cover"
                     />
                   )}
