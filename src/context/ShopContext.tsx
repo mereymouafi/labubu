@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Product as BaseProduct, fetchProducts } from '../lib/supabase';
-import { Product } from '../types';
+import { fetchProducts } from '../lib/supabase';
+import { Product } from '../lib/supabase';
 
 // Product type is now imported from '../types'
 
@@ -147,8 +147,12 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           color: product.blindBoxInfo.color,
           quantity: product.blindBoxInfo.quantity
         } : undefined,
-        // Attach pochette-specific fields if present
+        // Attach T-shirt customization options if present
+        ...(product.selectedSize ? { selectedSize: product.selectedSize } : {}),
         ...(product.selectedColor ? { selectedColor: product.selectedColor } : {}),
+        ...(product.selectedStyle ? { selectedStyle: product.selectedStyle } : {}),
+        ...(product.selectedAge ? { selectedAge: product.selectedAge } : {}),
+        // Attach pochette-specific fields if present
         ...(product.selectedPhone ? { selectedPhone: product.selectedPhone } : {})
       };
 

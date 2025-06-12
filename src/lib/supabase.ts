@@ -60,6 +60,21 @@ export type Product = {
   character_id?: string;
   color?: string[]; // Array of available colors
   phone?: string; // Add phone compatibility field
+  // T-shirt customization options
+  selectedSize?: string;
+  selectedColor?: string;
+  selectedStyle?: string;
+  selectedAge?: string;
+  // Pochette customization options
+  selectedPhone?: string;
+  // For cart item identification
+  cartItemId?: string;
+  // For blind box products
+  blindBoxInfo?: {
+    level: string;
+    color: string;
+    quantity: number;
+  };
 };
 
 export type OrderItem = {
@@ -70,7 +85,13 @@ export type OrderItem = {
   quantity: number;
   category_id?: string;
   category_name?: string;
-  // Add t-shirt customization options
+  // Direct T-shirt customization options
+  size?: string;
+  color?: string;
+  style?: string;
+  age?: string;
+  phone_model?: string;
+  // Nested options for backward compatibility
   tshirt_options?: {
     size?: string;
     color?: string;

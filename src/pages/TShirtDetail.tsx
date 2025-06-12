@@ -468,6 +468,8 @@ const TShirtDetailPage: React.FC = () => {
                         // Use images array instead of image_url to match Cart.tsx expectations
                         images: tshirtOption?.image_urls || [],
                         description: tshirtOption?.option_description || '',
+                        category: 'T-shirts',
+                        stock_status: 'in_stock',
                         // Add selected options as custom properties
                         selectedSize,
                         selectedColor,
@@ -516,6 +518,9 @@ const TShirtDetailPage: React.FC = () => {
                         price: tshirt.price,
                         images: tshirtOption?.image_urls || [],
                         description: tshirtOption?.option_description || '',
+                        category: 'T-shirts',
+                        stock_status: 'in_stock',
+                        // Store customization options to be used in checkout
                         selectedSize,
                         selectedColor,
                         selectedStyle,

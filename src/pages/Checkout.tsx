@@ -109,30 +109,61 @@ const Checkout: React.FC = () => {
           throw new Error('Invalid item in cart');
         }
         
+        console.log('Processing cart item:', item.product);
+        
         // Check if this is a t-shirt product with customization options
         const tshirtOptions = {
-          size: (item.product as any).selectedSize,
-          color: (item.product as any).selectedColor,
-          style: (item.product as any).selectedStyle,
-          age: (item.product as any).selectedAge
+          size: (item.product as any).selectedSize || '',
+          color: (item.product as any).selectedColor || '',
+          style: (item.product as any).selectedStyle || '',
+          age: (item.product as any).selectedAge || ''
         };
+        
+        console.log('T-shirt options extracted:', tshirtOptions);
         
         // Check if this is a Pochette product with customization options
         const pochetteOptions = {
-          color: (item.product as any).selectedColor,
-          phone_model: (item.product as any).selectedPhone
+          color: (item.product as any).selectedColor || '',
+          phone_model: (item.product as any).selectedPhone || ''
         };
         
-        return {
+        // Create the order item with proper structure
+        const orderItem: OrderItem = {
           product_id: item.product.id,
           product_name: item.product.name,
           product_image: item.product.images && item.product.images.length > 0 ? item.product.images[0] : '',
           price: item.product.price,
           quantity: item.quantity,
-          category_name: item.product.category,
-          tshirt_options: item.product.category === 'T-shirts' ? tshirtOptions : undefined,
-          pochette_options: item.product.category === 'Pochette' ? pochetteOptions : undefined
+          category_id: item.product.category_id,
+          category_name: item.product.category
         };
+        
+        // Add T-shirt customization options directly to the order item if it's a T-shirt
+        if (item.product.category === 'T-shirts') {
+          // Ensure we're setting all T-shirt options
+          orderItem.tshirt_options = {
+            size: tshirtOptions.size,
+            color: tshirtOptions.color,
+            style: tshirtOptions.style,
+            age: tshirtOptions.age
+          };
+          
+          // Also set them at the top level
+          orderItem.size = tshirtOptions.size;
+          orderItem.color = tshirtOptions.color;
+          orderItem.style = tshirtOptions.style;
+          orderItem.age = tshirtOptions.age;
+        }
+        
+        // Add Pochette customization options if it's a Pochette
+        if (item.product.category === 'Pochette') {
+          orderItem.color = pochetteOptions.color;
+          orderItem.phone_model = pochetteOptions.phone_model;
+          orderItem.pochette_options = pochetteOptions;
+        }
+        
+        console.log('Final order item:', orderItem);
+        return orderItem;
       });
       
       // Convert shipping info to match Supabase type
