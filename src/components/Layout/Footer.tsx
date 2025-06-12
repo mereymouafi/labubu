@@ -32,7 +32,7 @@ const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Contact Info Section */}
           <div className="mb-8 md:mb-0">
-            <h3 className="text-sm font-bold mb-6 uppercase">CONTACT US</h3>
+            <h3 className="text-sm font-bold mb-6 uppercase">CONTACT uuuUS</h3>
             <ul className="space-y-4 text-sm text-gray-400">
               <li className="flex items-center">
                 <Mail size={16} className="mr-2" />
@@ -48,7 +48,7 @@ const Footer: React.FC = () => {
               </li>
               <li className="flex items-start">
                 <MapPin size={16} className="mr-2 mt-1" />
-                <span>Casablanca, Morocco</span>
+                <span>Agadir, Morocco</span>
               </li>
             </ul>
           </div>
