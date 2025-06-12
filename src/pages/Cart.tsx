@@ -170,7 +170,7 @@ const Cart: React.FC = () => {
                 
                 <div className="flex flex-grow">
                   {/* Product Image */}
-                  <Link to={`/product/${item.product.id}`} className="w-36 h-36 flex-shrink-0 mr-6 cursor-pointer">
+                  <Link to={item.product.category === 'T-shirts' ? `/t-shirts` : `/product/${item.product.id}`} className="w-36 h-36 flex-shrink-0 mr-6 cursor-pointer">
                     <img 
                       src={item.product.images[0]} 
                       alt={item.product.name}
@@ -182,7 +182,7 @@ const Cart: React.FC = () => {
                   <div className="flex-grow">
                     <div className="flex flex-col h-full justify-between">
                       <div>
-                        <Link to={`/product/${item.product.id}`} className="hover:text-labubumaroc-red transition-colors">
+                        <Link to={item.product.category === 'T-shirts' ? `/t-shirts` : `/product/${item.product.id}`} className="hover:text-labubumaroc-red transition-colors">
                           <h3 className="font-medium mb-1">{item.product.name}</h3>
                         </Link>
                         {item.product.category === 'Blind Box' && (
