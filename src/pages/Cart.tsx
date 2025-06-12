@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useShop } from '../context/ShopContext';
@@ -10,39 +10,49 @@ const Cart: React.FC = () => {
   const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>({});
   const [showAlert, setShowAlert] = useState(false);
   
+  // Helper to get a unique ID for cart item
+  const getItemId = (item: { product: { cartItemId?: string; id: string } }) => {
+    return item.product.cartItemId || `${item.product.id}-${Math.random().toString(36).substr(2, 9)}`;
+  };
+
   // Calculate total price based on selected items only
   const subtotal = cartItems.reduce(
-    (sum, item) => sum + (selectedItems[item.product.id] ? (item.product.price * item.quantity) : 0), 
+    (sum, item) => {
+      const itemId = getItemId(item);
+      return sum + (selectedItems[itemId] ? (item.product.price * item.quantity) : 0);
+    }, 
     0
   );
 
-  // Handle select all checkbox
-  useEffect(() => {
-    if (selectAll) {
+  // Toggle select all checkbox
+  const toggleSelectAll = (checked: boolean) => {
+    setSelectAll(checked);
+    if (checked) {
       const selected: Record<string, boolean> = {};
       cartItems.forEach(item => {
-        selected[item.product.id] = true;
+        const itemId = getItemId(item);
+        selected[itemId] = true;
       });
       setSelectedItems(selected);
-    } else if (Object.keys(selectedItems).length === cartItems.length) {
-      // Only clear if select all was previously checked
+    } else {
       setSelectedItems({});
     }
-  }, [selectAll, cartItems]);
+  };
 
-  // Toggle item selection
-  const toggleItemSelection = (productId: string) => {
+  // Toggle individual item selection
+  const toggleItemSelection = (cartItemId: string) => {
     setSelectedItems(prev => {
-      const newSelection = {...prev};
-      newSelection[productId] = !newSelection[productId];
+      const newSelection = {
+        ...prev,
+        [cartItemId]: !prev[cartItemId]
+      };
       
-      // Update select all state based on selection state
-      if (!newSelection[productId]) {
-        setSelectAll(false);
-      } else if (Object.keys(newSelection).length === cartItems.length && 
-                Object.values(newSelection).every(value => value)) {
-        setSelectAll(true);
-      }
+      // Update select all state based on current selection
+      const allSelected = cartItems.every(item => {
+        const itemId = getItemId(item);
+        return newSelection[itemId];
+      });
+      setSelectAll(allSelected);
       
       return newSelection;
     });
@@ -82,7 +92,10 @@ const Cart: React.FC = () => {
     }
     
     // Create an array of selected cart items
-    const selectedCartItems = cartItems.filter(item => selectedItems[item.product.id]);
+    const selectedCartItems = cartItems.filter(item => {
+      const itemId = item.product.cartItemId || item.product.id;
+      return selectedItems[itemId];
+    });
     
     // Set the selected items in the context
     setSelectedCartItems(selectedCartItems);
@@ -137,7 +150,7 @@ const Cart: React.FC = () => {
                   type="checkbox" 
                   className="form-checkbox h-5 w-5 text-labubumaroc-red"
                   checked={selectAll}
-                  onChange={() => setSelectAll(!selectAll)}
+                  onChange={(e) => toggleSelectAll(e.target.checked)}
                 />
                 <span className="ml-2 text-sm text-gray-700">Select all</span>
               </label>
@@ -150,8 +163,8 @@ const Cart: React.FC = () => {
                   <input 
                     type="checkbox" 
                     className="form-checkbox h-5 w-5 text-labubumaroc-red mt-16"
-                    checked={!!selectedItems[item.product.id]}
-                    onChange={() => toggleItemSelection(item.product.id)}
+                    checked={!!selectedItems[getItemId(item)]}
+                    onChange={() => toggleItemSelection(getItemId(item))}
                   />
                 </div>
                 
