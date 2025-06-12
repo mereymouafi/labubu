@@ -245,7 +245,36 @@ export const ShopProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   // Add a product to the wishlist
   const addToWishlist = (product: Product) => {
     if (!isInWishlist(product.id)) {
-      setWishlistItems(prevItems => [...prevItems, product]);
+      // Create a clean copy of the product to ensure it's properly serializable
+      const cleanProduct: Product = {
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        images: [...product.images],
+        category: product.category,
+        stock_status: product.stock_status,
+        // Include optional properties only if they exist
+        original_price: product.original_price,
+        description: product.description,
+        // Include pack price information if available
+        ...(product.packPrice ? { packPrice: product.packPrice } : {}),
+        ...(product.packOriginalPrice ? { packOriginalPrice: product.packOriginalPrice } : {}),
+        // Include blind box info if it exists
+        blindBoxInfo: product.blindBoxInfo ? {
+          level: product.blindBoxInfo.level,
+          color: product.blindBoxInfo.color,
+          quantity: product.blindBoxInfo.quantity
+        } : undefined,
+        // Attach T-shirt customization options if present
+        ...(product.selectedSize ? { selectedSize: product.selectedSize } : {}),
+        ...(product.selectedColor ? { selectedColor: product.selectedColor } : {}),
+        ...(product.selectedStyle ? { selectedStyle: product.selectedStyle } : {}),
+        ...(product.selectedAge ? { selectedAge: product.selectedAge } : {}),
+        // Attach pochette-specific fields if present
+        ...(product.selectedPhone ? { selectedPhone: product.selectedPhone } : {})
+      };
+      
+      setWishlistItems(prevItems => [...prevItems, cleanProduct]);
     } else {
       // If already in wishlist, remove it (toggle behavior)
       removeFromWishlist(product.id);

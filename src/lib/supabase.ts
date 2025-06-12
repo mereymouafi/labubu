@@ -75,6 +75,9 @@ export type Product = {
     color: string;
     quantity: number;
   };
+  // Pack price information
+  packPrice?: number;
+  packOriginalPrice?: number;
 };
 
 export type OrderItem = {
@@ -499,7 +502,9 @@ export const fetchProductsByPack = async (packId: string): Promise<Product[]> =>
       .map((product: any) => ({
         ...product,
         price: packPrice, // Override the product price with the pack price
-        original_price: packOriginalPrice // Override the product original_price with the pack original_price
+        original_price: packOriginalPrice, // Override the product original_price with the pack original_price
+        packPrice: packPrice, // Store the pack price separately
+        packOriginalPrice: packOriginalPrice // Store the pack original price separately
       })) as unknown as Product[];
     
     console.log('Extracted products with pack price:', products);
@@ -542,7 +547,9 @@ export const fetchProductsByPack = async (packId: string): Promise<Product[]> =>
       return (productsData || []).map((product: any) => ({
         ...product,
         price: packPrice, // Override the product price with the pack price
-        original_price: packOriginalPrice // Override the product original_price with the pack original_price
+        original_price: packOriginalPrice, // Override the product original_price with the pack original_price
+        packPrice: packPrice, // Store the pack price separately
+        packOriginalPrice: packOriginalPrice // Store the pack original price separately
       }));
     }
     

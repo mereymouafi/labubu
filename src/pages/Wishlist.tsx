@@ -63,7 +63,26 @@ const Wishlist: React.FC = () => {
                     </div>
                     <div className="mt-2 sm:mt-0 text-right">
                       <p className="font-bold text-xl">
-                        {product.price.toFixed(2)} MAD
+                        {/* Display pack price if available, otherwise use regular price */}
+                        {product.packPrice ? (
+                          <>
+                            {product.packPrice.toFixed(2)} MAD
+                            {product.packOriginalPrice && (
+                              <span className="text-sm text-gray-500 line-through ml-2">
+                                {product.packOriginalPrice.toFixed(2)} MAD
+                              </span>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            {product.price.toFixed(2)} MAD
+                            {product.original_price && (
+                              <span className="text-sm text-gray-500 line-through ml-2">
+                                {product.original_price.toFixed(2)} MAD
+                              </span>
+                            )}
+                          </>
+                        )}
                       </p>
                       <button
                         onClick={() => removeFromWishlist(product.id)}
