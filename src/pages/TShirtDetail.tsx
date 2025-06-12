@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Heart, Share2, ChevronLeft, ChevronRight, ShoppingCart, Check, ArrowLeft, ArrowRight } from 'lucide-react';
 import { fetchTShirtDetail, fetchTShirtOptions, TShirtOption, TShirtDetail } from '../lib/supabase';
@@ -69,7 +69,7 @@ const TShirtDetailPage: React.FC = () => {
   const [selectedColor, setSelectedColor] = useState<string>('');
   const [selectedStyle, setSelectedStyle] = useState<string>('');
   const [selectedAge, setSelectedAge] = useState<string>('');
-  const autoScrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  // Auto-scroll functionality has been removed
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const [inWishlist, setInWishlist] = useState(false);
   const { addToCart, addToWishlist, isInWishlist } = useShop();
@@ -113,11 +113,7 @@ const TShirtDetailPage: React.FC = () => {
     setSelectedColor('');
     setSelectedStyle('');
     
-    // Clean up any existing interval
-    if (autoScrollIntervalRef.current) {
-      clearInterval(autoScrollIntervalRef.current);
-      autoScrollIntervalRef.current = null;
-    }
+    // Auto-scroll functionality has been removed
   }, [id]);
   
   const incrementQuantity = () => {
@@ -138,24 +134,7 @@ const TShirtDetailPage: React.FC = () => {
     setCurrentImageIndex(prev => (prev - 1 + tshirtOption.image_urls.length) % tshirtOption.image_urls.length);
   };
   
-  // Set up auto-scrolling effect
-  useEffect(() => {
-    // Only set up auto-scroll if we have multiple images
-    if (tshirtOption?.image_urls && tshirtOption.image_urls.length > 1) {
-      // Start the auto-scroll interval
-      autoScrollIntervalRef.current = setInterval(() => {
-        nextImage();
-      }, 3000); // Scroll every 3 seconds
-    }
-    
-    // Clean up the interval when component unmounts
-    return () => {
-      if (autoScrollIntervalRef.current) {
-        clearInterval(autoScrollIntervalRef.current);
-        autoScrollIntervalRef.current = null;
-      }
-    };
-  }, [tshirtOption]);
+  // Auto-scroll functionality has been removed
   
   if (loading) {
     return (
@@ -234,21 +213,7 @@ const TShirtDetailPage: React.FC = () => {
                         src={tshirtOption.image_urls[currentImageIndex]}
                         alt={tshirt.option_name}
                         className="w-full h-full object-cover"
-                        onMouseEnter={() => {
-                          // Pause auto-scroll on hover
-                          if (autoScrollIntervalRef.current) {
-                            clearInterval(autoScrollIntervalRef.current);
-                            autoScrollIntervalRef.current = null;
-                          }
-                        }}
-                        onMouseLeave={() => {
-                          // Resume auto-scroll when mouse leaves
-                          if (!autoScrollIntervalRef.current && tshirtOption?.image_urls && tshirtOption.image_urls.length > 1) {
-                            autoScrollIntervalRef.current = setInterval(() => {
-                              nextImage();
-                            }, 3000);
-                          }
-                        }}
+                        // Auto-scroll functionality has been removed
                       />
                       
                       {/* Image navigation */}
