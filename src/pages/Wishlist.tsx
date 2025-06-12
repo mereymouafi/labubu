@@ -51,12 +51,9 @@ const Wishlist: React.FC = () => {
                 <div className="flex-grow mt-4 sm:mt-0">
                   <div className="flex flex-col sm:flex-row justify-between w-full">
                     <div>
-                      <Link 
-                        to={product.category === 'T-shirts' ? `/t-shirts` : `/product/${product.id}`}
-                        className="font-medium text-lg hover:text-labubumaroc-red transition-colors duration-300"
-                      >
+                      <span className="font-medium text-lg">
                         {product.name}
-                      </Link>
+                      </span>
                       {product.collection && (
                         <p className="text-sm text-gray-500 mt-1">Style: {product.collection}</p>
                       )}
