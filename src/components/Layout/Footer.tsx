@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Facebook, Instagram, Mail, Phone, MapPin, ArrowRight } from 'lucide-react';
+import { Facebook, Instagram, Mail, Phone, MapPin } from 'lucide-react';
 
 const Footer: React.FC = () => {
   return (
@@ -24,17 +24,12 @@ const Footer: React.FC = () => {
               </a>
             </div>
           </div>
-          
-          <div className="flex items-center space-x-4">
-            <Link to="/cart" className="text-black hover:text-gray-600 transition-colors duration-200 font-medium">Cart</Link>
-            <Link to="/wishlist" className="text-black hover:text-gray-600 transition-colors duration-200 font-medium">Wishlist</Link>
-          </div>
         </div>
       </div>
 
       {/* Main Footer */}
       <div className="container mx-auto px-4 py-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Contact Info Section */}
           <div className="mb-8 md:mb-0">
             <h3 className="text-sm font-bold mb-6 uppercase">CONTACT US</h3>
@@ -106,88 +101,11 @@ const Footer: React.FC = () => {
               </li>
             </ul>
           </div>
-
-          {/* SHOP Column */}
-          <div>
-            <h3 className="text-sm font-bold mb-6 uppercase">CATEGORIES</h3>
-            <ul className="space-y-3 text-sm text-gray-400">
-              <li>
-                <Link to="/blind-box" className="hover:text-white transition-colors duration-200">
-                  BLIND BOXES
-                </Link>
-              </li>
-              <li>
-                <Link to="/accessories/pochettes" className="hover:text-white transition-colors duration-200">
-                  POCHETTE
-                </Link>
-              </li>
-              <li>
-                <Link to="/t-shirts" className="hover:text-white transition-colors duration-200">
-                  T-SHIRTS
-                </Link>
-              </li>
-              <li>
-                <Link to="/port-cles" className="hover:text-white transition-colors duration-200">
-                  PORT CLÉS
-                </Link>
-              </li>
-              <li>
-                <Link to="/figurings" className="hover:text-white transition-colors duration-200">
-                  FIGURINES
-                </Link>
-              </li>
-              <li>
-                <Link to="/mugs" className="hover:text-white transition-colors duration-200">
-                  MUGS
-                </Link>
-              </li>
-              <li>
-                <Link to="/accessories" className="hover:text-white transition-colors duration-200">
-                  ACCESSOIRES
-                </Link>
-              </li>
-            </ul>
-          </div>
-        </div>
-        
-        {/* Newsletter Section */}
-        <div className="mt-12 pt-8 border-t border-gray-800">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-            <div>
-              <h3 className="text-lg font-bold mb-2">SUBSCRIBE TO OUR NEWSLETTER</h3>
-              <p className="text-gray-400 text-sm">Stay updated with our latest products and offers</p>
-            </div>
-            <div className="flex">
-              <input 
-                type="email" 
-                placeholder="Your email address" 
-                className="bg-gray-900 text-white px-4 py-2 flex-grow border border-gray-700 focus:outline-none focus:border-white"
-              />
-              <button className="bg-white text-black px-4 py-2 flex items-center hover:bg-gray-200 transition-colors duration-200">
-                SUBSCRIBE <ArrowRight size={16} className="ml-2" />
-              </button>
-            </div>
-          </div>
         </div>
 
-        {/* Country/Region Selector */}
-        <div className="mt-12 pt-6 border-t border-gray-800 flex flex-col-reverse md:flex-row justify-between items-center">
-          <div className="flex flex-col md:flex-row items-center md:items-start">
-            <p className="text-gray-400 text-sm mt-4 md:mt-0">&copy; {new Date().getFullYear()} Labubu Maroc. All rights reserved.</p>
-            <div className="flex space-x-4 md:ml-6 mt-2 md:mt-0">
-              <Link to="/terms" className="text-gray-400 text-xs hover:text-white transition-colors duration-200">Terms</Link>
-              <Link to="/privacy" className="text-gray-400 text-xs hover:text-white transition-colors duration-200">Privacy</Link>
-              <Link to="/sitemap" className="text-gray-400 text-xs hover:text-white transition-colors duration-200">Sitemap</Link>
-            </div>
-          </div>
-          
-          <div className="flex items-center">
-            <span className="text-sm text-gray-400 mr-2">COUNTRY/REGION</span>
-            <button className="border border-gray-700 px-3 py-1 flex items-center hover:border-white transition-colors duration-200">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/2/2c/Flag_of_Morocco.svg" alt="Morocco flag" className="w-5 h-3 mr-2" />
-              <span className="text-sm">MA</span>
-            </button>
-          </div>
+        {/* Copyright */}
+        <div className="mt-8 pt-6 border-t border-gray-800 text-center">
+          <p className="text-gray-400 text-sm">&copy; {new Date().getFullYear()} Labubu Maroc. All rights reserved.</p>
         </div>
       </div>
     </footer>
