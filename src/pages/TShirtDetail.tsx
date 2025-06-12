@@ -456,10 +456,9 @@ const TShirtDetailPage: React.FC = () => {
                 {/* Add to cart button */}
                 <button 
                   className={`py-2 ${isAddedToCart ? 'bg-green-500 hover:bg-green-600' : 'bg-red-600 hover:bg-red-700'} text-white font-medium text-sm rounded-md transition-colors flex items-center justify-center gap-1`}
-                  disabled={(!selectedSize && !selectedAge) || !selectedColor || !selectedStyle}
-                  title={(!selectedSize && !selectedAge) || !selectedColor || !selectedStyle ? "Please select either size or age, plus color and style" : ""}
+                  disabled={isAddedToCart}
                   onClick={() => {
-                    if (tshirt && (selectedSize || selectedAge) && selectedColor && selectedStyle) {
+                    if (tshirt) {
                       // Convert TShirt to Product format for cart
                       const productForCart = {
                         id: tshirt.id,
@@ -507,10 +506,9 @@ const TShirtDetailPage: React.FC = () => {
                 {/* Shop Now button - add to cart and redirect to cart page */}
                 <button 
                   className="py-2 bg-black hover:bg-gray-900 text-white font-medium text-sm rounded-md transition-colors flex items-center justify-center gap-1"
-                  disabled={(!selectedSize && !selectedAge) || !selectedColor || !selectedStyle}
-                  title={(!selectedSize && !selectedAge) || !selectedColor || !selectedStyle ? "Please select either size or age, plus color and style" : ""}
+                  disabled={isAddedToCart}
                   onClick={() => {
-                    if (tshirt && (selectedSize || selectedAge) && selectedColor && selectedStyle) {
+                    if (tshirt) {
                       // Convert TShirt to Product format for cart
                       const productForCart = {
                         id: tshirt.id,
