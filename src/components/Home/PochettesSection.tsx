@@ -175,8 +175,8 @@ const PochettesSection: React.FC = () => {
           </Link>
         </div>
         
-        {/* Phone model selector */}
-        {phoneModels.length > 0 && (
+        {/* Phone model selector - Hidden as requested */}
+        {false && phoneModels.length > 0 && (
           <div className="mb-8">
             <h3 className="text-sm font-medium text-gray-700 mb-3">
               SELECT YOUR PHONE MODEL
