@@ -52,7 +52,7 @@ const Wishlist: React.FC = () => {
                   <div className="flex flex-col sm:flex-row justify-between w-full">
                     <div>
                       <Link 
-                        to={`/product/${product.id}`}
+                        to={product.category === 'T-shirts' ? `/t-shirts` : `/product/${product.id}`}
                         className="font-medium text-lg hover:text-labubumaroc-red transition-colors duration-300"
                       >
                         {product.name}
